@@ -65,11 +65,11 @@ app.use('/backend/uploads', (req, res, next) => {
   res.status(404).send('Not found');
 });
 
-// Serve frontend: root shows quiz list, all other paths serve HTML from project folder
+// Serve frontend from backend/public (Railway root is backend)
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'educator-quiz.html'));
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
-app.use(express.static(path.join(__dirname, '..')));
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.use((err, req, res, next) => {
   console.error(err);

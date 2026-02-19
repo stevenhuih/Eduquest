@@ -33,17 +33,6 @@ function getAuthHeaders() {
 }
 
 /**
- * Fetch helper that always sends auth headers for protected /api routes.
- * @param {string} url - Full URL (e.g. API_BASE + "/educators/admin/1")
- * @param {RequestInit} options - fetch options; headers are merged with getAuthHeaders().
- */
-function apiFetch(url, options) {
-  options = options || {};
-  options.headers = Object.assign({}, getAuthHeaders(), options.headers || {});
-  return fetch(url, options);
-}
-
-/**
  * Clear stored identity and redirect to the given login page.
  * @param {string} redirectUrl - e.g. 'student-login.html', 'educator-login.html', 'educatoradmin-login.html'
  */

@@ -1,4 +1,4 @@
--- Platform review system: students → educator admin, educators → educator admin, educator admins → platform.
+-- Platform review system: students â†’ educator admin, educators â†’ educator admin, educator admins â†’ platform.
 -- Run: psql -U postgres -d eduquest -f backend/migrations/036-create-reviews-table.sql
 
 CREATE TABLE IF NOT EXISTS reviews (
