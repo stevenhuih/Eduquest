@@ -28,22 +28,20 @@ async function getAll(req, res) {
 
 /**
  * GET /api/educators/admin/:adminId
- * Return educators for this admin (multi-tenant). Caller must be educatoradmin and req.userId === adminId.
+ * Return educators for this admin. Uses adminId from path; if auth present, caller must be educatoradmin matching adminId.
+ * If no auth or no match, still returns educators for given adminId (for dropdown loading). Invalid adminId returns [].
  */
 async function getByAdmin(req, res) {
   try {
     const adminId = Number(req.params.adminId);
     if (isNaN(adminId)) {
-      return res.status(400).json({ error: 'Invalid admin id' });
+      return res.json([]);
     }
-    if (req.role !== 'educatoradmin' || req.userId == null) {
-      return res.status(403).json({ error: 'Forbidden' });
-    }
-    if (Number(req.userId) !== adminId) {
+    if (req.role === 'educatoradmin' && req.userId != null && Number(req.userId) !== adminId) {
       return res.status(403).json({ error: 'Forbidden' });
     }
     const educators = await educatorModel.getEducatorsByAdmin(adminId);
-    res.json(educators);
+    res.json(educators || []);
   } catch (err) {
     console.error('Get educators by admin error:', err);
     res.status(500).json({ error: 'Failed to fetch educators' });
@@ -72,6 +70,9 @@ async function create(req, res) {
     res.status(201).json(row);
   } catch (err) {
     console.error(err);
+    if (err.code === '23505') {
+      return res.status(409).json({ error: 'Duplicate record detected' });
+    }
     res.status(500).json({ error: err.message || 'Failed to create educator' });
   }
 }

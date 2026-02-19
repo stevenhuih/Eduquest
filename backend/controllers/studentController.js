@@ -35,22 +35,27 @@ async function create(req, res) {
     res.status(201).json(student);
   } catch (err) {
     console.error('Create student error:', err);
+    if (err.code === '23505') {
+      return res.status(409).json({ error: 'Duplicate record detected' });
+    }
     res.status(500).json({ error: err.message || 'Failed to create student' });
   }
 }
 
 /**
  * GET /api/students?adminId=1
- * Return students belonging to this admin (tuition center). adminId query param required.
+ * Return students belonging to this admin. adminId from query or req.userId (educatoradmin). If none, return [].
  */
 async function getAll(req, res) {
   try {
-    const adminId = req.query.adminId != null ? Number(req.query.adminId) : NaN;
-    if (isNaN(adminId)) {
-      return res.status(400).json({ error: 'adminId query parameter is required' });
+    const queryAdminId = req.query.adminId != null ? Number(req.query.adminId) : NaN;
+    const authAdminId = (req.role === 'educatoradmin' && req.userId != null) ? Number(req.userId) : NaN;
+    const adminId = !isNaN(queryAdminId) ? queryAdminId : authAdminId;
+    if (adminId == null || isNaN(adminId)) {
+      return res.json([]);
     }
     const students = await studentModel.getAllStudents(adminId);
-    res.json(students);
+    res.json(students || []);
   } catch (err) {
     console.error('Get students error:', err);
     res.status(500).json({ error: 'Failed to fetch students' });

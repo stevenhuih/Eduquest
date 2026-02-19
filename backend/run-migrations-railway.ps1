@@ -60,7 +60,8 @@ $order = @(
   "042-educator-admins-plan-ensure.sql",
   "043-student-reports-table.sql",
   "044-add-rarities-system.sql",
-  "045-add-educatoradmin-status-subscription.sql"
+  "045-add-educatoradmin-status-subscription.sql",
+  "046-fix-sequences.sql"
 )
 
 foreach ($f in $order) {

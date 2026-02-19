@@ -1,4 +1,13 @@
 /**
+ * Fetch wrapper that sends auth headers. Use for all API calls from educator admin / educator / student pages.
+ */
+function apiFetch(url, options) {
+  options = options || {};
+  options.headers = Object.assign({}, getAuthHeaders(), options.headers || {});
+  return fetch(url, options);
+}
+
+/**
  * Auth headers for EduQuest API. Sends exactly one role header based on localStorage.role + localStorage.userId.
  */
 function getAuthHeaders() {
