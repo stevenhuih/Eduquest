@@ -858,10 +858,12 @@
       }
 
       function getCardImageUrl(card) {
-        if (!card || !card.image_path) return "";
-        var filename = card.image_path.replace(/^.*[/\\]/, "");
-        var base = (typeof API_BASE !== "undefined" && API_BASE) ? API_BASE.replace(/\/api\/?$/, "") : window.location.origin;
-        return base + "/api/shop/card-image/" + encodeURIComponent(filename);
+        var raw = card && (card.image_url || card.image_path);
+        if (!raw) return "";
+        raw = String(raw);
+        if (raw.indexOf("/assets/") === 0) return raw;
+        var filename = raw.replace(/^.*[/\\]/, "");
+        return "/assets/cards/" + filename;
       }
 
       function updateOwnershipProgress(ownedCount, totalCards) {
