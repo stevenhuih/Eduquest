@@ -1,0 +1,6 @@
+-- One-time backfill: set topic for existing questions that have NULL topic.
+-- Do NOT run automatically. Run manually if needed (e.g. via psql) after enforcing topic everywhere.
+--
+-- UPDATE questions
+-- SET topic = 'addition'
+-- WHERE topic IS NULL;

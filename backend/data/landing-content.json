@@ -1,0 +1,36 @@
+{
+  "hero": {
+    "title": "Make Learning An Adventure",
+    "subtitle": "Engage students with gamified quests, track progress in real-time, and build a classroom culture that celebrates every achievement."
+  },
+  "features": [
+    {
+      "title": "Track Progress",
+      "description": "Visualize student mastery in real-time. Identify gaps and celebrate growth streaks."
+    },
+    {
+      "title": "Run Challenges",
+      "description": "Create epic boss battles (exams) and daily quests. Turn \"have to do\" into \"want to conquer\"."
+    },
+    {
+      "title": "Boost Motivation",
+      "description": "Unlock avatars, earn badges, and build a positive classroom culture where effort is the currency."
+    },
+    {
+      "title": "Fight Boss Battles",
+      "description": "Fight Boss Battles. Students learn faster when they are having an engaged experience."
+    }
+  ],
+  "pricing": [
+    {
+      "name": "Basic Plan",
+      "description": "Suitable for small tuition centers",
+      "limitLabel": "Up to 5 classes"
+    },
+    {
+      "name": "Pro Plan",
+      "description": "Unlimited classes and analytics",
+      "limitLabel": "Unlimited classes"
+    }
+  ]
+}

@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduQuest - Student Dashboard</title>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="js/api.js"></script>
+<script src="js/student-navbar.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+:root { --font-family: 'Nunito', sans-serif; }
+body { font-family: var(--font-family); -webkit-font-smoothing: antialiased; background-color: #fafaf9; }
+/* Subtle Pastel Background */
+.bg-pastel-mesh {
+position: fixed; inset: 0; z-index: -50;
+background:
+radial-gradient(at 0% 0%, rgba(224, 231, 255, 0.4) 0px, transparent 50%),
+radial-gradient(at 100% 0%, rgba(255, 237, 213, 0.4) 0px, transparent 50%),
+radial-gradient(at 100% 100%, rgba(220, 252, 231, 0.3) 0px, transparent 50%),
+radial-gradient(at 0% 100%, rgba(255, 228, 230, 0.3) 0px, transparent 50%);
+filter: blur(40px);
+}
+/* Micro pattern for texture */
+.bg-texture {
+position: fixed; inset: 0; z-index: -49;
+opacity: 0.4;
+background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2394a3b8' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+@keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
+@keyframes pulse-soft { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.05); opacity: 0.8; } }
+@keyframes slide-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.animate-float { animation: float 6s ease-in-out infinite; }
+.animate-enter { animation: slide-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
+.glass-card {
+background: rgba(255, 255, 255, 0.7);
+backdrop-filter: blur(12px);
+-webkit-backdrop-filter: blur(12px);
+border: 1px solid rgba(255, 255, 255, 0.8);
+}
+/* Custom Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
+</style>
+<link id="all-fonts-link-font-geist" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-geist">
+.font-geist { font-family: 'Geist', sans-serif !important; }
+</style><link id="all-fonts-link-font-roboto" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-roboto">
+.font-roboto { font-family: 'Roboto', sans-serif !important; }
+</style><link id="all-fonts-link-font-montserrat" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-montserrat">
+.font-montserrat { font-family: 'Montserrat', sans-serif !important; }
+</style><link id="all-fonts-link-font-poppins" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-poppins">
+.font-poppins { font-family: 'Poppins', sans-serif !important; }
+</style><link id="all-fonts-link-font-playfair" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;900&amp;display=swap"><style id="all-fonts-style-font-playfair">
+.font-playfair { font-family: 'Playfair Display', serif !important; }
+</style><link id="all-fonts-link-font-instrument-serif" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:wght@400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-instrument-serif">
+.font-instrument-serif { font-family: 'Instrument Serif', serif !important; }
+</style><link id="all-fonts-link-font-merriweather" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&amp;display=swap"><style id="all-fonts-style-font-merriweather">
+.font-merriweather { font-family: 'Merriweather', serif !important; }
+</style><link id="all-fonts-link-font-bricolage" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-bricolage">
+.font-bricolage { font-family: 'Bricolage Grotesque', sans-serif !important; }
+</style><link id="all-fonts-link-font-jakarta" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap"><style id="all-fonts-style-font-jakarta">
+.font-jakarta { font-family: 'Plus Jakarta Sans', sans-serif !important; }
+</style><link id="all-fonts-link-font-manrope" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap"><style id="all-fonts-style-font-manrope">
+.font-manrope { font-family: 'Manrope', sans-serif !important; }
+</style><link id="all-fonts-link-font-space-grotesk" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-space-grotesk">
+.font-space-grotesk { font-family: 'Space Grotesk', sans-serif !important; }
+</style><link id="all-fonts-link-font-work-sans" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700;800&amp;display=swap"><style id="all-fonts-style-font-work-sans">
+.font-work-sans { font-family: 'Work Sans', sans-serif !important; }
+</style><link id="all-fonts-link-font-pt-serif" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=PT+Serif:wght@400;700&amp;display=swap"><style id="all-fonts-style-font-pt-serif">
+.font-pt-serif { font-family: 'PT Serif', serif !important; }
+</style><link id="all-fonts-link-font-geist-mono" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-geist-mono">
+.font-geist-mono { font-family: 'Geist Mono', monospace !important; }
+</style><link id="all-fonts-link-font-space-mono" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&amp;display=swap"><style id="all-fonts-style-font-space-mono">
+.font-space-mono { font-family: 'Space Mono', monospace !important; }
+</style><link id="all-fonts-link-font-quicksand" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-quicksand">
+.font-quicksand { font-family: 'Quicksand', sans-serif !important; }
+</style></head>
+  <body class="text-slate-600 selection:bg-violet-200 selection:text-violet-800">
+    <div class="bg-pastel-mesh"></div>
+    <div class="bg-texture"></div>
+
+    <!-- NAVIGATION -->
+    <nav class="fixed top-0 w-full z-50 pt-4 pb-2 px-4">
+      <div class="max-w-7xl mx-auto glass-card rounded-full px-4 py-3 flex items-center justify-between shadow-sm shadow-indigo-100/50">
+        <!-- Brand -->
+        <div class="flex items-center gap-3 pl-2">
+          <img src="assets/logo.png" alt="EduQuest" class="h-9 w-auto object-contain" />
+        </div>
+
+        <!-- Links -->
+        <div class="hidden md:flex items-center gap-1 p-1 bg-slate-100/50 rounded-full border border-slate-200/50">
+          <a href="student-dashboard.html" class="transition-all text-sm font-bold text-indigo-600 bg-white rounded-full pt-2 pr-5 pb-2 pl-5 shadow-sm" style="">Home</a>
+          <a href="student-class.html" class="hover:text-indigo-500 hover:bg-white/60 transition-all text-sm font-semibold text-slate-500 rounded-full pt-2 pr-5 pb-2 pl-5">
+            My Classes
+          </a>
+          <a href="student-shop.html" class="hover:text-indigo-500 hover:bg-white/60 transition-all text-sm font-semibold text-slate-500 rounded-full pt-2 pr-5 pb-2 pl-5">Shop</a>
+          
+        </div>
+
+        <!-- Profile -->
+        <div class="flex items-center gap-4 pr-2">
+          <div class="hidden sm:flex flex-col items-end">
+            <span id="navbar-student-name" class="text-xs font-bold text-slate-700"></span>
+            <span id="navbar-role-badge" class="text-[10px] font-bold text-indigo-500 bg-indigo-50 rounded-full pt-0.5 pr-2 pb-0.5 pl-2" style="">Student</span>
+          </div>
+          <div class="bg-white w-10 h-10 border-indigo-100 border-2 rounded-full pt-0.5 pr-0.5 pb-0.5 pl-0.5 cursor-pointer" onclick="window.location.href='student-profile.html'" role="button">
+            <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Alex&amp;backgroundColor=e0e7ff" alt="Profile" class="w-full h-full object-cover rounded-full">
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <main class="max-w-7xl mr-auto ml-auto pt-32 pr-6 pb-24 pl-6 space-y-12">
+      <!-- 1. CREATIVE HERO SECTION -->
+      <header class="relative rounded-[3rem] overflow-hidden min-h-[320px] flex items-center shadow-xl shadow-indigo-100/40 animate-enter group">
+        <!-- Hero background image -->
+        <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" style="background-image: url('assets/student-dashboard-hero.png');"></div>
+        <!-- Dark overlay for contrast and white text -->
+        <div class="absolute inset-0 bg-slate-900/60"></div>
+
+        <div class="relative z-10 w-full px-10 md:px-16 py-12 flex items-center justify-end">
+          <div class="space-y-6 text-right max-w-xl ml-auto">
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/20 border border-white/30 backdrop-blur-sm shadow-sm ml-auto">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="sun" class="lucide lucide-sun w-4 h-4 text-amber-300 fill-amber-300"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path></svg>
+              <span id="hero-greeting-text" class="text-xs font-bold text-white uppercase tracking-wide">Good Morning!</span>
+            </div>
+
+            <h1 class="text-4xl md:text-6xl font-bold text-white tracking-tight leading-[1.1]">
+              Ready to
+              <span class="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-violet-400">
+                Launch?
+              </span>
+            </h1>
+
+            <div class="flex gap-4 pt-2 justify-end">
+              <button class="shadow-indigo-200 hover:bg-indigo-600 hover:-translate-y-1 transition-all flex text-sm font-bold text-white bg-indigo-500 rounded-2xl pt-3.5 pr-8 pb-3.5 pl-8 shadow-lg gap-x-2 gap-y-2 items-center" onclick="window.location.href='student-class.html'" role="button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="rocket" class="lucide lucide-rocket w-[16px] h-[16px]" style="color: rgb(255, 255, 255); width: 16px; height: 16px" data-icon-replaced="true"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"></path><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"></path><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"></path><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"></path></svg>
+                Start Mission
+              </button>
+              
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- 2. SUMMARY CARDS (3 cards: EduCoins, Cards Collected, Insight) -->
+      <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-enter gap-x-6 gap-y-6" style="animation-delay: 100ms">
+        <!-- Card 1: EduCoins -->
+        <div class="group relative bg-white rounded-[2rem] p-6 border border-slate-100 hover:border-emerald-200 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-emerald-100/40 cursor-default overflow-hidden">
+          <div class="absolute -right-6 -top-6 w-24 h-24 bg-emerald-50 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+          <div class="flex justify-between items-start mb-6 relative">
+            <div class="p-3.5 bg-emerald-50 rounded-2xl text-emerald-500 shadow-sm border border-emerald-100">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-coins w-6 h-6 stroke-[1.5]"><circle cx="8" cy="8" r="6"></circle><path d="M18.09 10.37A6 6 0 1 1 10.34 18"></path><path d="M7 6h1v4"></path><path d="m16.71 13.88.7.71-2.82 2.82"></path></svg>
+            </div>
+          </div>
+          <div class="relative">
+            <h3 id="dashboard-coins-value" class="text-3xl font-bold text-slate-700 mb-2">—</h3>
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-wide group-hover:text-emerald-400 transition-colors">Current EduCoins</p>
+          </div>
+        </div>
+
+        <!-- Card 2: Cards Collected -->
+        <div class="group relative bg-white rounded-[2rem] p-6 border border-slate-100 hover:border-amber-200 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-amber-100/40 cursor-default overflow-hidden">
+          <div class="absolute -right-6 -top-6 w-24 h-24 bg-amber-50 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+          <div class="flex justify-between items-start mb-6 relative">
+            <div class="p-3.5 bg-amber-50 rounded-2xl text-amber-500 shadow-sm border border-amber-100">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layers w-6 h-6 stroke-[1.5]"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.57 3.91a2 2 0 0 0 1.66 0l8.57-3.9a1 1 0 0 0 0-1.83Z"></path><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"></path><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"></path></svg>
+            </div>
+          </div>
+          <div class="relative">
+            <h3 id="dashboard-cards-value" class="text-3xl font-bold text-slate-700 mb-2">—</h3>
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-wide group-hover:text-amber-400 transition-colors">Trading Cards Collected</p>
+          </div>
+        </div>
+
+        <!-- Card 3: Insight (Weakest Topic) -->
+        <div class="group relative bg-white rounded-[2rem] p-6 border border-slate-100 hover:border-indigo-200 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-indigo-100/40 cursor-default overflow-hidden">
+          <div class="absolute -right-6 -top-6 w-24 h-24 bg-indigo-50 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+          <div class="flex justify-between items-start mb-6 relative">
+            <div class="p-3.5 bg-indigo-50 rounded-2xl text-indigo-500 shadow-sm border border-indigo-100">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-lightbulb w-6 h-6 stroke-[1.5]"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"></path><path d="M9 18h6"></path><path d="M10 22h4"></path></svg>
+            </div>
+          </div>
+          <div class="relative">
+            <p id="dashboard-insight-text" class="text-sm font-semibold text-slate-700 leading-snug">Loading…</p>
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-wide mt-2 group-hover:text-indigo-400 transition-colors">Insight</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- MAIN LAYOUT -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <!-- MAIN CONTENT -->
+        <div class="lg:col-span-12 animate-enter space-y-12" style="animation-delay: 200ms">
+          <!-- 3. YOUR CLASSES (dynamic, educator-style layout) -->
+          <section class="space-y-8">
+            <div class="flex pr-2 pl-2 items-end justify-between">
+              <div>
+                <h2 class="bg-clip-text text-3xl font-semibold text-transparent tracking-tight bg-slate-900 pb-1">Your Classes</h2>
+                <p class="text-xs font-medium text-slate-500">Manage your courses and assignments</p>
+              </div>
+            </div>
+            <div id="student-classes-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 gap-x-8 gap-y-8"></div>
+          </section>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-900 text-slate-300 py-16 border-t border-slate-800">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+          <!-- Column 1: Brand -->
+          <div class="space-y-6">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-compass w-6 h-6">
+                  <path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z"></path>
+                  <circle cx="12" cy="12" r="10"></circle>
+                </svg>
+              </div>
+              <span class="text-xl font-bold text-white tracking-tight">
+                EduQuest
+              </span>
+            </div>
+            <p class="text-sm leading-relaxed text-slate-400 font-medium">
+              Making learning an addictive adventure for students around the
+              world.
+            </p>
+            <div class="flex gap-3">
+              <a href="#" class="w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-slate-700 hover:text-white transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-twitter">
+                  <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path>
+                </svg>
+              </a>
+              <a href="#" class="w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-slate-700 hover:text-white transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-instagram">
+                  <rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect>
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                  <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line>
+                </svg>
+              </a>
+            </div>
+          </div>
+
+          <!-- Column 2: Product -->
+          <div>
+            <h4 class="font-bold text-white mb-6 text-base">Product</h4>
+            <ul class="space-y-4 text-sm font-medium text-slate-400">
+              <li>
+                <a href="#" class="hover:text-indigo-400 transition-colors">
+                  Features
+                </a>
+              </li>
+              <li>
+                <a href="#" class="hover:text-indigo-400 transition-colors">
+                  Pricing
+                </a>
+              </li>
+              <li>
+                <a href="#" class="hover:text-indigo-400 transition-colors">
+                  Integrations
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Column 3: Resources -->
+          <div class="">
+            <h4 class="font-bold text-white mb-6 text-base">Resources</h4>
+            <ul class="space-y-4 text-sm font-medium text-slate-400">
+              <li class="">
+                <a href="#" class="hover:text-indigo-400 transition-colors">
+                  Teacher Guide
+                </a>
+              </li>
+              <li>
+                <a href="#" class="hover:text-indigo-400 transition-colors">
+                  Help Center
+                </a>
+              </li>
+              <li>
+                <a href="#" class="hover:text-indigo-400 transition-colors">
+                  Community
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Column 4: Legal -->
+          <div>
+            <h4 class="font-bold text-white mb-6 text-base">Legal</h4>
+            <ul class="space-y-4 text-sm font-medium text-slate-400">
+              <li>
+                <a href="#" class="hover:text-indigo-400 transition-colors">
+                  Privacy
+                </a>
+              </li>
+              <li>
+                <a href="#" class="hover:text-indigo-400 transition-colors">
+                  Terms
+                </a>
+              </li>
+              <li>
+                <a href="#" class="hover:text-indigo-400 transition-colors">
+                  Security
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Copyright -->
+        <div class="border-t border-slate-800 pt-8 flex justify-center">
+          <p class="text-sm font-medium text-slate-500">
+            © 2024 EduQuest. All rights reserved.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      lucide.createIcons();
+
+      (function setTimeOfDayGreeting() {
+        var el = document.getElementById("hero-greeting-text");
+        if (!el) return;
+        var h = new Date().getHours();
+        if (h >= 5 && h < 12) el.textContent = "Good Morning!";
+        else if (h >= 12 && h < 18) el.textContent = "Good Afternoon!";
+        else el.textContent = "Good Night!";
+      })();
+
+      (function () {
+        if (localStorage.getItem('role') !== 'student') {
+          window.location.href = "student-login.html";
+          return;
+        }
+        var studentId = localStorage.getItem("userId");
+      })();
+
+      // Dashboard: load data in parallel (no Promise.all), update DOM as each completes
+      (function () {
+        var API_BASE = '/api';
+        var studentId = localStorage.getItem("userId");
+        if (!studentId) return;
+
+        function esc(s) {
+          if (s == null) return '';
+          var div = document.createElement("div");
+          div.textContent = s;
+          return div.innerHTML;
+        }
+
+        function renderSummaryCards(coins, cardsCount, insight) {
+          var coinsEl = document.getElementById("dashboard-coins-value");
+          var cardsEl = document.getElementById("dashboard-cards-value");
+          var insightEl = document.getElementById("dashboard-insight-text");
+          if (coinsEl && coins != null) coinsEl.textContent = String(coins);
+          if (cardsEl && cardsCount != null) cardsEl.textContent = String(cardsCount);
+          if (insightEl && insight != null) insightEl.textContent = insight;
+        }
+
+        function renderClassCards(classes) {
+          var container = document.getElementById("student-classes-container");
+          if (!container) return;
+          if (!Array.isArray(classes) || classes.length === 0) {
+            container.innerHTML = '<p class="col-span-full text-slate-500 text-center py-12">No classes yet. Join a class to get started.</p>';
+            return;
+          }
+          var themeColors = [
+            { name: 'indigo', badge: 'text-indigo-600', border: 'ring-indigo-200', shadow: 'shadow-indigo-500/10', gradient: 'from-indigo-400 to-blue-500', progress: 'text-indigo-600', hover: 'bg-indigo-50/30', title: 'text-indigo-500', barShadow: 'rgba(99,102,241,0.4)' },
+            { name: 'purple', badge: 'text-purple-600', border: 'ring-purple-200', shadow: 'shadow-purple-500/10', gradient: 'from-purple-400 to-pink-500', progress: 'text-purple-600', hover: 'bg-purple-50/30', title: 'text-purple-500', barShadow: 'rgba(192,132,252,0.4)' },
+            { name: 'rose', badge: 'text-rose-600', border: 'ring-rose-200', shadow: 'shadow-rose-500/10', gradient: 'from-rose-400 to-orange-500', progress: 'text-rose-600', hover: 'bg-rose-50/30', title: 'text-rose-500', barShadow: 'rgba(251,113,133,0.4)' },
+            { name: 'emerald', badge: 'text-emerald-600', border: 'ring-emerald-200', shadow: 'shadow-emerald-500/10', gradient: 'from-emerald-400 to-teal-500', progress: 'text-emerald-600', hover: 'bg-emerald-50/30', title: 'text-emerald-500', barShadow: 'rgba(16,185,129,0.4)' }
+          ];
+          var cardImages = [
+            'https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=800&q=80',
+            'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=800&q=80',
+            'https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=800&q=80',
+            'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&q=80'
+          ];
+          container.innerHTML = '';
+          classes.forEach(function (c, i) {
+            var id = c.id;
+            var name = c.name || 'Unnamed class';
+            var educatorName = c.educator_name || '—';
+            var theme = themeColors[i % themeColors.length];
+            var img = cardImages[i % cardImages.length];
+            var subtitle = 'Taught by ' + esc(educatorName);
+            var card = document.createElement("div");
+            card.className = 'group/card relative flex flex-col h-full rounded-[2rem] bg-white border border-slate-100 shadow-xl shadow-slate-200/50 hover:shadow-2xl hover:' + theme.shadow + ' transition-all duration-300 hover:-translate-y-1 overflow-hidden ring-1 ring-slate-100 hover:' + theme.border + ' cursor-pointer';
+            card.dataset.classId = String(id);
+            card.innerHTML =
+              '<div class="relative h-48 overflow-hidden">' +
+                '<div class="absolute inset-0 bg-slate-200"></div>' +
+                '<img src="' + esc(img) + '" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover/card:scale-110" alt="">' +
+                '<div class="absolute inset-0 bg-gradient-to-t from-white via-' + theme.name + '-900/10 to-transparent opacity-80"></div>' +
+                '<div class="absolute bottom-0 left-0 w-full p-6 pt-12 bg-gradient-to-t from-white via-white/90 to-transparent">' +
+                  '<h3 class="text-xl font-bold text-slate-800 tracking-tight group-hover/card:' + theme.progress + ' transition-colors">' + esc(name) + '</h3>' +
+                '</div>' +
+              '</div>' +
+              '<div class="flex-1 flex flex-col pt-2 pr-6 pb-6 pl-6 justify-between">' +
+                '<p class="text-xs font-medium text-slate-500 mb-4">' + subtitle + '</p>' +
+                '<div class="space-y-2 bg-slate-50/50 p-4 rounded-2xl border border-slate-100/50 group-hover/card:' + theme.hover + ' transition-colors">' +
+                  '<p class="text-[11px] font-bold uppercase tracking-wide text-slate-500">Next Mission</p>' +
+                  '<p class="next-mission-primary text-sm font-semibold text-slate-700">Analyzing progress…</p>' +
+                  '<p class="next-mission-secondary text-xs text-slate-500"></p>' +
+                '</div>' +
+              '</div>';
+            card.addEventListener("click", function () {
+              window.location.href = "student-manageclass.html?classId=" + encodeURIComponent(String(id));
+            });
+            container.appendChild(card);
+          });
+        }
+
+        function loadNextMission(studentId, classId) {
+          var container = document.getElementById("student-classes-container");
+          if (!container) return Promise.resolve();
+          var card = container.querySelector('[data-class-id="' + String(classId) + '"]');
+          var primaryEl = card ? card.querySelector('.next-mission-primary') : null;
+          var secondaryEl = card ? card.querySelector('.next-mission-secondary') : null;
+          function setMission(primary, secondary) {
+            if (primaryEl) primaryEl.textContent = primary;
+            if (secondaryEl) secondaryEl.textContent = secondary || '';
+          }
+          return Promise.all([
+            fetch(API_BASE + '/attempts/performance/' + studentId + '/' + classId, { headers: getAuthHeaders() }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
+            fetch(API_BASE + '/quizzes/class/' + classId, { headers: getAuthHeaders() }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
+          ]).then(function (results) {
+            var performance = results[0];
+            var quizzes = results[1];
+            var hasQuizzes = Array.isArray(quizzes) && quizzes.length > 0;
+            if (performance == null || !Array.isArray(performance)) {
+              setMission('Keep practicing to discover your next mission.', '');
+              return;
+            }
+            var withAttempts = performance.filter(function (t) { return (t.total != null ? Number(t.total) : 0) > 0; });
+            var candidates = withAttempts.length > 0 ? withAttempts : performance;
+            if (candidates.length === 0) {
+              setMission('Start your first quiz to begin progress', '');
+              return;
+            }
+            candidates.sort(function (a, b) { return (a.accuracy != null ? Number(a.accuracy) : 0) - (b.accuracy != null ? Number(b.accuracy) : 0); });
+            var weakest = candidates[0];
+            var topicName = (weakest.topic_name != null ? weakest.topic_name : weakest.topic) || 'this topic';
+            setMission('Review ' + topicName, hasQuizzes ? 'Quiz available' : '');
+          });
+        }
+
+        // Fetch coins
+        fetch(API_BASE + '/students/' + studentId + '/coins', { headers: getAuthHeaders() })
+          .then(function (r) { return r.ok ? r.json() : null; })
+          .then(function (data) {
+            var coins = data && data.coins != null ? data.coins : null;
+            var coinsEl = document.getElementById("dashboard-coins-value");
+            if (coinsEl) coinsEl.textContent = coins != null ? String(coins) : '—';
+          })
+          .catch(function () {
+            var el = document.getElementById("dashboard-coins-value");
+            if (el) el.textContent = '—';
+          });
+
+        // Fetch cards
+        fetch(API_BASE + '/students/' + studentId + '/cards', { headers: getAuthHeaders() })
+          .then(function (r) { return r.ok ? r.json() : null; })
+          .then(function (data) {
+            var count = Array.isArray(data) ? data.length : (data != null ? 0 : null);
+            var cardsEl = document.getElementById("dashboard-cards-value");
+            if (cardsEl) cardsEl.textContent = count != null ? String(count) : '—';
+          })
+          .catch(function () {
+            var el = document.getElementById("dashboard-cards-value");
+            if (el) el.textContent = '—';
+          });
+
+        // Fetch report (insight)
+        fetch(API_BASE + '/reports/student/me', { headers: getAuthHeaders() })
+          .then(function (r) { return r.ok ? r.json() : null; })
+          .then(function (data) {
+            var weaknesses = data && data.weaknesses && data.weaknesses.length ? data.weaknesses : [];
+            var insight = weaknesses.length > 0
+              ? 'Focus on ' + weaknesses[0] + '. Accuracy below 60%.'
+              : 'Great job. No weak topics detected.';
+            var insightEl = document.getElementById("dashboard-insight-text");
+            if (insightEl) insightEl.textContent = insight;
+          })
+          .catch(function () {
+            var el = document.getElementById("dashboard-insight-text");
+            if (el) el.textContent = 'Great job. No weak topics detected.';
+          });
+
+        // Fetch classes
+        fetch(API_BASE + '/classes/student/' + studentId, { headers: getAuthHeaders() })
+          .then(function (r) { return r.ok ? r.json() : null; })
+          .then(function (data) {
+            var list = Array.isArray(data) ? data : [];
+            renderClassCards(list);
+            if (list.length > 0) {
+              Promise.all(list.map(function (c) { return loadNextMission(studentId, c.id); })).catch(function () {});
+            }
+          })
+          .catch(function () {
+            var container = document.getElementById("student-classes-container");
+            if (container) container.innerHTML = '<p class="col-span-full text-slate-500 text-center py-12">Unable to load classes.</p>';
+          });
+      })();
+    </script>
+  
+</body></html>

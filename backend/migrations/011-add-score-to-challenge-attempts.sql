@@ -1,0 +1,2 @@
+ALTER TABLE challenge_attempts
+ADD COLUMN IF NOT EXISTS score INTEGER;

@@ -1,0 +1,1088 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EduQuest - My Classes</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&amp;display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --font-family: "Nunito", sans-serif;
+      }
+      body {
+        font-family: var(--font-family);
+        -webkit-font-smoothing: antialiased;
+        background-color: #f8fafc;
+        background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+        background-size: 24px 24px;
+        overflow-x: hidden;
+      }
+      .font-eduquest {
+        font-family: var(--font-family) !important;
+      }
+      /* --- ANIMATIONS --- */
+      @keyframes shimmer {
+        0% {
+          background-position: 200% 0;
+        }
+        100% {
+          background-position: -200% 0;
+        }
+      }
+      @keyframes slide-up {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes pop-in {
+        0% {
+          opacity: 0;
+          transform: scale(0.95);
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+      @keyframes float-slow {
+        0% {
+          transform: translate(0, 0);
+        }
+        100% {
+          transform: translate(0, 10px);
+        }
+      }
+      .animate-enter {
+        animation: slide-up 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        opacity: 0;
+      }
+      .animate-float {
+        animation: float-slow 4s ease-in-out infinite alternate;
+      }
+      .stagger-1 {
+        animation-delay: 100ms;
+      }
+      .stagger-2 {
+        animation-delay: 200ms;
+      }
+      .stagger-3 {
+        animation-delay: 300ms;
+      }
+      /* --- UTILITIES --- */
+      .glass-card {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        box-shadow: 0 10px 30px -5px rgba(99, 102, 241, 0.1);
+      }
+      .glass-panel {
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+      }
+      .glass-dark {
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(99, 102, 241, 0.3);
+        border-radius: 10px;
+      }
+      .modal-overlay {
+        transition:
+          opacity 0.3s ease,
+          visibility 0.3s ease;
+      }
+      .modal-overlay.hidden {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+      .modal-content {
+        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      .modal-overlay.hidden .modal-content {
+        transform: scale(0.95) translateY(10px);
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-geist"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-geist">
+      .font-geist {
+        font-family: "Geist", sans-serif !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-roboto"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-roboto">
+      .font-roboto {
+        font-family: "Roboto", sans-serif !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-montserrat"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-montserrat">
+      .font-montserrat {
+        font-family: "Montserrat", sans-serif !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-poppins"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-poppins">
+      .font-poppins {
+        font-family: "Poppins", sans-serif !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-playfair"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;900&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-playfair">
+      .font-playfair {
+        font-family: "Playfair Display", serif !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-instrument-serif"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:wght@400;500;600;700&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-instrument-serif">
+      .font-instrument-serif {
+        font-family: "Instrument Serif", serif !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-merriweather"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-merriweather">
+      .font-merriweather {
+        font-family: "Merriweather", serif !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-bricolage"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@300;400;500;600;700&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-bricolage">
+      .font-bricolage {
+        font-family: "Bricolage Grotesque", sans-serif !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-jakarta"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-jakarta">
+      .font-jakarta {
+        font-family: "Plus Jakarta Sans", sans-serif !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-manrope"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-manrope">
+      .font-manrope {
+        font-family: "Manrope", sans-serif !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-space-grotesk"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-space-grotesk">
+      .font-space-grotesk {
+        font-family: "Space Grotesk", sans-serif !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-work-sans"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700;800&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-work-sans">
+      .font-work-sans {
+        font-family: "Work Sans", sans-serif !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-pt-serif"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=PT+Serif:wght@400;700&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-pt-serif">
+      .font-pt-serif {
+        font-family: "PT Serif", serif !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-geist-mono"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500;600;700&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-geist-mono">
+      .font-geist-mono {
+        font-family: "Geist Mono", monospace !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-space-mono"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-space-mono">
+      .font-space-mono {
+        font-family: "Space Mono", monospace !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-quicksand"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-quicksand">
+      .font-quicksand {
+        font-family: "Quicksand", sans-serif !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-newsreader"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400..800&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-newsreader">
+      .font-newsreader {
+        font-family: "Newsreader", serif !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-google-sans-flex"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;600;700&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-google-sans-flex">
+      .font-google-sans-flex {
+        font-family: "Google Sans Flex", sans-serif !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-oswald"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-oswald">
+      .font-oswald {
+        font-family: "Oswald", sans-serif !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-dm-sans"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-dm-sans">
+      .font-dm-sans {
+        font-family: "DM Sans", sans-serif !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-cormorant"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-cormorant">
+      .font-cormorant {
+        font-family: "Cormorant Garamond", serif !important;
+      }
+    </style>
+
+    <script>
+      // Configure Tailwind to include our custom 3D transform utilities
+      tailwind.config = {
+        theme: {
+          extend: {
+            // Add any custom theme extensions here if needed
+          },
+        },
+        plugins: [
+          function ({ addUtilities }) {
+            const rotateXUtilities = {};
+            const rotateYUtilities = {};
+            const rotateZUtilities = {};
+            const rotateValues = [0, 5, 10, 15, 20, 30, 45, 75];
+            // Generate rotate-x utilities
+            rotateValues.forEach((value) => {
+              rotateXUtilities[`.rotate-x-${value}`] = {
+                "--tw-rotate-x": `${value}deg`,
+                transform: `
+translate3d(var(--tw-translate-x, 0), var(--tw-translate-y, 0), var(--tw-translate-z, 0))
+rotateX(var(--tw-rotate-x, 0))
+rotateY(var(--tw-rotate-y, 0))
+rotateZ(var(--tw-rotate-z, 0))
+skewX(var(--tw-skew-x, 0))
+skewY(var(--tw-skew-y, 0))
+scaleX(var(--tw-scale-x, 1))
+scaleY(var(--tw-scale-y, 1))
+`
+                  .replace(/\\s+/g, " ")
+                  .trim(),
+              };
+              if (value !== 0) {
+                rotateXUtilities[`.-rotate-x-${value}`] = {
+                  "--tw-rotate-x": `-${value}deg`,
+                  transform: `
+translate3d(var(--tw-translate-x, 0), var(--tw-translate-y, 0), var(--tw-translate-z, 0))
+rotateX(var(--tw-rotate-x, 0))
+rotateY(var(--tw-rotate-y, 0))
+rotateZ(var(--tw-rotate-z, 0))
+skewX(var(--tw-skew-x, 0))
+skewY(var(--tw-skew-y, 0))
+scaleX(var(--tw-scale-x, 1))
+scaleY(var(--tw-scale-y, 1))
+`
+                    .replace(/\\s+/g, " ")
+                    .trim(),
+                };
+              }
+            });
+            // Generate rotate-y utilities
+            rotateValues.forEach((value) => {
+              rotateYUtilities[`.rotate-y-${value}`] = {
+                "--tw-rotate-y": `${value}deg`,
+                transform: `
+translate3d(var(--tw-translate-x, 0), var(--tw-translate-y, 0), var(--tw-translate-z, 0))
+rotateX(var(--tw-rotate-x, 0))
+rotateY(var(--tw-rotate-y, 0))
+rotateZ(var(--tw-rotate-z, 0))
+skewX(var(--tw-skew-x, 0))
+skewY(var(--tw-skew-y, 0))
+scaleX(var(--tw-scale-x, 1))
+scaleY(var(--tw-scale-y, 1))
+`
+                  .replace(/\\s+/g, " ")
+                  .trim(),
+              };
+              if (value !== 0) {
+                rotateYUtilities[`.-rotate-y-${value}`] = {
+                  "--tw-rotate-y": `-${value}deg`,
+                  transform: `
+translate3d(var(--tw-translate-x, 0), var(--tw-translate-y, 0), var(--tw-translate-z, 0))
+rotateX(var(--tw-rotate-x, 0))
+rotateY(var(--tw-rotate-y, 0))
+rotateZ(var(--tw-rotate-z, 0))
+skewX(var(--tw-skew-x, 0))
+skewY(var(--tw-skew-y, 0))
+scaleX(var(--tw-scale-x, 1))
+scaleY(var(--tw-scale-y, 1))
+`
+                    .replace(/\\s+/g, " ")
+                    .trim(),
+                };
+              }
+            });
+            // Generate rotate-z utilities
+            rotateValues.forEach((value) => {
+              rotateZUtilities[`.rotate-z-${value}`] = {
+                "--tw-rotate-z": `${value}deg`,
+                transform: `
+translate3d(var(--tw-translate-x, 0), var(--tw-translate-y, 0), var(--tw-translate-z, 0))
+rotateX(var(--tw-rotate-x, 0))
+rotateY(var(--tw-rotate-y, 0))
+rotateZ(var(--tw-rotate-z, 0))
+skewX(var(--tw-skew-x, 0))
+skewY(var(--tw-skew-y, 0))
+scaleX(var(--tw-scale-x, 1))
+scaleY(var(--tw-scale-y, 1))
+`
+                  .replace(/\\s+/g, " ")
+                  .trim(),
+              };
+              if (value !== 0) {
+                rotateZUtilities[`.-rotate-z-${value}`] = {
+                  "--tw-rotate-z": `-${value}deg`,
+                  transform: `
+translate3d(var(--tw-translate-x, 0), var(--tw-translate-y, 0), var(--tw-translate-z, 0))
+rotateX(var(--tw-rotate-x, 0))
+rotateY(var(--tw-rotate-y, 0))
+rotateZ(var(--tw-rotate-z, 0))
+skewX(var(--tw-skew-x, 0))
+skewY(var(--tw-skew-y, 0))
+scaleX(var(--tw-scale-x, 1))
+scaleY(var(--tw-scale-y, 1))
+`
+                    .replace(/\\s+/g, " ")
+                    .trim(),
+                };
+              }
+            });
+            // Perspective utilities
+            const perspectiveUtilities = {
+              ".perspective-none": { perspective: "none" },
+              ".perspective-dramatic": { perspective: "100px" },
+              ".perspective-near": { perspective: "300px" },
+              ".perspective-normal": { perspective: "500px" },
+              ".perspective-midrange": { perspective: "800px" },
+              ".perspective-distant": { perspective: "1200px" },
+            };
+            // Transform style utilities
+            const transformStyleUtilities = {
+              ".transform-style-preserve-3d": {
+                "transform-style": "preserve-3d",
+              },
+              ".transform-style-flat": { "transform-style": "flat" },
+            };
+            addUtilities({
+              ...rotateXUtilities,
+              ...rotateYUtilities,
+              ...rotateZUtilities,
+              ...perspectiveUtilities,
+              ...transformStyleUtilities,
+            });
+          },
+        ],
+      };
+    </script>
+  </head>
+  <body class="text-slate-600">
+    <!-- NAVIGATION -->
+    <nav class="fixed w-full z-50 pt-4 pr-4 pb-2 pl-4 top-0">
+      <div
+        class="max-w-7xl mx-auto glass-card rounded-full px-4 py-3 flex items-center justify-between shadow-sm shadow-indigo-100/20"
+      >
+        <!-- Brand -->
+        <div class="flex items-center gap-3 pl-2">
+          <img src="assets/logo.png" alt="EduQuest" class="h-9 w-auto object-contain" />
+        </div>
+
+        <!-- Links -->
+        <div
+          class="hidden md:flex items-center gap-1 p-1 bg-slate-100/50 rounded-full border border-slate-200/50"
+        >
+          <a
+            href="student-dashboard.html"
+            class="hover:text-indigo-500 hover:bg-white/60 transition-all text-sm font-semibold text-slate-500 rounded-full pt-2 pr-5 pb-2 pl-5"
+          >
+            Home
+          </a>
+          <a
+            href="student-manageclass.html"
+            class="transition-all text-sm font-bold text-indigo-600 bg-white rounded-full pt-2 pr-5 pb-2 pl-5 shadow-sm"
+          >
+            My Classes
+          </a>
+          <a
+            href="student-shop.html"
+            class="hover:text-indigo-500 hover:bg-white/60 transition-all text-sm font-semibold text-slate-500 rounded-full pt-2 pr-5 pb-2 pl-5"
+          >
+            Shop
+          </a>
+        </div>
+
+        <!-- Profile -->
+        <div class="flex items-center gap-4 pr-2">
+          <div class="hidden sm:flex flex-col items-end">
+            <span id="navbar-student-name" class="text-xs font-bold text-slate-700"></span>
+            <span
+              class="text-[10px] font-bold text-indigo-500 bg-indigo-50 rounded-full pt-0.5 pr-2 pb-0.5 pl-2"
+            >
+              Student
+            </span>
+          </div>
+          <div
+            class="bg-white w-10 h-10 border-indigo-100 border-2 rounded-full pt-0.5 pr-0.5 pb-0.5 pl-0.5 cursor-pointer hover:scale-105 transition-transform"
+            onclick="window.location.href='student-profile.html'"
+            role="button"
+          >
+            <img
+              src="https://api.dicebear.com/7.x/notionists/svg?seed=Alex&amp;backgroundColor=e0e7ff"
+              alt="Profile"
+              class="w-full h-full object-cover rounded-full"
+            />
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- FULL WIDTH HERO HEADER -->
+    <div
+      class="relative w-full h-[600px] lg:h-[650px] overflow-hidden rounded-b-[20px]"
+    >
+      <!-- Greenhouse Background Image -->
+      <div class="absolute inset-0 z-0">
+        <img
+          src="./hero-bg.png"
+          alt="EduQuest Hero"
+          class="w-full h-full object-cover object-center"
+          style="filter: brightness(1.08) saturate(1.1)"
+        />
+        <!-- Enhanced Gradient for better text visibility -->
+        <div
+          class="absolute inset-0 bg-gradient-to-r from-slate-50/70 via-slate-50/45 to-slate-50/5 sm:to-transparent"
+        ></div>
+        <div
+          class="absolute inset-0 bg-gradient-to-t from-slate-50/55 via-transparent to-transparent"
+        ></div>
+      </div>
+
+      <!-- Hero Content -->
+      <div
+        class="absolute inset-0 z-10 h-full w-full flex items-center justify-center"
+      >
+        <div
+          class="w-full max-w-7xl px-6 flex flex-col md:flex-row items-center justify-between gap-8 md:gap-16 pt-20"
+        >
+          <!-- Left: Typography -->
+          <div
+            class="flex-1 max-w-2xl flex flex-col items-center md:items-start text-center md:text-left space-y-8 animate-enter z-20 font-eduquest"
+          >
+            <!-- Heading -->
+            <h1
+              class="text-5xl md:text-7xl font-extrabold tracking-tight text-slate-900 leading-[0.95] drop-shadow-sm"
+            >
+              Grow your
+              <br class="hidden md:block" />
+              <span
+                class="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 via-teal-500 to-emerald-600 italic pr-1 pb-2"
+              >
+                Knowledge Garden
+                <svg
+                  class="absolute -bottom-2 left-0 w-full h-3 text-emerald-300/40 -z-10"
+                  viewBox="0 0 100 10"
+                  preserveAspectRatio="none"
+                >
+                  <path
+                    d="M0 5 Q 50 10 100 5"
+                    stroke="currentColor"
+                    stroke-width="8"
+                    fill="none"
+                  ></path>
+                </svg>
+              </span>
+            </h1>
+
+            <!-- Subtitle -->
+            <p
+              class="text-lg md:text-xl font-semibold text-slate-700 max-w-lg leading-relaxed"
+            >
+              Step into your learning sanctuary. Tend to your assignments,
+              nurture your skills, and watch your achievements
+              <span class="text-emerald-600 font-bold">bloom</span>
+              .
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="max-w-7xl mx-auto px-6 pb-20 mt-0 relative z-20">
+      <!-- 2. SEARCH -->
+      <section class="mt-8 md:mt-12 mb-10 animate-enter stagger-1">
+        <div class="glass-card rounded-2xl p-2">
+          <div class="relative w-full group">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              data-lucide="search"
+              class="lucide lucide-search absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-indigo-500 transition-colors"
+            >
+              <path d="m21 21-4.34-4.34"></path>
+              <circle cx="11" cy="11" r="8"></circle>
+            </svg>
+            <input
+              id="student-class-search"
+              type="text"
+              placeholder="Search by class, subject, or teacher..."
+              class="w-full bg-slate-50/50 border border-transparent rounded-xl pl-12 pr-5 py-3 text-base font-semibold text-slate-700 placeholder-slate-400 focus:bg-white focus:border-indigo-200 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none"
+            />
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. MAIN GRID + SIDE PANEL -->
+      <div class="flex flex-col xl:flex-row gap-8 items-start">
+        <!-- LEFT: CLASS GRID -->
+        <div class="flex-1 w-full">
+          <div id="student-class-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 gap-x-8 gap-y-8 pb-12">Loading your classes...</div>
+        </div>
+
+        <!-- RIGHT: SIDE PANEL (removed - content moved to hero card) -->
+      </div>
+    </main>
+
+    <!-- MODAL: JOIN NEW CLASS -->
+    <div
+      id="joinClassModal"
+      class="modal-overlay hidden fixed inset-0 z-[100] flex items-center justify-center px-4"
+    >
+      <!-- Backdrop -->
+      <div
+        onclick="toggleModal('joinClassModal')"
+        class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
+      ></div>
+
+      <!-- Content -->
+      <div
+        class="modal-content relative bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-white/50"
+      >
+        <!-- Modal Header -->
+        <div
+          class="p-6 text-center relative overflow-hidden bg-slate-900"
+          style="
+            background-image: url(&quot;./join-class-bg.jpg&quot;);
+            background-size: cover;
+            background-position: center top;
+          "
+        >
+          <div
+            class="absolute inset-0 bg-gradient-to-b from-slate-900/60 via-slate-900/40 to-slate-900/75"
+          ></div>
+          <div class="relative z-10">
+            <div
+              class="w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl mx-auto flex items-center justify-center mb-3 shadow-inner ring-1 ring-white/30"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                data-lucide="ticket"
+                class="lucide lucide-ticket w-8 h-8 text-white stroke-[1.5]"
+              >
+                <path
+                  d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"
+                ></path>
+                <path d="M13 5v2"></path>
+                <path d="M13 17v2"></path>
+                <path d="M13 11v2"></path>
+              </svg>
+            </div>
+            <h2 class="text-xl font-extrabold text-white">Join a Class</h2>
+            <p class="text-indigo-100 text-xs font-medium mt-1">
+              Enter your invite code to unlock a new world.
+            </p>
+          </div>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="p-6 md:p-8">
+          <div id="modalForm">
+            <label
+              class="block text-xs font-bold text-slate-500 uppercase mb-2 ml-1"
+            >
+              Class Link
+            </label>
+            <div class="relative mb-6">
+              <input
+                id="classCodeInput"
+                type="text"
+                placeholder="Paste class link here"
+                class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-4 py-3 font-mono text-lg font-bold text-slate-800 placeholder-slate-300 focus:outline-none focus:border-indigo-500 focus:bg-white transition-all text-center tracking-widest"
+              />
+              <p
+                class="text-[10px] text-slate-400 mt-2 text-center font-medium"
+              >
+                Ask your teacher if you don't have a code.
+              </p>
+            </div>
+
+            <div class="flex gap-3">
+              <button
+                onclick="toggleModal('joinClassModal')"
+                class="flex-1 py-3 bg-white border border-slate-200 text-slate-600 rounded-xl text-sm font-bold hover:bg-slate-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onclick="simulateJoin()"
+                class="flex-1 py-3 bg-indigo-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-indigo-200 hover:bg-indigo-700 hover:shadow-indigo-300 transition-all active:scale-95 flex items-center justify-center gap-2"
+              >
+                <span id="btnText">Join Class</span>
+                <div
+                  id="btnSpinner"
+                  class="hidden w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"
+                ></div>
+              </button>
+            </div>
+          </div>
+
+          <!-- Success State (Hidden initially) -->
+          <div id="modalSuccess" class="hidden text-center py-4">
+            <div
+              class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 animate-[pop-in_0.5s_ease-out]"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                data-lucide="check"
+                class="lucide lucide-check w-8 h-8 stroke-[3]"
+              >
+                <path d="M20 6 9 17l-5-5"></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold text-slate-800 mb-1">You're In!</h3>
+            <p class="text-sm text-slate-500 mb-6">Successfully joined</p>
+            <button
+              onclick="
+                toggleModal('joinClassModal');
+                resetModal();
+              "
+              class="w-full py-3 bg-slate-900 text-white rounded-xl text-sm font-bold shadow-lg"
+            >
+              Start Exploring
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer
+      class="bg-slate-900 text-slate-300 py-12 border-t border-slate-800 mt-12 relative z-10"
+    >
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+          <div class="space-y-4">
+            <div class="flex items-center gap-2">
+              <div
+                class="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  data-lucide="compass"
+                  class="lucide lucide-compass w-5 h-5 stroke-[1.5]"
+                >
+                  <path
+                    d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z"
+                  ></path>
+                  <circle cx="12" cy="12" r="10"></circle>
+                </svg>
+              </div>
+              <span class="text-lg font-bold text-white tracking-tight">
+                EduQuest
+              </span>
+            </div>
+            <p
+              class="text-xs leading-relaxed text-slate-400 font-medium max-w-xs"
+            >
+              Making learning an addictive adventure for students around the
+              world.
+            </p>
+          </div>
+          <div>
+            <h4 class="font-bold text-white mb-4 text-sm">Product</h4>
+            <ul class="space-y-2 text-xs font-medium text-slate-400">
+              <li>
+                <a href="#" class="hover:text-indigo-400 transition-colors">
+                  Features
+                </a>
+              </li>
+              <li>
+                <a href="#" class="hover:text-indigo-400 transition-colors">
+                  Pricing
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="">
+            <h4 class="font-bold text-white mb-4 text-sm">Resources</h4>
+            <ul class="space-y-2 text-xs font-medium text-slate-400">
+              <li>
+                <a href="#" class="hover:text-indigo-400 transition-colors">
+                  Help Center
+                </a>
+              </li>
+              <li>
+                <a href="#" class="hover:text-indigo-400 transition-colors">
+                  Community
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="font-bold text-white mb-4 text-sm">Legal</h4>
+            <ul class="space-y-2 text-xs font-medium text-slate-400">
+              <li>
+                <a href="#" class="hover:text-indigo-400 transition-colors">
+                  Privacy
+                </a>
+              </li>
+              <li>
+                <a href="#" class="hover:text-indigo-400 transition-colors">
+                  Terms
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="border-t border-slate-800 pt-6 flex justify-center">
+          <p class="text-xs font-medium text-slate-500">
+            © 2024 EduQuest. All rights reserved.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      lucide.createIcons();
+
+      function toggleModal(modalId) {
+        const modal = document.getElementById(modalId);
+        modal.classList.toggle("hidden");
+        if (!modal.classList.contains("hidden")) {
+          setTimeout(
+            () => document.getElementById("classCodeInput").focus(),
+            100,
+          );
+        }
+      }
+
+      function simulateJoin() {
+        const btnText = document.getElementById("btnText");
+        const btnSpinner = document.getElementById("btnSpinner");
+        const form = document.getElementById("modalForm");
+        const success = document.getElementById("modalSuccess");
+        const input = document.getElementById("classCodeInput");
+
+        if (input.value.length < 3) {
+          input.classList.add("border-rose-400", "ring-2", "ring-rose-200");
+          setTimeout(
+            () =>
+              input.classList.remove(
+                "border-rose-400",
+                "ring-2",
+                "ring-rose-200",
+              ),
+            2000,
+          );
+          return;
+        }
+
+        btnText.classList.add("hidden");
+        btnSpinner.classList.remove("hidden");
+
+        setTimeout(() => {
+          form.classList.add("hidden");
+          success.classList.remove("hidden");
+        }, 1500);
+      }
+
+      function resetModal() {
+        setTimeout(() => {
+          document.getElementById("modalForm").classList.remove("hidden");
+          document.getElementById("modalSuccess").classList.add("hidden");
+          document.getElementById("btnText").classList.remove("hidden");
+          document.getElementById("btnSpinner").classList.add("hidden");
+          document.getElementById("classCodeInput").value = "";
+        }, 500);
+      }
+
+      var API_BASE = '/api';
+      if (localStorage.getItem('role') !== 'student') { window.location.href = "student-login.html"; }
+      var STUDENT_ID = localStorage.getItem("userId");
+      var allStudentClasses = [];
+
+      function esc(s) {
+        if (s == null) return '';
+        var div = document.createElement('div');
+        div.textContent = s;
+        return div.innerHTML;
+      }
+
+      function renderStudentClasses(classes) {
+        var container = document.getElementById('student-class-list');
+        if (!container) return;
+
+        container.innerHTML = '';
+
+        if (!classes || classes.length === 0) {
+          container.innerHTML = '<p class="col-span-full text-slate-500 text-center py-12">You are not enrolled in any classes yet.</p>';
+          return;
+        }
+
+        var themeColors = [
+          { name: 'indigo', border: 'ring-indigo-200', shadow: 'shadow-indigo-500/10', gradient: 'from-indigo-400 to-blue-500', progress: 'text-indigo-600', hover: 'bg-indigo-50/30', barShadow: 'rgba(99,102,241,0.4)' },
+          { name: 'purple', border: 'ring-purple-200', shadow: 'shadow-purple-500/10', gradient: 'from-purple-400 to-pink-500', progress: 'text-purple-600', hover: 'bg-purple-50/30', barShadow: 'rgba(192,132,252,0.4)' },
+          { name: 'rose', border: 'ring-rose-200', shadow: 'shadow-rose-500/10', gradient: 'from-rose-400 to-orange-500', progress: 'text-rose-600', hover: 'bg-rose-50/30', barShadow: 'rgba(251,113,133,0.4)' },
+          { name: 'emerald', border: 'ring-emerald-200', shadow: 'shadow-emerald-500/10', gradient: 'from-emerald-400 to-teal-500', progress: 'text-emerald-600', hover: 'bg-emerald-50/30', barShadow: 'rgba(16,185,129,0.4)' }
+        ];
+        var cardImages = [
+          'https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=800&q=80',
+          'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=800&q=80',
+          'https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=800&q=80',
+          'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&q=80'
+        ];
+
+        classes.forEach(function (c, i) {
+          var id = c.id;
+          var name = c.name || 'Unnamed class';
+          var educatorName = (c.educator_name && String(c.educator_name).trim()) ? c.educator_name.trim() : 'Educator';
+          var theme = themeColors[i % themeColors.length];
+          var img = cardImages[i % cardImages.length];
+          var subtitle = 'Taught by ' + esc(educatorName);
+
+          var card = document.createElement('div');
+          card.className = 'group/card relative flex flex-col h-full rounded-[2rem] bg-white border border-slate-100 shadow-xl shadow-slate-200/50 hover:shadow-2xl hover:' + theme.shadow + ' transition-all duration-300 hover:-translate-y-1 overflow-hidden ring-1 ring-slate-100 hover:' + theme.border + ' cursor-pointer';
+          card.dataset.classId = String(id);
+          card.innerHTML =
+            '<div class="relative h-48 overflow-hidden">' +
+              '<div class="absolute inset-0 bg-slate-200"></div>' +
+              '<img src="' + esc(img) + '" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover/card:scale-110" alt="">' +
+              '<div class="absolute inset-0 bg-gradient-to-t from-white via-' + theme.name + '-900/10 to-transparent opacity-80"></div>' +
+              '<div class="absolute bottom-0 left-0 w-full p-6 pt-12 bg-gradient-to-t from-white via-white/90 to-transparent">' +
+                '<h3 class="text-xl font-bold text-slate-800 tracking-tight group-hover/card:' + theme.progress + ' transition-colors">' + esc(name) + '</h3>' +
+              '</div>' +
+            '</div>' +
+            '<div class="flex-1 flex flex-col pt-2 pr-6 pb-6 pl-6 justify-between">' +
+              '<p class="text-xs font-medium text-slate-500 mb-4">' + subtitle + '</p>' +
+              '<div class="space-y-2 bg-slate-50/50 p-4 rounded-2xl border border-slate-100/50 group-hover/card:' + theme.hover + ' transition-colors">' +
+                '<p class="text-[11px] font-bold uppercase tracking-wide text-slate-500">Next Mission</p>' +
+                '<p class="next-mission-primary text-sm font-semibold text-slate-700">Analyzing your progress...</p>' +
+                '<p class="next-mission-secondary text-xs text-slate-500"></p>' +
+              '</div>' +
+            '</div>';
+
+          card.addEventListener('click', function () {
+            window.location.href = 'student-manageclass.html?classId=' + encodeURIComponent(String(id));
+          });
+
+          container.appendChild(card);
+          loadNextMission(STUDENT_ID, id, card);
+        });
+      }
+
+      function loadNextMission(studentId, classId, cardElement) {
+        var primaryEl = cardElement ? cardElement.querySelector('.next-mission-primary') : null;
+        var secondaryEl = cardElement ? cardElement.querySelector('.next-mission-secondary') : null;
+        function setMission(primary, secondary) {
+          if (primaryEl) primaryEl.textContent = primary;
+          if (secondaryEl) secondaryEl.textContent = secondary || '';
+        }
+        Promise.all([
+          fetch(API_BASE + '/attempts/performance/' + studentId + '/' + classId, { headers: getAuthHeaders() }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
+          fetch(API_BASE + '/quizzes/class/' + classId, { headers: getAuthHeaders() }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
+        ]).then(function (results) {
+          var performance = results[0];
+          var quizzes = results[1];
+          var hasQuizzes = Array.isArray(quizzes) && quizzes.length > 0;
+          if (performance == null || !Array.isArray(performance)) {
+            setMission('Keep practicing to discover your next mission.', '');
+            return;
+          }
+          var withAttempts = performance.filter(function (t) { return (t.total != null ? Number(t.total) : 0) > 0; });
+          var candidates = withAttempts.length > 0 ? withAttempts : performance;
+          if (candidates.length === 0) {
+            setMission('Start your first quiz to begin progress', '');
+            return;
+          }
+          candidates.sort(function (a, b) { return (a.accuracy != null ? Number(a.accuracy) : 0) - (b.accuracy != null ? Number(b.accuracy) : 0); });
+          var weakest = candidates[0];
+          var topicName = (weakest.topic_name != null ? weakest.topic_name : weakest.topic) || 'this topic';
+          setMission('Review ' + topicName, hasQuizzes ? 'Quiz available' : '');
+        });
+      }
+
+      function applyFiltersAndSearch() {
+        var searchEl = document.getElementById('student-class-search');
+        var q = (searchEl && searchEl.value) ? searchEl.value.trim().toLowerCase() : '';
+        var list = allStudentClasses.slice();
+        if (q) {
+          list = list.filter(function (c) {
+            var name = (c.name || '').toLowerCase();
+            var teacher = (c.educator_name || '').toLowerCase();
+            return name.indexOf(q) !== -1 || teacher.indexOf(q) !== -1 || (c.description || '').toLowerCase().indexOf(q) !== -1;
+          });
+        }
+        renderStudentClasses(list);
+      }
+
+      async function loadStudentClasses() {
+        var container = document.getElementById('student-class-list');
+        if (container) container.innerHTML = 'Loading your classes...';
+
+        try {
+          var res = await fetch(API_BASE + '/classes/student/' + STUDENT_ID, { headers: getAuthHeaders() });
+          if (!res.ok) throw new Error('Failed to load classes');
+          var classes = await res.json();
+          allStudentClasses = Array.isArray(classes) ? classes : [];
+          applyFiltersAndSearch();
+        } catch (err) {
+          console.error('Failed to load student classes', err);
+          if (container) container.innerHTML = '<p class="col-span-full text-slate-500 text-center py-12">Unable to load classes. Please try again.</p>';
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', function () {
+        loadStudentClasses();
+        var searchEl = document.getElementById('student-class-search');
+        if (searchEl) searchEl.addEventListener('input', applyFiltersAndSearch);
+      });
+    </script>
+    <script src="js/api.js"></script>
+    <script src="js/student-navbar.js"></script>
+  </body>
+</html>

@@ -1,0 +1,1432 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EduQuest - Class Hub</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&amp;display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --font-body: "Nunito", sans-serif;
+        --font-heading: "Plus Jakarta Sans", sans-serif;
+      }
+      body {
+        font-family: var(--font-body);
+        -webkit-font-smoothing: antialiased;
+        background-color: #f8fafc;
+        overflow-x: hidden;
+      }
+      /* ANIMATED BACKGROUND */
+      .cinematic-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -50;
+        background:
+          radial-gradient(
+            circle at 15% 15%,
+            rgba(224, 231, 255, 0.4) 0%,
+            transparent 40%
+          ),
+          radial-gradient(
+            circle at 85% 10%,
+            rgba(255, 228, 230, 0.4) 0%,
+            transparent 40%
+          ),
+          radial-gradient(
+            circle at 50% 50%,
+            rgba(240, 249, 255, 0.5) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 80% 90%,
+            rgba(220, 252, 231, 0.3) 0%,
+            transparent 40%
+          );
+        background-size: 150% 150%;
+        animation: breathe 15s ease-in-out infinite alternate;
+      }
+      .cinematic-grid {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -49;
+        background-image: radial-gradient(#6366f1 0.7px, transparent 0.7px);
+        background-size: 24px 24px;
+        opacity: 0.08;
+        mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+      }
+      /* GLASSMORPHISM UTILITIES */
+      .glass-panel {
+        background: rgba(255, 255, 255, 0.65);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        box-shadow:
+          0 4px 20px -2px rgba(99, 102, 241, 0.05),
+          0 10px 40px -10px rgba(99, 102, 241, 0.05);
+      }
+      .glass-card-hover {
+        transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+      .glass-card-hover:hover {
+        transform: translateY(-4px) scale(1.005);
+        background: rgba(255, 255, 255, 0.85);
+        box-shadow: 0 12px 30px -5px rgba(99, 102, 241, 0.1);
+        border-color: rgba(255, 255, 255, 1);
+      }
+      /* KEYFRAMES */
+      @keyframes breathe {
+        0% {
+          transform: scale(1);
+        }
+        100% {
+          transform: scale(1.05);
+        }
+      }
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+      }
+      @keyframes wiggle {
+        0%,
+        100% {
+          transform: rotate(0deg);
+        }
+        25% {
+          transform: rotate(-3deg);
+        }
+        75% {
+          transform: rotate(3deg);
+        }
+      }
+      @keyframes slide-up-fade {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes progress-fill {
+        from {
+          stroke-dashoffset: 283;
+        }
+        to {
+          stroke-dashoffset: 70;
+        } /* 75% fill */
+      }
+      /* UTILITY CLASSES */
+      .animate-float {
+        animation: float 6s ease-in-out infinite;
+      }
+      .animate-float-delayed {
+        animation: float 8s ease-in-out 1s infinite;
+      }
+      .animate-enter {
+        animation: slide-up-fade 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        opacity: 0;
+      }
+      .delay-100 {
+        animation-delay: 100ms;
+      }
+      .delay-200 {
+        animation-delay: 200ms;
+      }
+      .delay-300 {
+        animation-delay: 300ms;
+      }
+      .font-heading {
+        font-family: var(--font-heading);
+      }
+      /* Toggle Switch */
+      .toggle-checkbox:checked {
+        right: 0;
+        border-color: #6366f1;
+      }
+      .toggle-checkbox:checked + .toggle-label {
+        background-color: #6366f1;
+      }
+      /* Custom Scrollbar */
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(148, 163, 184, 0.5);
+        border-radius: 10px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: rgba(148, 163, 184, 0.8);
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-geist"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-geist">
+      .font-geist {
+        font-family: "Geist", sans-serif !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-roboto"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-roboto">
+      .font-roboto {
+        font-family: "Roboto", sans-serif !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-montserrat"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-montserrat">
+      .font-montserrat {
+        font-family: "Montserrat", sans-serif !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-poppins"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-poppins">
+      .font-poppins {
+        font-family: "Poppins", sans-serif !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-playfair"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;900&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-playfair">
+      .font-playfair {
+        font-family: "Playfair Display", serif !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-instrument-serif"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:wght@400;500;600;700&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-instrument-serif">
+      .font-instrument-serif {
+        font-family: "Instrument Serif", serif !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-merriweather"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-merriweather">
+      .font-merriweather {
+        font-family: "Merriweather", serif !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-bricolage"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@300;400;500;600;700&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-bricolage">
+      .font-bricolage {
+        font-family: "Bricolage Grotesque", sans-serif !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-jakarta"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-jakarta">
+      .font-jakarta {
+        font-family: "Plus Jakarta Sans", sans-serif !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-manrope"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-manrope">
+      .font-manrope {
+        font-family: "Manrope", sans-serif !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-space-grotesk"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-space-grotesk">
+      .font-space-grotesk {
+        font-family: "Space Grotesk", sans-serif !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-work-sans"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700;800&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-work-sans">
+      .font-work-sans {
+        font-family: "Work Sans", sans-serif !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-pt-serif"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=PT+Serif:wght@400;700&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-pt-serif">
+      .font-pt-serif {
+        font-family: "PT Serif", serif !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-geist-mono"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500;600;700&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-geist-mono">
+      .font-geist-mono {
+        font-family: "Geist Mono", monospace !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-space-mono"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-space-mono">
+      .font-space-mono {
+        font-family: "Space Mono", monospace !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-quicksand"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-quicksand">
+      .font-quicksand {
+        font-family: "Quicksand", sans-serif !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-newsreader"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400..800&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-newsreader">
+      .font-newsreader {
+        font-family: "Newsreader", serif !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-google-sans-flex"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;600;700&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-google-sans-flex">
+      .font-google-sans-flex {
+        font-family: "Google Sans Flex", sans-serif !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-oswald"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-oswald">
+      .font-oswald {
+        font-family: "Oswald", sans-serif !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-dm-sans"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-dm-sans">
+      .font-dm-sans {
+        font-family: "DM Sans", sans-serif !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-cormorant"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-cormorant">
+      .font-cormorant {
+        font-family: "Cormorant Garamond", serif !important;
+      }
+    </style>
+    <style>
+      /* 3D Transform utilities */
+      .perspective-normal {
+        perspective: 500px !important;
+      }
+    </style>
+    <script>
+      // Configure Tailwind to include our custom 3D transform utilities
+      tailwind.config = {
+        theme: {
+          extend: {
+            // Add any custom theme extensions here if needed
+          },
+        },
+        plugins: [
+          function ({ addUtilities }) {
+            const rotateXUtilities = {};
+            const rotateYUtilities = {};
+            const rotateZUtilities = {};
+            const rotateValues = [0, 5, 10, 15, 20, 30, 45, 75];
+            // Generate rotate-x utilities
+            rotateValues.forEach((value) => {
+              rotateXUtilities[`.rotate-x-${value}`] = {
+                "--tw-rotate-x": `${value}deg`,
+                transform: `
+translate3d(var(--tw-translate-x, 0), var(--tw-translate-y, 0), var(--tw-translate-z, 0))
+rotateX(var(--tw-rotate-x, 0))
+rotateY(var(--tw-rotate-y, 0))
+rotateZ(var(--tw-rotate-z, 0))
+skewX(var(--tw-skew-x, 0))
+skewY(var(--tw-skew-y, 0))
+scaleX(var(--tw-scale-x, 1))
+scaleY(var(--tw-scale-y, 1))
+`
+                  .replace(/\\s+/g, " ")
+                  .trim(),
+              };
+              if (value !== 0) {
+                rotateXUtilities[`.-rotate-x-${value}`] = {
+                  "--tw-rotate-x": `-${value}deg`,
+                  transform: `
+translate3d(var(--tw-translate-x, 0), var(--tw-translate-y, 0), var(--tw-translate-z, 0))
+rotateX(var(--tw-rotate-x, 0))
+rotateY(var(--tw-rotate-y, 0))
+rotateZ(var(--tw-rotate-z, 0))
+skewX(var(--tw-skew-x, 0))
+skewY(var(--tw-skew-y, 0))
+scaleX(var(--tw-scale-x, 1))
+scaleY(var(--tw-scale-y, 1))
+`
+                    .replace(/\\s+/g, " ")
+                    .trim(),
+                };
+              }
+            });
+            // Generate rotate-y utilities
+            rotateValues.forEach((value) => {
+              rotateYUtilities[`.rotate-y-${value}`] = {
+                "--tw-rotate-y": `${value}deg`,
+                transform: `
+translate3d(var(--tw-translate-x, 0), var(--tw-translate-y, 0), var(--tw-translate-z, 0))
+rotateX(var(--tw-rotate-x, 0))
+rotateY(var(--tw-rotate-y, 0))
+rotateZ(var(--tw-rotate-z, 0))
+skewX(var(--tw-skew-x, 0))
+skewY(var(--tw-skew-y, 0))
+scaleX(var(--tw-scale-x, 1))
+scaleY(var(--tw-scale-y, 1))
+`
+                  .replace(/\\s+/g, " ")
+                  .trim(),
+              };
+              if (value !== 0) {
+                rotateYUtilities[`.-rotate-y-${value}`] = {
+                  "--tw-rotate-y": `-${value}deg`,
+                  transform: `
+translate3d(var(--tw-translate-x, 0), var(--tw-translate-y, 0), var(--tw-translate-z, 0))
+rotateX(var(--tw-rotate-x, 0))
+rotateY(var(--tw-rotate-y, 0))
+rotateZ(var(--tw-rotate-z, 0))
+skewX(var(--tw-skew-x, 0))
+skewY(var(--tw-skew-y, 0))
+scaleX(var(--tw-scale-x, 1))
+scaleY(var(--tw-scale-y, 1))
+`
+                    .replace(/\\s+/g, " ")
+                    .trim(),
+                };
+              }
+            });
+            // Generate rotate-z utilities
+            rotateValues.forEach((value) => {
+              rotateZUtilities[`.rotate-z-${value}`] = {
+                "--tw-rotate-z": `${value}deg`,
+                transform: `
+translate3d(var(--tw-translate-x, 0), var(--tw-translate-y, 0), var(--tw-translate-z, 0))
+rotateX(var(--tw-rotate-x, 0))
+rotateY(var(--tw-rotate-y, 0))
+rotateZ(var(--tw-rotate-z, 0))
+skewX(var(--tw-skew-x, 0))
+skewY(var(--tw-skew-y, 0))
+scaleX(var(--tw-scale-x, 1))
+scaleY(var(--tw-scale-y, 1))
+`
+                  .replace(/\\s+/g, " ")
+                  .trim(),
+              };
+              if (value !== 0) {
+                rotateZUtilities[`.-rotate-z-${value}`] = {
+                  "--tw-rotate-z": `-${value}deg`,
+                  transform: `
+translate3d(var(--tw-translate-x, 0), var(--tw-translate-y, 0), var(--tw-translate-z, 0))
+rotateX(var(--tw-rotate-x, 0))
+rotateY(var(--tw-rotate-y, 0))
+rotateZ(var(--tw-rotate-z, 0))
+skewX(var(--tw-skew-x, 0))
+skewY(var(--tw-skew-y, 0))
+scaleX(var(--tw-scale-x, 1))
+scaleY(var(--tw-scale-y, 1))
+`
+                    .replace(/\\s+/g, " ")
+                    .trim(),
+                };
+              }
+            });
+            // Perspective utilities
+            const perspectiveUtilities = {
+              ".perspective-none": { perspective: "none" },
+              ".perspective-dramatic": { perspective: "100px" },
+              ".perspective-near": { perspective: "300px" },
+              ".perspective-normal": { perspective: "500px" },
+              ".perspective-midrange": { perspective: "800px" },
+              ".perspective-distant": { perspective: "1200px" },
+            };
+            // Transform style utilities
+            const transformStyleUtilities = {
+              ".transform-style-preserve-3d": {
+                "transform-style": "preserve-3d",
+              },
+              ".transform-style-flat": { "transform-style": "flat" },
+            };
+            addUtilities({
+              ...rotateXUtilities,
+              ...rotateYUtilities,
+              ...rotateZUtilities,
+              ...perspectiveUtilities,
+              ...transformStyleUtilities,
+            });
+          },
+        ],
+      };
+    </script>
+  </head>
+  <body
+    class="selection:bg-indigo-200 selection:text-indigo-900 pb-20 text-slate-600"
+  >
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/educator-navbar.js"></script>
+    <script>
+      requireEducatorAuth();
+    </script>
+    <!-- GLOBAL ATMOSPHERE -->
+    <div class="cinematic-bg"></div>
+    <div class="cinematic-grid"></div>
+
+    <!-- NAVIGATION (Maintained) -->
+    <nav
+      class="fixed top-0 w-full z-40 pt-4 pb-2 px-4 transition-all duration-300"
+    >
+      <div
+        class="max-w-7xl mx-auto glass-panel rounded-full px-4 py-3 flex items-center justify-between"
+      >
+        <!-- Brand -->
+        <div class="flex items-center gap-3 pl-2">
+          <img
+            src="assets/logo.png"
+            alt="EduQuest"
+            class="h-9 w-auto object-contain"
+          />
+        </div>
+
+        <!-- Links (Educator Context) -->
+        <div
+          class="hidden md:flex items-center gap-1 p-1 rounded-full border bg-slate-100/50 border-slate-200/50"
+        >
+          <a
+            href="educator-dashboard.html"
+            class="transition-all hover:text-indigo-600 hover:bg-white/60 text-sm font-semibold text-slate-500 rounded-full pt-2 pr-5 pb-2 pl-5"
+          >
+            Dashboard
+          </a>
+          <a
+            href="educator-class.html"
+            class="transition-all text-sm font-bold text-indigo-600 bg-white border-slate-200/60 border rounded-full pt-2 pr-5 pb-2 pl-5 shadow-sm"
+          >
+            My Classes
+          </a>
+          <a
+            href="educator-reports.html"
+            class="transition-all hover:text-indigo-600 hover:bg-white/60 text-sm font-semibold text-slate-500 rounded-full pt-2 pr-5 pb-2 pl-5"
+          >
+            Reports
+          </a>
+        </div>
+
+        <!-- Profile -->
+        <div class="flex items-center gap-4 pr-2">
+          <button
+            class="relative p-2 hover:text-indigo-500 transition-colors text-slate-400"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="lucide lucide-bell"
+            >
+              <path
+                d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"
+                class=""
+              ></path>
+              <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
+            </svg>
+            <span
+              class="absolute top-2 right-2.5 w-2 h-2 bg-rose-500 rounded-full border border-white"
+            ></span>
+          </button>
+          <div class="hidden sm:flex flex-col items-end">
+            <span id="navbar-educator-name" class="text-xs font-bold font-heading text-slate-700"></span>
+            <span
+              id="navbar-role-badge"
+              class="text-[10px] font-bold text-indigo-500 rounded-full pt-0.5 pr-2 pb-0.5 pl-2 bg-indigo-50"
+              style=""
+            >
+              Educator
+            </span>
+          </div>
+          <div
+            class="cursor-pointer transition-all hover:ring-indigo-100 bg-white w-10 h-10 border-indigo-100 border-2 ring-transparent ring-2 rounded-full pt-0.5 pr-0.5 pb-0.5 pl-0.5 relative"
+            onclick="window.location.href = 'educator-profile.html'"
+            role="button"
+          >
+            <img
+              src="https://api.dicebear.com/7.x/avataaars/svg?seed=Frizzle&amp;backgroundColor=e0e7ff"
+              alt="Profile"
+              class="w-full h-full object-cover rounded-full"
+            />
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="max-w-7xl mx-auto pt-28 px-6 relative z-10">
+      <!-- CLASS HERO SECTION (functional: same design as student-manageclass) -->
+      <section class="mb-8 animate-enter relative group">
+        <div
+          class="relative w-full rounded-[2rem] border border-white shadow-xl shadow-indigo-100/40 overflow-hidden"
+          style="background-image: url('assets/educator-manageclass-hero.png'); background-size: cover; background-position: center; background-repeat: no-repeat; min-height: 280px;"
+        >
+          <div class="absolute inset-0 bg-slate-900/50"></div>
+
+          <div class="absolute top-6 right-10 text-white/40 opacity-80">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+              <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path>
+            </svg>
+          </div>
+          <div class="absolute bottom-8 left-[20%] text-white/30">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+              <circle cx="12" cy="12" r="10"></circle>
+            </svg>
+          </div>
+
+          <div class="relative z-10 p-8 md:p-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
+            <div class="space-y-4 max-w-2xl">
+              <a
+                href="educator-class.html"
+                class="inline-flex items-center gap-1.5 hover:text-indigo-200 transition-colors uppercase text-xs font-bold text-white/80 tracking-wider mb-2"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left">
+                  <path d="m12 19-7-7 7-7"></path>
+                  <path d="M19 12H5"></path>
+                </svg>
+                Back to My Classes
+              </a>
+
+              <div>
+                <div class="flex items-center gap-3 mb-2">
+                  <span id="studentCountPill" class="inline-flex items-center gap-1.5 bg-white/20 text-white text-[11px] font-bold px-2.5 py-1 rounded-full border border-white/30">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-users">
+                      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                      <circle cx="9" cy="7" r="4"></circle>
+                      <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                      <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    <span id="studentCountText">— Students</span>
+                  </span>
+                </div>
+                <h1 id="classTitle" class="text-3xl md:text-4xl font-extrabold text-white tracking-tight leading-tight drop-shadow-sm"></h1>
+                <p id="classDescription" class="text-base text-white/90 font-medium mt-2 max-w-xl"></p>
+              </div>
+
+              <div class="flex items-center gap-3 pt-2">
+                <img id="educatorAvatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=educator&amp;backgroundColor=c7d2fe" alt="Teacher" class="w-10 h-10 rounded-full border-2 border-white shadow-md" />
+                <div>
+                  <p class="text-xs text-white/70 font-bold uppercase tracking-wider">Taught by</p>
+                  <p id="educatorName" class="text-sm font-bold text-white"></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. MAIN GRID -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+        <!-- LEFT COLUMN (Wider) -->
+        <div class="lg:col-span-2 space-y-12">
+          <!-- 4. INSIGHTS STRIP - GLASS CARDS -->
+          <div
+            class="grid grid-cols-2 md:grid-cols-4 gap-5 animate-enter delay-100"
+          >
+            <!-- Stat 1 -->
+            <div
+              class="glass-panel rounded-2xl p-5 hover-lift flex flex-col gap-3 relative overflow-hidden group"
+            >
+              <div
+                class="absolute top-0 right-0 p-4 opacity-5 group-hover:scale-110 transition-transform duration-500"
+              ></div>
+              <div
+                class="w-10 h-10 rounded-full flex items-center justify-center border bg-indigo-100/50 text-indigo-600 border-indigo-100"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="lucide lucide-bar-chart-2 w-[18px] h-[18px]"
+                  style="color: rgb(79, 70, 229); width: 18px; height: 18px"
+                  data-icon-replaced="true"
+                >
+                  <line x1="18" x2="18" y1="20" y2="10" class=""></line>
+                  <line x1="12" x2="12" y1="20" y2="4" class=""></line>
+                  <line x1="6" x2="6" y1="20" y2="14"></line>
+                </svg>
+              </div>
+              <div class="">
+                <span
+                  id="avg-score-value"
+                  class="block text-3xl font-heading font-extrabold text-slate-700"
+                  >—</span
+                >
+                <span
+                  class="text-xs font-bold uppercase tracking-wide text-slate-400"
+                >
+                  Avg Quiz Score
+                </span>
+              </div>
+            </div>
+            <!-- Stat 2 -->
+            <div
+              class="glass-panel rounded-2xl p-5 hover-lift flex flex-col gap-3 relative overflow-hidden group"
+            >
+              <div
+                class="w-10 h-10 rounded-full flex items-center justify-center border bg-emerald-100/50 text-emerald-600 border-emerald-100"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="lucide lucide-check-circle-2"
+                >
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path d="m9 12 2 2 4-4"></path>
+                </svg>
+              </div>
+              <div>
+                <span
+                  id="completion-value"
+                  class="block text-3xl font-heading font-extrabold text-slate-700"
+                  >—</span
+                >
+                <span
+                  class="text-xs font-bold uppercase tracking-wide text-slate-400"
+                >
+                  Completion
+                </span>
+              </div>
+            </div>
+            <!-- Stat 3 -->
+            <div
+              class="glass-panel rounded-2xl p-5 hover-lift flex flex-col gap-3 relative overflow-hidden group"
+            >
+              <div
+                class="w-10 h-10 rounded-full flex items-center justify-center border bg-amber-100/50 text-amber-600 border-amber-100"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="lucide lucide-zap"
+                >
+                  <polygon
+                    points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"
+                  ></polygon>
+                </svg>
+              </div>
+              <div class="">
+                <span
+                  id="class-xp-value"
+                  class="block text-3xl font-heading font-extrabold text-slate-700"
+                  >—</span
+                >
+                <span
+                  class="text-xs font-bold uppercase tracking-wide text-slate-400"
+                >
+                  Class XP
+                </span>
+              </div>
+            </div>
+            <!-- Stat 4 -->
+            <div
+              class="glass-panel rounded-2xl p-5 hover-lift flex flex-col gap-3 relative overflow-hidden group"
+            >
+              <div
+                class="w-10 h-10 rounded-full flex items-center justify-center border bg-rose-100/50 text-rose-600 border-rose-100"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="lucide lucide-users"
+                >
+                  <path
+                    d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"
+                    class=""
+                  ></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <path d="M22 21v-2a4 4 0 0 0-3-3.87" class=""></path>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+              </div>
+              <div class="">
+                <span
+                  id="active-now-value"
+                  class="block text-3xl font-heading font-extrabold text-slate-700"
+                  >—/—</span
+                >
+                <span
+                  class="text-xs font-bold uppercase tracking-wide text-slate-400"
+                >
+                  Active Now
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5. QUIZZES SECTION -->
+          <section class="animate-enter delay-200">
+            <div class="flex mb-6 items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="p-2 rounded-lg bg-indigo-100 text-indigo-600">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="lucide lucide-book-open"
+                  >
+                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                  </svg>
+                </div>
+                <h2 class="text-2xl font-heading font-bold text-slate-800">
+                  Quizzes
+                </h2>
+              </div>
+              <div class="flex items-center gap-2">
+                <button
+                  id="createQuizFromManageBtn"
+                  type="button"
+                  class="flex transition-all hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-200 hover:shadow-sm group text-xs font-bold text-slate-600 bg-white border-slate-200 border rounded-xl pt-2 pr-4 pb-2 pl-4 gap-x-2 items-center"
+                  role="button"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus">
+                    <path d="M5 12h14"></path>
+                    <path d="M12 5v14"></path>
+                  </svg>
+                  New Quiz
+                </button>
+                <button
+                  id="viewAllQuizzesBtn"
+                  type="button"
+                  class="flex transition-all hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-200 hover:shadow-sm group text-xs font-bold text-slate-600 bg-white border-slate-200 border rounded-xl pt-2 pr-4 pb-2 pl-4 gap-x-2 gap-y-2 items-center"
+                  role="button"
+                >
+                  View All
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="lucide lucide-arrow-right group-hover:translate-x-0.5 transition-transform"
+                  >
+                    <path d="M5 12h14" class=""></path>
+                    <path d="m12 5 7 7-7 7" class=""></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div id="quiz-list" class="space-y-5"></div>
+          </section>
+
+          <!-- 7. QUESTION BANK SECTION -->
+          <section class="animate-enter delay-300">
+            <div class="flex mb-6 items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="p-2 rounded-lg bg-violet-100 text-violet-600">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="lucide lucide-library"
+                  >
+                    <path d="m16 6 4 14"></path>
+                    <path d="M12 6v14"></path>
+                    <path d="M8 8v12"></path>
+                    <path d="M4 4v16"></path>
+                  </svg>
+                </div>
+                <h2 class="text-2xl font-heading font-bold text-slate-800">
+                  Question Bank
+                </h2>
+              </div>
+              <button
+                id="openQuestionBankBtn"
+                type="button"
+                class="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold rounded-xl shadow-lg shadow-indigo-200 hover:shadow-indigo-300 transition-all active:scale-95"
+                role="button"
+              >
+                Open Question Bank
+              </button>
+            </div>
+            <div
+              class="glass-card-hover glass-panel rounded-2xl p-6 relative overflow-hidden group"
+            >
+              <p class="text-sm font-medium text-slate-500 mb-0">
+                Store reusable math questions to generate quizzes quickly.
+              </p>
+            </div>
+          </section>
+        </div>
+
+        <!-- RIGHT COLUMN: Class Insights + Students in this class -->
+        <div class="lg:col-span-1 space-y-6 animate-enter delay-300">
+          <!-- Class Insights (highlighted) -->
+          <div
+            id="class-performance-panel"
+            class="glass-panel rounded-2xl p-5 border border-indigo-100 bg-gradient-to-br from-indigo-50/80 to-white hidden"
+          >
+            <h3 class="font-semibold text-lg text-slate-800 mb-2 flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-lightbulb text-indigo-500">
+                <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"></path>
+                <path d="M9 18h6"></path>
+                <path d="M10 22h4"></path>
+              </svg>
+              Class Insights
+            </h3>
+            <p id="class-weak-topic" class="text-sm text-indigo-600 font-semibold"></p>
+          </div>
+
+          <!-- Students in this class -->
+          <div class="glass-panel rounded-3xl p-6 relative overflow-hidden">
+            <h3 class="text-lg font-heading font-bold text-slate-800 mb-4">
+              Students in this class
+            </h3>
+            <div id="student-analytics-list" class="space-y-3"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- FOOTER (Maintained) -->
+    <footer
+      class="py-12 border-t mt-20 relative z-10 bg-slate-900 text-slate-300 border-slate-800"
+    >
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+          <div class="space-y-4">
+            <div class="flex items-center gap-2">
+              <div
+                class="w-8 h-8 rounded-lg flex items-center justify-center bg-indigo-600 text-white"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="lucide lucide-compass w-5 h-5"
+                >
+                  <path
+                    d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z"
+                  ></path>
+                  <circle cx="12" cy="12" r="10"></circle>
+                </svg>
+              </div>
+              <span class="text-lg font-bold tracking-tight text-white">
+                EduQuest
+              </span>
+            </div>
+            <p
+              class="text-xs leading-relaxed font-medium max-w-xs text-slate-400"
+            >
+              Making learning an addictive adventure for students around the
+              world.
+            </p>
+          </div>
+          <div class="">
+            <h4 class="font-bold mb-4 text-sm text-white">Product</h4>
+            <ul class="space-y-2 text-xs font-medium text-slate-400">
+              <li class="">
+                <a href="#" class="transition-colors hover:text-indigo-400">
+                  Features
+                </a>
+              </li>
+              <li>
+                <a href="#" class="transition-colors hover:text-indigo-400">
+                  Pricing
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="font-bold mb-4 text-sm text-white">Resources</h4>
+            <ul class="space-y-2 text-xs font-medium text-slate-400">
+              <li>
+                <a href="#" class="transition-colors hover:text-indigo-400">
+                  Help Center
+                </a>
+              </li>
+              <li>
+                <a href="#" class="transition-colors hover:text-indigo-400">
+                  Community
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="font-bold mb-4 text-sm text-white">Legal</h4>
+            <ul class="space-y-2 text-xs font-medium text-slate-400">
+              <li>
+                <a href="#" class="transition-colors hover:text-indigo-400">
+                  Privacy
+                </a>
+              </li>
+              <li>
+                <a href="#" class="transition-colors hover:text-indigo-400">
+                  Terms
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="border-t pt-6 flex justify-center border-slate-800">
+          <p class="text-xs font-medium text-slate-500">
+            © 2024 EduQuest. All rights reserved.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        if (localStorage.getItem('role') !== 'educator') {
+          window.location.href = 'educator-login.html';
+          return;
+        }
+        var educatorId = localStorage.getItem('userId');
+        if (!educatorId) {
+          window.location.href = 'educator-login.html';
+          return;
+        }
+
+        lucide.createIcons();
+
+        var params = new URLSearchParams(window.location.search);
+        var classId = params.get("classId");
+        if (!classId) {
+          console.error("educator-manageclass: missing classId in URL");
+        }
+        var CLASS_ID = classId;
+        var API_BASE = '/api';
+
+        if (!CLASS_ID) {
+          console.warn(
+            "educator-manageclass: no classId in URL, skipping quiz load",
+          );
+        }
+
+        function bindClassIdNavigation() {
+          var viewAllBtn = document.getElementById("viewAllQuizzesBtn");
+          if (viewAllBtn) {
+            viewAllBtn.addEventListener("click", function (e) {
+              e.preventDefault();
+              if (!CLASS_ID) {
+                console.error("Missing classId in URL");
+                return;
+              }
+              window.location.href = "educator-quiz.html?classId=" + encodeURIComponent(CLASS_ID);
+            });
+          }
+          var openQuestionBankBtn = document.getElementById("openQuestionBankBtn");
+          if (openQuestionBankBtn) {
+            openQuestionBankBtn.addEventListener("click", function (e) {
+              e.preventDefault();
+              if (!CLASS_ID) {
+                console.error("Missing classId in URL");
+                return;
+              }
+              window.location.href = "educator-questionbank.html?classId=" + encodeURIComponent(CLASS_ID);
+            });
+          }
+          var createQuizBtn = document.getElementById("createQuizFromManageBtn");
+          if (createQuizBtn) {
+            createQuizBtn.addEventListener("click", function (e) {
+              e.preventDefault();
+              if (!CLASS_ID) {
+                console.error("Missing classId in URL");
+                return;
+              }
+              window.location.href = "educator-createquiz.html?classId=" + encodeURIComponent(CLASS_ID);
+            });
+          }
+        }
+        bindClassIdNavigation();
+
+      async function loadClassHeader(classId) {
+        if (!classId) return;
+        var titleEl = document.getElementById("classTitle");
+        var descEl = document.getElementById("classDescription");
+        var countEl = document.getElementById("studentCountText");
+        var educatorEl = document.getElementById("educatorName");
+        var avatarEl = document.getElementById("educatorAvatar");
+        try {
+          var res = await fetch(API_BASE + "/classes/" + classId, { headers: getAuthHeaders() });
+          if (!res.ok) {
+            if (res.status === 403 || res.status === 404) {
+              window.location.href = "educator-class.html";
+              return;
+            }
+            throw new Error("Failed to load class");
+          }
+          var data = await res.json();
+          if (titleEl) titleEl.textContent = data.name || "";
+          if (descEl) descEl.textContent = data.description || "";
+          if (countEl) countEl.textContent = (data.student_count != null ? data.student_count : 0) + " Students";
+          if (educatorEl) educatorEl.textContent = data.educator_name || "—";
+          if (avatarEl && data.educator_name) {
+            var seed = encodeURIComponent(String(data.educator_name).replace(/\s+/g, ""));
+            avatarEl.src = "https://api.dicebear.com/7.x/avataaars/svg?seed=" + seed + "&backgroundColor=c7d2fe";
+            avatarEl.alt = data.educator_name;
+          }
+          document.title = (data.name ? data.name + " – " : "") + "EduQuest";
+        } catch (e) {
+          console.error("Load class header failed", e);
+          if (titleEl) titleEl.textContent = "Class";
+          if (descEl) descEl.textContent = "";
+          if (countEl) countEl.textContent = "0 Students";
+          if (educatorEl) educatorEl.textContent = "—";
+        }
+      }
+
+      function formatTimeAgo(dateStr) {
+        if (!dateStr) return "Never";
+        const diff = Date.now() - new Date(dateStr).getTime();
+        const hours = Math.floor(diff / 3600000);
+        if (hours < 1) return "Just now";
+        if (hours < 24) return hours + "h ago";
+        const days = Math.floor(hours / 24);
+        return days + "d ago";
+      }
+
+      async function loadOverview() {
+        if (!CLASS_ID) return;
+        try {
+          const res = await fetch(
+            API_BASE + "/classes/" + CLASS_ID + "/overview",
+            { headers: getAuthHeaders() },
+          );
+          const data = await res.json();
+          var avgEl = document.getElementById("avg-score-value");
+          var compEl = document.getElementById("completion-value");
+          var xpEl = document.getElementById("class-xp-value");
+          var activeEl = document.getElementById("active-now-value");
+          if (avgEl)
+            avgEl.textContent =
+              (data.avg_score != null ? data.avg_score : 0) + "%";
+          if (compEl)
+            compEl.textContent =
+              (data.completion_rate != null ? data.completion_rate : 0) + "%";
+          if (xpEl)
+            xpEl.textContent = data.total_xp != null ? data.total_xp : 0;
+          if (activeEl)
+            activeEl.textContent =
+              (data.active_students != null ? data.active_students : 0) +
+              "/" +
+              (data.total_students != null ? data.total_students : 0);
+        } catch (err) {
+          console.error("Failed to load overview", err);
+        }
+      }
+
+      async function loadStudentAnalytics() {
+        if (!CLASS_ID) return;
+        try {
+          const res = await fetch(
+            API_BASE + "/classes/" + CLASS_ID + "/student-analytics",
+            { headers: getAuthHeaders() },
+          );
+          const students = await res.json();
+          var container = document.getElementById("student-analytics-list");
+          if (!container) return;
+          container.innerHTML = "";
+          if (!students || students.length === 0) {
+            container.innerHTML =
+              '<p class="text-slate-500 text-sm">No students in this class yet.</p>';
+            return;
+          }
+          students.forEach(function (s) {
+            var row = document.createElement("div");
+            row.className = "glass-panel rounded-xl p-4 mb-3";
+            row.innerHTML =
+              '<div class="flex justify-between">' +
+              "<div>" +
+              '<div class="font-bold text-slate-700">' +
+              (s.name || "—") +
+              "</div>" +
+              '<div class="text-xs text-slate-400">Weakest topic: ' +
+              (s.weakest_topic || "—") +
+              "</div>" +
+              "</div>" +
+              '<div class="text-right">' +
+              '<div class="text-sm font-bold">' +
+              Math.round(s.avg_score || 0) +
+              "%</div>" +
+              '<div class="text-xs text-slate-400">Last active: ' +
+              formatTimeAgo(s.last_activity) +
+              "</div>" +
+              "</div>" +
+              "</div>";
+            container.appendChild(row);
+          });
+        } catch (err) {
+          console.error("Failed to load student analytics", err);
+        }
+      }
+
+      async function ensureClassAccess() {
+        try {
+          const res = await fetch(
+            API_BASE + "/classes/educator/" + educatorId + "/assigned",
+            { headers: getAuthHeaders() },
+          );
+          const classes = await res.json();
+          console.log("Educator ID:", educatorId);
+          console.log("Assigned classes:", classes);
+          console.log("Requested class:", CLASS_ID);
+          if (!res.ok) {
+            alert("Failed to verify class access.");
+            window.location.href = "educator-class.html";
+            return false;
+          }
+          const allowed =
+            Array.isArray(classes) &&
+            classes.some(function (c) {
+              return Number(c.id) === Number(CLASS_ID);
+            });
+          if (!allowed) {
+            alert("You do not have access to this class.");
+            window.location.href = "educator-class.html";
+            return false;
+          }
+        } catch (e) {
+          alert("Failed to verify class access.");
+          window.location.href = "educator-class.html";
+          return false;
+        }
+        return true;
+      }
+
+      async function loadClassPerformance() {
+        if (!CLASS_ID) return;
+
+        try {
+          const res = await fetch(
+            API_BASE + "/attempts/class-performance/" + CLASS_ID,
+            { headers: getAuthHeaders() },
+          );
+          const data = await res.json();
+
+          const panel = document.getElementById("class-performance-panel");
+          const text = document.getElementById("class-weak-topic");
+
+          if (!panel || !text) return;
+
+          if (!data.topic) {
+            panel.classList.add("hidden");
+            return;
+          }
+
+          const topicName =
+            data.topic.charAt(0).toUpperCase() + data.topic.slice(1);
+          text.textContent =
+            "Weakest topic: " +
+            topicName +
+            " — " +
+            data.accuracy +
+            "% average accuracy";
+
+          panel.classList.remove("hidden");
+        } catch (err) {
+          console.error("Failed to load class performance", err);
+        }
+      }
+
+      async function loadQuizzes() {
+        if (!CLASS_ID) return;
+        try {
+          const res = await fetch(API_BASE + "/quizzes/class/" + CLASS_ID, {
+            headers: getAuthHeaders(),
+          });
+          const quizzes = await res.json();
+          renderQuizList(quizzes);
+        } catch (err) {
+          console.error("Failed to load quizzes", err);
+        }
+      }
+
+      function renderQuizList(quizzes) {
+        const container = document.getElementById("quiz-list");
+        if (!container) return;
+
+        container.innerHTML = "";
+
+        if (!quizzes || quizzes.length === 0) {
+          container.innerHTML = '<p class="text-slate-500 text-sm">No quizzes yet.</p>';
+          return;
+        }
+
+        var displayQuizzes = quizzes.slice(0, 3);
+        displayQuizzes.forEach(function (q) {
+          const card = document.createElement("div");
+          card.className = "group relative bg-white rounded-[2rem] p-6 border border-slate-100 hover:border-indigo-200 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-indigo-100/40 overflow-hidden cursor-pointer";
+          card.innerHTML =
+            '<div class="flex justify-between items-start gap-4 relative">' +
+              '<div class="p-3.5 bg-indigo-50 rounded-2xl text-indigo-500 shadow-sm border border-indigo-100 flex-shrink-0">' +
+                '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book-open"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>' +
+              '</div>' +
+              '<div class="flex-1 min-w-0">' +
+                '<h3 class="font-semibold text-slate-800 truncate">' + (q.title || "Untitled Quiz") + '</h3>' +
+                '<p class="text-sm text-slate-500 mt-1">Created ' + (q.created_at ? new Date(q.created_at).toLocaleDateString() : "—") + '</p>' +
+              '</div>' +
+              '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right text-slate-400 group-hover:text-indigo-500 flex-shrink-0"><path d="m9 18 6-6-6-6"></path></svg>' +
+            '</div>';
+
+          card.addEventListener("click", function () {
+            window.location.href = "educator-editquiz.html?quizId=" + q.id;
+          });
+
+          container.appendChild(card);
+        });
+      }
+
+        if (!CLASS_ID) {
+          loadClassPerformance();
+          loadQuizzes();
+          return;
+        }
+        ensureClassAccess().then(function (ok) {
+          if (ok) {
+            loadClassHeader(CLASS_ID);
+            loadOverview();
+            loadStudentAnalytics();
+            loadClassPerformance();
+            loadQuizzes();
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

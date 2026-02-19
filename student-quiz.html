@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduQuest - Space Explorers Quiz</title>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="js/api.js"></script>
+    <script src="js/student-navbar.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+:root { --font-family: 'Nunito', sans-serif; }
+body { font-family: var(--font-family); -webkit-font-smoothing: antialiased; background-color: #fafaf9; }
+/* Subtle Pastel Background */
+.bg-pastel-mesh {
+position: fixed; inset: 0; z-index: -50;
+background:
+radial-gradient(at 0% 0%, rgba(224, 231, 255, 0.4) 0px, transparent 50%),
+radial-gradient(at 100% 0%, rgba(255, 237, 213, 0.4) 0px, transparent 50%),
+radial-gradient(at 100% 100%, rgba(220, 252, 231, 0.3) 0px, transparent 50%),
+radial-gradient(at 0% 100%, rgba(255, 228, 230, 0.3) 0px, transparent 50%);
+filter: blur(40px);
+}
+/* Micro pattern for texture */
+.bg-texture {
+position: fixed; inset: 0; z-index: -49;
+opacity: 0.4;
+background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2394a3b8' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.glass-card {
+background: rgba(255, 255, 255, 0.7);
+backdrop-filter: blur(12px);
+-webkit-backdrop-filter: blur(12px);
+border: 1px solid rgba(255, 255, 255, 0.8);
+}
+.quiz-card-shadow {
+box-shadow: 0 20px 40px -12px rgba(99, 102, 241, 0.1);
+}
+@keyframes slide-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.animate-enter { animation: slide-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
+@keyframes pulse-ring {
+0% { transform: scale(0.8); opacity: 0.5; }
+100% { transform: scale(1.2); opacity: 0; }
+}
+.animate-pulse-ring { animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+/* Custom Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
+</style>
+<link id="all-fonts-link-font-geist" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-geist">.font-geist { font-family: 'Geist', sans-serif !important; }</style><link id="all-fonts-link-font-roboto" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-roboto">.font-roboto { font-family: 'Roboto', sans-serif !important; }</style><link id="all-fonts-link-font-montserrat" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-montserrat">.font-montserrat { font-family: 'Montserrat', sans-serif !important; }</style><link id="all-fonts-link-font-poppins" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-poppins">.font-poppins { font-family: 'Poppins', sans-serif !important; }</style><link id="all-fonts-link-font-playfair" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;900&amp;display=swap"><style id="all-fonts-style-font-playfair">.font-playfair { font-family: 'Playfair Display', serif !important; }</style><link id="all-fonts-link-font-instrument-serif" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:wght@400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-instrument-serif">.font-instrument-serif { font-family: 'Instrument Serif', serif !important; }</style><link id="all-fonts-link-font-merriweather" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&amp;display=swap"><style id="all-fonts-style-font-merriweather">.font-merriweather { font-family: 'Merriweather', serif !important; }</style><link id="all-fonts-link-font-bricolage" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-bricolage">.font-bricolage { font-family: 'Bricolage Grotesque', sans-serif !important; }</style><link id="all-fonts-link-font-jakarta" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap"><style id="all-fonts-style-font-jakarta">.font-jakarta { font-family: 'Plus Jakarta Sans', sans-serif !important; }</style><link id="all-fonts-link-font-manrope" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap"><style id="all-fonts-style-font-manrope">.font-manrope { font-family: 'Manrope', sans-serif !important; }</style><link id="all-fonts-link-font-space-grotesk" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-space-grotesk">.font-space-grotesk { font-family: 'Space Grotesk', sans-serif !important; }</style><link id="all-fonts-link-font-work-sans" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700;800&amp;display=swap"><style id="all-fonts-style-font-work-sans">.font-work-sans { font-family: 'Work Sans', sans-serif !important; }</style><link id="all-fonts-link-font-pt-serif" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=PT+Serif:wght@400;700&amp;display=swap"><style id="all-fonts-style-font-pt-serif">.font-pt-serif { font-family: 'PT Serif', serif !important; }</style><link id="all-fonts-link-font-geist-mono" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-geist-mono">.font-geist-mono { font-family: 'Geist Mono', monospace !important; }</style><link id="all-fonts-link-font-space-mono" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&amp;display=swap"><style id="all-fonts-style-font-space-mono">.font-space-mono { font-family: 'Space Mono', monospace !important; }</style><link id="all-fonts-link-font-quicksand" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-quicksand">.font-quicksand { font-family: 'Quicksand', sans-serif !important; }</style></head>
+  <body class="text-slate-600 selection:bg-violet-200 selection:text-violet-800 pb-20">
+    <div class="bg-pastel-mesh"></div>
+    <div class="bg-texture"></div>
+
+    <!-- NAVIGATION (UNCHANGED) -->
+    <nav class="fixed top-0 w-full z-50 pt-4 pb-2 px-4">
+      <div class="max-w-7xl mx-auto glass-card rounded-full px-4 py-3 flex items-center justify-between shadow-sm shadow-indigo-100/50">
+        <!-- Brand -->
+        <div class="flex items-center gap-3 pl-2">
+          <img src="assets/logo.png" alt="EduQuest" class="h-9 w-auto object-contain" />
+        </div>
+
+        <!-- Links (Updated tabs as requested) -->
+        <div class="hidden md:flex items-center gap-1 p-1 bg-slate-100/50 rounded-full border border-slate-200/50">
+          <a href="student-dashboard.html" class="hover:text-indigo-500 hover:bg-white/60 transition-all text-sm font-semibold text-slate-500 rounded-full pt-2 pr-5 pb-2 pl-5">Home</a>
+          <a href="student-class.html" class="transition-all text-sm font-bold text-indigo-600 bg-white rounded-full pt-2 pr-5 pb-2 pl-5 shadow-sm">My Classes</a>
+          <a href="student-shop.html" class="hover:text-indigo-500 hover:bg-white/60 transition-all text-sm font-semibold text-slate-500 rounded-full pt-2 pr-5 pb-2 pl-5">Shop</a>
+          
+          
+        </div>
+
+        <!-- Profile -->
+        <div class="flex items-center gap-4 pr-2">
+          <div class="hidden sm:flex flex-col items-end">
+            <span id="navbar-student-name" class="text-xs font-bold text-slate-700"></span>
+            <span class="text-[10px] font-bold text-indigo-500 bg-indigo-50 rounded-full pt-0.5 pr-2 pb-0.5 pl-2" style="">Student</span>
+          </div>
+          <div class="bg-white w-10 h-10 border-indigo-100 border-2 rounded-full pt-0.5 pr-0.5 pb-0.5 pl-0.5 relative" onclick="window.location.href='student-profile.html'" role="button">
+            
+            <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Alex&amp;backgroundColor=e0e7ff" alt="Profile" class="w-full h-full object-cover rounded-full">
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- CONTENT AREA -->
+    <main class="max-w-7xl mx-auto pt-32 pb-24 px-6 gap-8">
+      
+      <!-- QUIZ LIST (when no ?id=) -->
+      <div id="student-quiz-list-view" class="hidden">
+        <div class="bg-white/90 backdrop-blur-sm rounded-2xl border border-slate-200 shadow-sm p-6 mb-8 flex flex-col sm:flex-row items-center justify-center gap-4 text-center">
+          <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center shrink-0 shadow-md shadow-indigo-100">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2L9 5Z"></path><path d="M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v0"></path></svg>
+          </div>
+          <div>
+            <h1 class="text-2xl sm:text-3xl font-bold text-slate-800 tracking-tight">Choose a quiz</h1>
+          </div>
+        </div>
+        <div id="student-quiz-list" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"><!-- filled by JS --></div>
+        <p id="student-quiz-list-empty" class="hidden text-slate-500">No quizzes available.</p>
+      </div>
+
+      <!-- QUIZ TAKING VIEW (when ?id= present) -->
+      <div id="student-quiz-take-view">
+      <div id="student-quiz-content">
+      <!-- 2. QUIZ HEADER STRIP -->
+      <header class="mb-8 animate-enter">
+        <div class="w-full bg-white/80 backdrop-blur-md rounded-2xl p-2 pl-6 pr-2 flex items-center justify-between border border-white shadow-lg shadow-indigo-100/30 relative overflow-hidden group">
+            <!-- Background Gradient Decoration -->
+            <div class="absolute inset-0 bg-gradient-to-r from-violet-50/50 via-indigo-50/30 to-blue-50/50 opacity-100"></div>
+            
+            <div class="relative z-10 flex flex-col md:flex-row md:items-center gap-4 md:gap-8 w-full py-2">
+                <!-- Title Info -->
+                <div class="flex-1">
+                    <div class="flex items-center gap-3 mb-0.5">
+                        <h1 id="student-quiz-title" class="text-xl font-bold text-slate-800 tracking-tight">Loading…</h1>
+                        <span id="student-quiz-difficulty" class="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-bold border border-emerald-100 uppercase tracking-wide">—</span>
+                    </div>
+                    <p id="student-quiz-meta" class="text-xs font-medium text-slate-500">Maths</p>
+                </div>
+
+                <!-- Reward Info -->
+                <div class="flex items-center gap-3 bg-white/60 rounded-xl px-4 py-2 border border-white/50 shadow-sm">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Reward</span>
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm font-bold text-indigo-600">⚡ +<span id="reward-xp"></span> XP</span>
+                        <span class="text-slate-300">|</span>
+                        <span class="text-sm font-bold text-amber-600">🪙 +<span id="reward-coins"></span> Coins</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </header>
+
+      <!-- MAIN LAYOUT GRID -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- 3. LEFT MAIN COLUMN: QUESTION CARD -->
+        <section class="lg:col-span-8 animate-enter" style="animation-delay: 100ms">
+            <div class="bg-white rounded-[2rem] border border-slate-100 quiz-card-shadow overflow-hidden relative">
+                <!-- Top Progress Line -->
+                <div class="w-full h-1.5 bg-slate-50">
+                    
+                </div>
+
+                <div class="p-8 md:p-10">
+                    <!-- Question Header -->
+                    <div class="flex justify-between items-start mb-6">
+                        <span id="student-question-counter" class="text-xs font-bold text-indigo-500 bg-indigo-50 border border-indigo-100 px-3 py-1 rounded-lg uppercase tracking-wider">Question 1 of 1</span>
+                        <button class="text-slate-300 hover:text-rose-400 transition-colors" title="Report Issue">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-flag"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" x2="4" y1="22" y2="15"></line></svg>
+                        </button>
+                    </div>
+
+                    <!-- Question Text -->
+                    <h2 id="student-question-text" class="text-2xl md:text-3xl font-bold text-slate-800 leading-tight mb-8">Loading…</h2>
+
+                    <!-- Answers Area -->
+                    <div id="student-options-container" class="space-y-4 mb-10"><!-- options filled by JS --></div>
+
+                    <!-- Navigation Footer -->
+                    <div class="flex items-center justify-between pt-6 border-t border-slate-50">
+                        <button type="button" id="student-prev" class="px-6 py-3 rounded-xl text-slate-500 font-bold text-sm hover:bg-slate-50 transition-colors flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-left"><path d="m15 18-6-6 6-6"></path></svg>
+                            Previous
+                        </button>
+                        <button type="button" id="student-next" class="px-8 py-3 bg-gradient-to-r from-indigo-500 to-violet-500 text-white rounded-xl font-bold text-sm shadow-lg shadow-indigo-200 hover:shadow-indigo-300 hover:-translate-y-0.5 transition-all flex items-center gap-2">
+                            Next Question
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </button>
+                    </div>
+                    <div id="student-submit-area" class="hidden pt-6 border-t border-slate-50">
+                        <button type="button" id="student-submit-btn" class="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-bold text-sm">Submit Quiz</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. RIGHT SIDEBAR -->
+        <aside class="lg:col-span-4 space-y-6 animate-enter" style="animation-delay: 200ms">
+            
+            <!-- Timer Card (hidden when no time limit) -->
+            <div id="student-timer-card" class="hidden bg-white rounded-[1.5rem] p-5 border border-slate-100 shadow-sm flex items-center gap-4 relative overflow-hidden">
+                <div class="relative w-14 h-14 flex items-center justify-center">
+                    <svg class="w-full h-full -rotate-90" viewBox="0 0 36 36">
+                        <path class="text-slate-100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3"></path>
+                        <path class="text-indigo-500" stroke-dasharray="75, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path>
+                    </svg>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clock text-indigo-500"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wide mb-0.5">Time Remaining</h3>
+                    <p id="time-remaining" class="text-2xl font-bold text-slate-700 tabular-nums">0:00</p>
+                </div>
+            </div>
+
+            <!-- Question Map -->
+            <div class="bg-white rounded-[1.5rem] p-6 border border-slate-100 shadow-sm">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-sm font-bold text-slate-700">Progress Map</h3>
+                    <span id="student-progress-count" class="text-xs font-semibold text-slate-400">0/0</span>
+                </div>
+                <div id="student-progress-map" class="flex flex-wrap gap-3"><!-- filled by JS from quiz.questions.length --></div>
+            </div>
+
+            <!-- Hint Card (Sticky Note Style) -->
+            
+        </aside>
+
+      </div>
+
+      <!-- Results View (shown after submit) -->
+      </div>
+      <div id="student-results-view" class="hidden">
+        <div class="bg-white rounded-[2rem] border border-slate-100 shadow-lg p-8 md:p-10">
+          <h2 class="text-2xl font-bold text-slate-800 mb-2">Quiz Results</h2>
+          <div class="flex items-center gap-4 mb-6 pb-6 border-b border-slate-100 flex-wrap">
+            <div class="text-4xl font-bold text-indigo-600" id="student-results-score">0%</div>
+            <div id="student-results-pass-fail" class="hidden text-lg font-bold"></div>
+            <div class="text-slate-500"><span id="student-results-total">0 / 0</span> questions correct</div>
+          </div>
+          <div class="flex flex-wrap gap-4 mb-6 pb-6 border-b border-slate-100">
+            <p class="text-sm font-semibold text-slate-700">XP Earned: <span id="student-results-xp" class="text-indigo-600">+0</span></p>
+            <p class="text-sm font-semibold text-slate-700">Coins Earned: <span id="student-results-coins" class="text-amber-600">+0</span></p>
+            <p id="student-results-levelup" class="hidden text-sm font-bold text-emerald-600"></p>
+          </div>
+          <div id="student-results-list" class="space-y-6 mb-8"><!-- filled by JS --></div>
+          <a href="student-manageclass.html" class="inline-flex items-center gap-2 px-6 py-3 bg-indigo-500 hover:bg-indigo-600 text-white font-bold rounded-xl transition-colors">Return to Classes</a>
+        </div>
+      </div>
+      </div>
+    </main>
+
+    <!-- 5. BOTTOM STICKY BAR -->
+    <div class="fixed bottom-0 left-0 right-0 z-40 bg-white/90 backdrop-blur-lg border-t border-slate-200/60 pb-[safe-area-inset-bottom]">
+        
+    </div>
+
+    <!-- 6. HIDDEN MODALS (HTML Structure present for Aura/Interactions) -->
+    <!-- Submit Confirmation Modal (Hidden) -->
+    <div class="hidden fixed inset-0 z-[100] flex items-center justify-center px-4">
+        <div class="absolute inset-0 bg-slate-900/20 backdrop-blur-sm"></div>
+        <div class="relative bg-white rounded-[2rem] p-8 max-w-sm w-full shadow-2xl animate-enter">
+            <div class="w-16 h-16 rounded-full bg-indigo-50 text-indigo-500 flex items-center justify-center mx-auto mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-circle-2"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>
+            </div>
+            <h3 class="text-xl font-bold text-center text-slate-800 mb-2">Submit Quiz?</h3>
+            <p class="text-sm text-center text-slate-500 mb-6">You've answered 10 of 10 questions. Ready to see your score?</p>
+            <div class="space-y-3">
+                <button class="w-full py-3 bg-indigo-500 text-white rounded-xl font-bold text-sm shadow-lg shadow-indigo-200 hover:bg-indigo-600 transition-all">Yes, Submit Now</button>
+                <button class="w-full py-3 bg-white border border-slate-200 text-slate-500 rounded-xl font-bold text-sm hover:bg-slate-50 transition-all">Review Answers</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER (UNCHANGED) -->
+    <footer class="bg-slate-900 text-slate-300 py-16 border-t border-slate-800 relative z-50 mb-16 lg:mb-0">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+          <!-- Column 1: Brand -->
+          <div class="space-y-6">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-compass w-6 h-6">
+                  <path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z"></path>
+                  <circle cx="12" cy="12" r="10"></circle>
+                </svg>
+              </div>
+              <span class="text-xl font-bold text-white tracking-tight">EduQuest</span>
+            </div>
+            <p class="text-sm leading-relaxed text-slate-400 font-medium">Making learning an addictive adventure for students around the world.</p>
+            <div class="flex gap-3">
+              <a href="#" class="w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-slate-700 hover:text-white transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-twitter"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path></svg>
+              </a>
+              <a href="#" class="w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-slate-700 hover:text-white transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-instagram"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line></svg>
+              </a>
+            </div>
+          </div>
+
+          <!-- Column 2: Product -->
+          <div>
+            <h4 class="font-bold text-white mb-6 text-base">Product</h4>
+            <ul class="space-y-4 text-sm font-medium text-slate-400">
+              <li><a href="#" class="hover:text-indigo-400 transition-colors">Features</a></li>
+              <li><a href="#" class="hover:text-indigo-400 transition-colors">Pricing</a></li>
+              <li><a href="#" class="hover:text-indigo-400 transition-colors">Integrations</a></li>
+            </ul>
+          </div>
+
+          <!-- Column 3: Resources -->
+          <div>
+            <h4 class="font-bold text-white mb-6 text-base">Resources</h4>
+            <ul class="space-y-4 text-sm font-medium text-slate-400">
+              <li><a href="#" class="hover:text-indigo-400 transition-colors">Teacher Guide</a></li>
+              <li><a href="#" class="hover:text-indigo-400 transition-colors">Help Center</a></li>
+              <li><a href="#" class="hover:text-indigo-400 transition-colors">Community</a></li>
+            </ul>
+          </div>
+
+          <!-- Column 4: Legal -->
+          <div>
+            <h4 class="font-bold text-white mb-6 text-base">Legal</h4>
+            <ul class="space-y-4 text-sm font-medium text-slate-400">
+              <li><a href="#" class="hover:text-indigo-400 transition-colors">Privacy</a></li>
+              <li><a href="#" class="hover:text-indigo-400 transition-colors">Terms</a></li>
+              <li><a href="#" class="hover:text-indigo-400 transition-colors">Security</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Copyright -->
+        <div class="border-t border-slate-800 pt-8 flex justify-center">
+          <p class="text-sm font-medium text-slate-500">© 2024 EduQuest. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      lucide.createIcons();
+      function getClassId() {
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get('classId');
+        return id ? Number(id) : null;
+      }
+      const CLASS_ID = getClassId();
+      var API_BASE = '/api';
+      var studentQuiz = { quiz: null, currentIndex: 0, answers: {} };
+
+      function startTimer(timeLimitMinutes) {
+        var totalSeconds = timeLimitMinutes * 60;
+        var remaining = totalSeconds;
+        var el = document.getElementById('time-remaining');
+        if (!el) return;
+        var mm = Math.floor(remaining / 60);
+        var ss = remaining % 60;
+        el.textContent = mm + ':' + (ss < 10 ? '0' : '') + ss;
+        var timerId = setInterval(function () {
+          remaining--;
+          mm = Math.floor(remaining / 60);
+          ss = remaining % 60;
+          el.textContent = mm + ':' + (ss < 10 ? '0' : '') + ss;
+          if (remaining <= 0) {
+            clearInterval(timerId);
+            var prevBtn = document.getElementById('student-prev');
+            var nextBtn = document.getElementById('student-next');
+            var submitBtn = document.getElementById('student-submit-btn');
+            if (prevBtn) prevBtn.disabled = true;
+            if (nextBtn) nextBtn.disabled = true;
+            if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Submitting…'; }
+            submitQuiz();
+          }
+        }, 1000);
+      }
+
+      function updateProgressMap() {
+        var q = studentQuiz.quiz;
+        var mapEl = document.getElementById('student-progress-map');
+        var countEl = document.getElementById('student-progress-count');
+        if (!mapEl || !countEl) return;
+        mapEl.innerHTML = '';
+        if (!q || !q.questions || !q.questions.length) { countEl.textContent = '0/0'; return; }
+        var total = q.questions.length;
+        var idx = studentQuiz.currentIndex;
+        countEl.textContent = (idx + 1) + '/' + total;
+        q.questions.forEach(function (question, i) {
+          var answered = studentQuiz.answers[question.id] != null;
+          var current = i === idx;
+          var btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'w-9 h-9 rounded-full font-bold text-sm flex items-center justify-center transition-colors';
+          if (answered && !current) btn.className += ' bg-emerald-100 text-emerald-600 hover:bg-emerald-200';
+          else if (current) btn.className += ' bg-white border-2 border-indigo-500 text-indigo-600 shadow-md shadow-indigo-100';
+          else btn.className += ' bg-slate-50 border border-slate-200 text-slate-400 hover:bg-white hover:border-slate-300';
+          btn.textContent = i + 1;
+          btn.dataset.index = i;
+          btn.addEventListener('click', function () { studentQuiz.currentIndex = i; renderQuestion(); updateProgressMap(); });
+          mapEl.appendChild(btn);
+        });
+      }
+
+      function renderQuestion() {
+        var q = studentQuiz.quiz;
+        if (!q || !q.questions || !q.questions.length) return;
+        var idx = studentQuiz.currentIndex;
+        var question = q.questions[idx];
+        var total = q.questions.length;
+        document.getElementById('student-question-counter').textContent = 'Question ' + (idx + 1) + ' of ' + total;
+        document.getElementById('student-question-text').textContent = question.question_text;
+        var container = document.getElementById('student-options-container');
+        container.innerHTML = '';
+        var letters = 'ABCDEFGH';
+        (question.options || []).forEach(function (opt, i) {
+          var isSelected = studentQuiz.answers[question.id] === opt.id;
+          var div = document.createElement('div');
+          div.className = 'group relative flex items-center p-4 rounded-xl border-2 border-slate-200 bg-white hover:border-indigo-300 cursor-pointer transition-all duration-300';
+          if (isSelected) div.classList.add('border-indigo-500', 'bg-indigo-50/30');
+          div.dataset.optionId = opt.id;
+          div.dataset.questionId = question.id;
+          div.innerHTML = '<div class="flex-shrink-0 w-8 h-8 rounded-lg bg-slate-100 text-slate-500 font-bold flex items-center justify-center border border-slate-200">' + letters[i] + '</div><span class="ml-4 text-base font-medium text-slate-700">' + (opt.option_text || '') + '</span><div class="absolute right-4 w-5 h-5 rounded-full border-2 ' + (isSelected ? 'border-indigo-500 bg-indigo-500' : 'border-slate-200') + '">' + (isSelected ? '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="4" class="m-auto"><path d="M20 6 9 17l-5-5"></path></svg>' : '') + '</div>';
+          div.addEventListener('click', function () { studentQuiz.answers[question.id] = parseInt(opt.id, 10); renderQuestion(); updateProgressMap(); });
+          container.appendChild(div);
+        });
+        document.getElementById('student-prev').style.visibility = idx === 0 ? 'hidden' : 'visible';
+        var nextBtn = document.getElementById('student-next');
+        var submitArea = document.getElementById('student-submit-area');
+        if (idx === total - 1) { nextBtn.classList.add('hidden'); submitArea.classList.remove('hidden'); } else { nextBtn.classList.remove('hidden'); submitArea.classList.add('hidden'); }
+        updateProgressMap();
+      }
+
+      function escHtml(s) {
+        if (s == null || s === undefined) return '';
+        return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      }
+      function renderResults(attemptResult) {
+        console.log('Attempt result received:', attemptResult);
+        if (!attemptResult || !attemptResult.results) {
+          console.error('Invalid attemptResult:', attemptResult);
+          return;
+        }
+        const results = attemptResult.results || [];
+        const totalQuestions = results.length;
+        let correctCount = 0;
+        results.forEach(function (r) {
+          var correctOpt = (r.options || []).find(function (o) { return o.is_correct === true; });
+          if (correctOpt && r.selected_option_id != null && Number(r.selected_option_id) === Number(correctOpt.id)) correctCount++;
+        });
+        var scoreEl = document.getElementById('student-results-score');
+        var listEl = document.getElementById('student-results-list');
+        var resultsView = document.getElementById('student-results-view');
+        var quizContent = document.getElementById('student-quiz-content');
+        var statusEl = document.getElementById('student-results-pass-fail');
+        if (!scoreEl || !listEl || !resultsView || !quizContent) return;
+        var scorePct = totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : (attemptResult.score != null ? attemptResult.score : 0);
+        scoreEl.textContent = scorePct + '%';
+        if (statusEl) {
+          statusEl.classList.remove('hidden');
+          if (attemptResult.passed === true) {
+            statusEl.textContent = 'Passed';
+            statusEl.classList.add('text-green-600');
+            statusEl.classList.remove('text-red-600');
+          } else {
+            statusEl.textContent = 'Failed — partial rewards granted';
+            statusEl.classList.add('text-red-600');
+            statusEl.classList.remove('text-green-600');
+          }
+        }
+        var totalEl = document.getElementById('student-results-total');
+        if (totalEl) totalEl.textContent = correctCount + ' / ' + totalQuestions;
+        var xpEl = document.getElementById('student-results-xp');
+        var coinsEl = document.getElementById('student-results-coins');
+        var levelUpEl = document.getElementById('student-results-levelup');
+        if (xpEl) xpEl.textContent = '+' + (attemptResult.xpEarned != null ? attemptResult.xpEarned : 0);
+        if (coinsEl) coinsEl.textContent = '+' + (attemptResult.coinsEarned != null ? attemptResult.coinsEarned : 0);
+        if (levelUpEl) {
+          if (attemptResult.leveledUp === true && attemptResult.newLevel != null) {
+            levelUpEl.textContent = 'Level up! You\'re now level ' + attemptResult.newLevel + '.';
+            levelUpEl.classList.remove('hidden');
+          } else {
+            levelUpEl.classList.add('hidden');
+          }
+        }
+        listEl.innerHTML = '';
+        results.forEach(function (r, i) {
+          var correctOpt = (r.options || []).find(function (o) { return o.is_correct; });
+          var selectedOpt = (r.options || []).find(function (o) { return o.id === r.selected_option_id || Number(o.id) === Number(r.selected_option_id); });
+          var correctText = correctOpt ? correctOpt.option_text : '—';
+          var selectedText = selectedOpt ? selectedOpt.option_text : '(none)';
+          var isCorrect = correctOpt && selectedOpt && (correctOpt.id === selectedOpt.id || Number(correctOpt.id) === Number(selectedOpt.id));
+          var block = document.createElement('div');
+          block.className = 'border border-slate-200 rounded-xl p-4';
+          block.innerHTML =
+            '<p class="font-bold text-slate-800 mb-2">' + (i + 1) + '. ' + escHtml(r.question_text) + '</p>' +
+            '<p class="text-sm mb-1"><span class="text-slate-500">Your answer:</span> <span class="' + (isCorrect ? 'text-emerald-600 font-medium bg-emerald-50 px-1 rounded' : 'text-rose-600 font-medium bg-rose-50 px-1 rounded') + '">' + escHtml(selectedText) + '</span></p>' +
+            '<p class="text-sm mb-2"><span class="text-slate-500">Correct answer:</span> <span class="text-emerald-600 font-medium bg-emerald-50 px-1 rounded">' + escHtml(correctText) + '</span></p>' +
+            (r.explanation ? '<p class="text-sm text-slate-600 bg-slate-50 rounded-lg p-2">' + escHtml(r.explanation) + '</p>' : '');
+          listEl.appendChild(block);
+        });
+        quizContent.classList.add('hidden');
+        resultsView.classList.remove('hidden');
+      }
+
+      (async function () {
+        if (localStorage.getItem('role') !== 'student') { window.location.href = "student-login.html"; return; }
+        var params = new URLSearchParams(window.location.search);
+        var quizId = params.get('quizId') || params.get('id');
+        var listView = document.getElementById('student-quiz-list-view');
+        var takeView = document.getElementById('student-quiz-take-view');
+
+        if (!quizId) {
+          takeView.classList.add('hidden');
+          listView.classList.remove('hidden');
+          var listStudentId = localStorage.getItem("userId");
+          var listUrl = CLASS_ID != null ? (API_BASE + '/quizzes/class/' + CLASS_ID) : (API_BASE + '/quizzes?student_id=' + listStudentId);
+          fetch(listUrl + (listUrl.indexOf('?') >= 0 ? '&' : '?') + '_t=' + Date.now(), { headers: getAuthHeaders() }).then(function (r) { return r.json(); }).then(function (list) {
+            console.log('Quiz list:', list);
+            var listEl = document.getElementById('student-quiz-list');
+            var emptyEl = document.getElementById('student-quiz-list-empty');
+            if (!list || list.length === 0) { emptyEl.classList.remove('hidden'); return; }
+            emptyEl.classList.add('hidden');
+            list.forEach(function (quiz) {
+              var card = document.createElement('a');
+              card.href = 'student-quiz.html?id=' + quiz.id;
+              card.className = 'group relative block bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-md hover:shadow-xl hover:shadow-indigo-100/30 hover:-translate-y-0.5 hover:border-indigo-200 transition-all duration-300 flex flex-col';
+              var p = quiz;
+              var passGradeVal = (p.pass_grade != null ? Number(p.pass_grade) : (p.passGrade != null ? Number(p.passGrade) : 0));
+              var passGradeDisplay = (isNaN(passGradeVal) ? 0 : passGradeVal) + '%';
+              var timeMinRaw = p.time_limit_minutes != null ? p.time_limit_minutes : p.timeLimitMinutes;
+              var timeMin = (timeMinRaw != null && timeMinRaw !== '') ? Number(timeMinRaw) : null;
+              var timeText = (timeMin != null && !isNaN(timeMin)) ? timeMin + ' min' : 'No limit';
+              var dueDateVal = p.due_date != null ? p.due_date : p.dueDate;
+              var dueText = (dueDateVal && String(dueDateVal).trim() !== '') ? new Date(dueDateVal).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : 'No due date';
+              var allowRetakes = p.allow_retakes != null ? p.allow_retakes : p.allowRetakes;
+              var retakesText = (allowRetakes === true || allowRetakes === 't' || String(allowRetakes).toLowerCase() === 'true') ? 'Yes' : 'No';
+              var qCountRaw = p.question_count != null ? p.question_count : p.questionCount;
+              var qCount = qCountRaw != null ? Number(qCountRaw) : 0;
+              var questionCountNum = !isNaN(qCount) ? qCount : 0;
+              var questionCountLabel = questionCountNum + ' question' + (questionCountNum !== 1 ? 's' : '');
+              var lastPassed = p.last_passed != null ? p.last_passed : p.lastPassed;
+              var badgeText, badgeClass;
+              if (lastPassed === true || lastPassed === 't') { badgeText = 'Passed'; badgeClass = 'bg-emerald-100 text-emerald-700 border-emerald-200'; }
+              else if (lastPassed === false || lastPassed === 'f') { badgeText = 'Failed'; badgeClass = 'bg-red-100 text-red-700 border-red-200'; }
+              else { badgeText = 'Not Attempted'; badgeClass = 'bg-slate-100 text-slate-600 border-slate-200'; }
+              var badge = '<span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wide border ' + badgeClass + '">' + badgeText + '</span>';
+              card.innerHTML =
+                '<div class="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-indigo-400 to-violet-400 rounded-t-2xl"></div>' +
+                '<div class="p-6 pt-7 flex flex-col flex-1">' +
+                  '<div class="flex justify-between items-start gap-3 mb-4">' +
+                    '<div class="min-w-0 flex-1">' +
+                      '<h3 class="text-xl font-bold text-slate-800 truncate">' + (p.title || 'Quiz') + '</h3>' +
+                    '</div>' +
+                    '<div class="shrink-0">' + badge + '</div>' +
+                  '</div>' +
+                  '<div class="grid grid-cols-2 gap-x-4 gap-y-3 py-4 border-y border-slate-100 flex-1">' +
+                    '<div><p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Questions</p><p class="text-sm font-bold text-slate-700">' + questionCountNum + '</p></div>' +
+                    '<div><p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Pass grade</p><p class="text-sm font-bold text-slate-700">' + passGradeDisplay + '</p></div>' +
+                    '<div><p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Time limit</p><p class="text-sm font-bold text-slate-700">' + timeText + '</p></div>' +
+                    '<div><p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Due date</p><p class="text-sm font-bold text-slate-700">' + dueText + '</p></div>' +
+                    '<div class="col-span-2"><p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Retakes</p><p class="text-sm font-bold text-slate-700">' + retakesText + '</p></div>' +
+                  '</div>' +
+                  '<div class="mt-4 pt-3 border-t border-slate-100">' +
+                    '<span class="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-100">' +
+                      '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-400"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2L9 5Z"></path></svg>' +
+                      questionCountLabel +
+                    '</span>' +
+                  '</div>' +
+                '</div>';
+              listEl.appendChild(card);
+            });
+          }).catch(function (err) { console.error(err); document.getElementById('student-quiz-list-empty').classList.remove('hidden'); document.getElementById('student-quiz-list-empty').textContent = 'Failed to load quizzes.'; alert('Something went wrong. Please try again.'); });
+          return;
+        }
+
+        listView.classList.add('hidden');
+        takeView.classList.remove('hidden');
+        var titleEl = document.getElementById('student-quiz-title');
+        var quizContent = document.getElementById('student-quiz-content');
+        titleEl.textContent = 'Loading…';
+        var prevBtn = document.getElementById('student-prev');
+        var nextBtn = document.getElementById('student-next');
+        var submitBtn = document.getElementById('student-submit-btn');
+        if (prevBtn) prevBtn.disabled = true;
+        if (nextBtn) nextBtn.disabled = true;
+        if (submitBtn) submitBtn.disabled = true;
+
+        function renderQuiz(quiz) {
+          studentQuiz.quiz = quiz;
+          titleEl.textContent = quiz.title || 'Quiz';
+          document.getElementById('student-quiz-difficulty').textContent = (quiz.questions && quiz.questions[0] && quiz.questions[0].difficulty_level) || '—';
+          document.getElementById('student-quiz-meta').textContent = 'Maths';
+          var xpEl = document.getElementById('reward-xp');
+          var coinsEl = document.getElementById('reward-coins');
+          if (xpEl) xpEl.textContent = quiz.xp_reward != null ? quiz.xp_reward : 100;
+          if (coinsEl) coinsEl.textContent = quiz.coin_reward != null ? quiz.coin_reward : 20;
+          studentQuiz.currentIndex = 0;
+          if (prevBtn) prevBtn.disabled = false;
+          if (nextBtn) nextBtn.disabled = false;
+          if (submitBtn) submitBtn.disabled = false;
+          renderQuestion();
+          if (quiz.time_limit_minutes && Number(quiz.time_limit_minutes) > 0) {
+            var timerCard = document.getElementById('student-timer-card');
+            if (timerCard) timerCard.classList.remove('hidden');
+            startTimer(Number(quiz.time_limit_minutes));
+          }
+        }
+
+        var studentId = localStorage.getItem("userId");
+        fetch(API_BASE + '/quizzes/' + quizId + '?student_id=' + studentId, { headers: getAuthHeaders() })
+          .then(function (res) {
+            if (res.status === 403) {
+              return res.json().catch(function () { return {}; }).then(function (errData) {
+                if (quizContent) {
+                  quizContent.innerHTML = '<div class="rounded-2xl border border-slate-200 bg-white p-8 text-center"><p class="text-slate-700 font-medium">' + (errData.error || 'This quiz is no longer available.') + '</p><a href="student-manageclass.html" class="inline-block mt-4 text-indigo-600 font-bold">Back to class</a></div>';
+                }
+                titleEl.textContent = 'Quiz unavailable';
+                return null;
+              });
+            }
+            if (!res.ok) throw new Error('Fetch failed');
+            return res.json();
+          })
+          .then(function (quiz) {
+            if (!quiz) return;
+            if (CLASS_ID && quiz.class_id !== CLASS_ID) {
+              alert('This quiz does not belong to this class.');
+              window.location.href = 'student-class.html';
+              return;
+            }
+            renderQuiz(quiz);
+          })
+          .catch(function (err) {
+            console.error(err);
+            titleEl.textContent = 'Failed to load quiz';
+            if (prevBtn) prevBtn.disabled = false;
+            if (nextBtn) nextBtn.disabled = false;
+            if (submitBtn) submitBtn.disabled = false;
+            alert('Something went wrong. Please try again.');
+          });
+      })();
+
+      function submitQuiz() {
+        var q = studentQuiz.quiz;
+        if (!q) return;
+        var answers = [];
+        (q.questions || []).forEach(function (qu) { var optId = studentQuiz.answers[qu.id]; if (optId != null) answers.push({ question_id: qu.id, selected_option_id: optId }); });
+        var prevBtn = document.getElementById('student-prev');
+        var nextBtn = document.getElementById('student-next');
+        var submitBtn = document.getElementById('student-submit-btn');
+        if (prevBtn) prevBtn.disabled = true;
+        if (nextBtn) nextBtn.disabled = true;
+        if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Submitting…'; }
+        fetch(API_BASE + '/attempts', { method: 'POST', headers: getAuthHeaders(), body: JSON.stringify({ quiz_id: q.id, class_id: CLASS_ID, answers: answers }) })
+          .then(function (res) {
+            if (res.status === 403) return res.json().then(function (d) { throw new Error(d.error || 'You can only attempt this quiz once.'); });
+            if (!res.ok) throw new Error('Submit failed');
+            return res.json();
+          })
+          .then(function (data) {
+            renderResults(data);
+          })
+          .catch(function (err) {
+            console.error(err);
+            alert(err.message || 'Something went wrong. Please try again.');
+            if (prevBtn) prevBtn.disabled = false;
+            if (nextBtn) nextBtn.disabled = false;
+            if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Submit Quiz'; }
+          });
+      }
+      document.getElementById('student-prev').addEventListener('click', function () { if (studentQuiz.currentIndex > 0) { studentQuiz.currentIndex--; renderQuestion(); } });
+      document.getElementById('student-next').addEventListener('click', function () { if (studentQuiz.quiz && studentQuiz.currentIndex < studentQuiz.quiz.questions.length - 1) { studentQuiz.currentIndex++; renderQuestion(); } });
+      document.getElementById('student-submit-btn').addEventListener('click', function () { submitQuiz(); });
+    </script>
+  
+</body></html>

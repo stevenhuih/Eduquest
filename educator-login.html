@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduQuest - Educator Login</title>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet">
+<style>
+:root {
+--font-family: 'Nunito', sans-serif;
+}
+body {
+font-family: var(--font-family);
+background-color: #F8FAFC;
+color: #334155;
+-webkit-font-smoothing: antialiased;
+}
+/* --- Backgrounds --- */
+.page-bg {
+position: fixed;
+inset: 0;
+z-index: -50;
+background:
+radial-gradient(circle at 0% 0%, rgba(224, 231, 255, 0.4) 0%, transparent 50%),
+radial-gradient(circle at 100% 100%, rgba(250, 232, 255, 0.4) 0%, transparent 50%),
+linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
+}
+.bg-grid-pattern {
+position: fixed;
+inset: 0;
+z-index: -49;
+opacity: 0.3;
+background-image:
+linear-gradient(rgba(203, 213, 225, 0.3) 1px, transparent 1px),
+linear-gradient(90deg, rgba(203, 213, 225, 0.3) 1px, transparent 1px);
+background-size: 40px 40px;
+mask-image: radial-gradient(circle at 50% 50%, black 40%, transparent 80%);
+-webkit-mask-image: radial-gradient(circle at 50% 50%, black 40%, transparent 80%);
+}
+/* --- Floating Animations --- */
+@keyframes float-slow {
+0%, 100% { transform: translateY(0px) rotate(0deg); }
+50% { transform: translateY(-15px) rotate(2deg); }
+}
+@keyframes float-medium {
+0%, 100% { transform: translateY(0px); }
+50% { transform: translateY(-10px); }
+}
+.animate-float-slow { animation: float-slow 8s ease-in-out infinite; }
+.animate-float-medium { animation: float-medium 5s ease-in-out infinite; }
+/* --- Glass Card --- */
+.glass-card {
+background: rgba(255, 255, 255, 0.75);
+backdrop-filter: blur(24px);
+-webkit-backdrop-filter: blur(24px);
+border: 1px solid rgba(255, 255, 255, 0.8);
+box-shadow:
+0 20px 25px -5px rgba(0, 0, 0, 0.05),
+0 8px 10px -6px rgba(0, 0, 0, 0.01),
+inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+}
+/* --- Form Elements --- */
+.input-group { position: relative; }
+.input-field {
+transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.input-field:focus {
+box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+border-color: #818CF8;
+}
+/* Floating Label Logic */
+.input-field:placeholder-shown + .input-label {
+top: 1rem; /* center vertically roughly */
+font-size: 0.875rem;
+color: #94A3B8;
+transform: translateY(0);
+}
+.input-field:not(:placeholder-shown) + .input-label,
+.input-field:focus + .input-label {
+top: -0.6rem;
+font-size: 0.75rem;
+color: #6366F1;
+background-color: rgba(255,255,255,0.9);
+padding: 0 4px;
+border-radius: 4px;
+margin-left: -4px;
+}
+/* Custom Checkbox */
+.custom-checkbox {
+appearance: none;
+background-color: #fff;
+margin: 0;
+font: inherit;
+color: currentColor;
+width: 1.15em;
+height: 1.15em;
+border: 1px solid #CBD5E1;
+border-radius: 0.35em;
+display: grid;
+place-content: center;
+transition: all 0.2s ease;
+}
+.custom-checkbox::before {
+content: "";
+width: 0.65em;
+height: 0.65em;
+transform: scale(0);
+transition: 120ms transform ease-in-out;
+box-shadow: inset 1em 1em white;
+background-color: white;
+transform-origin: center;
+clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+}
+.custom-checkbox:checked {
+background-color: #6366F1;
+border-color: #6366F1;
+}
+.custom-checkbox:checked::before {
+transform: scale(1);
+}
+.custom-checkbox:focus {
+box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+border-color: #818CF8;
+}
+/* --- Entrance Animations --- */
+.fade-in-up {
+animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+opacity: 0;
+transform: translateY(20px);
+}
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+@keyframes fadeInUp {
+from { opacity: 0; transform: translateY(20px); }
+to { opacity: 1; transform: translateY(0); }
+}
+</style>
+<link id="all-fonts-link-font-geist" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-geist">.font-geist { font-family: 'Geist', sans-serif !important; }</style><link id="all-fonts-link-font-roboto" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-roboto">.font-roboto { font-family: 'Roboto', sans-serif !important; }</style><link id="all-fonts-link-font-montserrat" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-montserrat">.font-montserrat { font-family: 'Montserrat', sans-serif !important; }</style><link id="all-fonts-link-font-poppins" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-poppins">.font-poppins { font-family: 'Poppins', sans-serif !important; }</style><link id="all-fonts-link-font-playfair" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;900&amp;display=swap"><style id="all-fonts-style-font-playfair">.font-playfair { font-family: 'Playfair Display', serif !important; }</style><link id="all-fonts-link-font-instrument-serif" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:wght@400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-instrument-serif">.font-instrument-serif { font-family: 'Instrument Serif', serif !important; }</style><link id="all-fonts-link-font-merriweather" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&amp;display=swap"><style id="all-fonts-style-font-merriweather">.font-merriweather { font-family: 'Merriweather', serif !important; }</style><link id="all-fonts-link-font-bricolage" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-bricolage">.font-bricolage { font-family: 'Bricolage Grotesque', sans-serif !important; }</style><link id="all-fonts-link-font-jakarta" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap"><style id="all-fonts-style-font-jakarta">.font-jakarta { font-family: 'Plus Jakarta Sans', sans-serif !important; }</style><link id="all-fonts-link-font-manrope" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap"><style id="all-fonts-style-font-manrope">.font-manrope { font-family: 'Manrope', sans-serif !important; }</style><link id="all-fonts-link-font-space-grotesk" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-space-grotesk">.font-space-grotesk { font-family: 'Space Grotesk', sans-serif !important; }</style><link id="all-fonts-link-font-work-sans" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700;800&amp;display=swap"><style id="all-fonts-style-font-work-sans">.font-work-sans { font-family: 'Work Sans', sans-serif !important; }</style><link id="all-fonts-link-font-pt-serif" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=PT+Serif:wght@400;700&amp;display=swap"><style id="all-fonts-style-font-pt-serif">.font-pt-serif { font-family: 'PT Serif', serif !important; }</style><link id="all-fonts-link-font-geist-mono" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-geist-mono">.font-geist-mono { font-family: 'Geist Mono', monospace !important; }</style><link id="all-fonts-link-font-space-mono" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&amp;display=swap"><style id="all-fonts-style-font-space-mono">.font-space-mono { font-family: 'Space Mono', monospace !important; }</style><link id="all-fonts-link-font-quicksand" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-quicksand">.font-quicksand { font-family: 'Quicksand', sans-serif !important; }</style>  <style>
+/* 3D Transform utilities */
+</style>
+<script>
+// Configure Tailwind to include our custom 3D transform utilities
+tailwind.config = {
+theme: {
+extend: {
+// Add any custom theme extensions here if needed
+}
+},
+plugins: [
+function({ addUtilities }) {
+const rotateXUtilities = {};
+const rotateYUtilities = {};
+const rotateZUtilities = {};
+const rotateValues = [0, 5, 10, 15, 20, 30, 45, 75];
+// Generate rotate-x utilities
+rotateValues.forEach((value) => {
+rotateXUtilities[`.rotate-x-${value}`] = {
+'--tw-rotate-x': `${value}deg`,
+transform: `
+translate3d(var(--tw-translate-x, 0), var(--tw-translate-y, 0), var(--tw-translate-z, 0))
+rotateX(var(--tw-rotate-x, 0))
+rotateY(var(--tw-rotate-y, 0))
+rotateZ(var(--tw-rotate-z, 0))
+skewX(var(--tw-skew-x, 0))
+skewY(var(--tw-skew-y, 0))
+scaleX(var(--tw-scale-x, 1))
+scaleY(var(--tw-scale-y, 1))
+`.replace(/\\s+/g, ' ').trim(),
+};
+if (value !== 0) {
+rotateXUtilities[`.-rotate-x-${value}`] = {
+'--tw-rotate-x': `-${value}deg`,
+transform: `
+translate3d(var(--tw-translate-x, 0), var(--tw-translate-y, 0), var(--tw-translate-z, 0))
+rotateX(var(--tw-rotate-x, 0))
+rotateY(var(--tw-rotate-y, 0))
+rotateZ(var(--tw-rotate-z, 0))
+skewX(var(--tw-skew-x, 0))
+skewY(var(--tw-skew-y, 0))
+scaleX(var(--tw-scale-x, 1))
+scaleY(var(--tw-scale-y, 1))
+`.replace(/\\s+/g, ' ').trim(),
+};
+}
+});
+// Generate rotate-y utilities
+rotateValues.forEach((value) => {
+rotateYUtilities[`.rotate-y-${value}`] = {
+'--tw-rotate-y': `${value}deg`,
+transform: `
+translate3d(var(--tw-translate-x, 0), var(--tw-translate-y, 0), var(--tw-translate-z, 0))
+rotateX(var(--tw-rotate-x, 0))
+rotateY(var(--tw-rotate-y, 0))
+rotateZ(var(--tw-rotate-z, 0))
+skewX(var(--tw-skew-x, 0))
+skewY(var(--tw-skew-y, 0))
+scaleX(var(--tw-scale-x, 1))
+scaleY(var(--tw-scale-y, 1))
+`.replace(/\\s+/g, ' ').trim(),
+};
+if (value !== 0) {
+rotateYUtilities[`.-rotate-y-${value}`] = {
+'--tw-rotate-y': `-${value}deg`,
+transform: `
+translate3d(var(--tw-translate-x, 0), var(--tw-translate-y, 0), var(--tw-translate-z, 0))
+rotateX(var(--tw-rotate-x, 0))
+rotateY(var(--tw-rotate-y, 0))
+rotateZ(var(--tw-rotate-z, 0))
+skewX(var(--tw-skew-x, 0))
+skewY(var(--tw-skew-y, 0))
+scaleX(var(--tw-scale-x, 1))
+scaleY(var(--tw-scale-y, 1))
+`.replace(/\\s+/g, ' ').trim(),
+};
+}
+});
+// Generate rotate-z utilities
+rotateValues.forEach((value) => {
+rotateZUtilities[`.rotate-z-${value}`] = {
+'--tw-rotate-z': `${value}deg`,
+transform: `
+translate3d(var(--tw-translate-x, 0), var(--tw-translate-y, 0), var(--tw-translate-z, 0))
+rotateX(var(--tw-rotate-x, 0))
+rotateY(var(--tw-rotate-y, 0))
+rotateZ(var(--tw-rotate-z, 0))
+skewX(var(--tw-skew-x, 0))
+skewY(var(--tw-skew-y, 0))
+scaleX(var(--tw-scale-x, 1))
+scaleY(var(--tw-scale-y, 1))
+`.replace(/\\s+/g, ' ').trim(),
+};
+if (value !== 0) {
+rotateZUtilities[`.-rotate-z-${value}`] = {
+'--tw-rotate-z': `-${value}deg`,
+transform: `
+translate3d(var(--tw-translate-x, 0), var(--tw-translate-y, 0), var(--tw-translate-z, 0))
+rotateX(var(--tw-rotate-x, 0))
+rotateY(var(--tw-rotate-y, 0))
+rotateZ(var(--tw-rotate-z, 0))
+skewX(var(--tw-skew-x, 0))
+skewY(var(--tw-skew-y, 0))
+scaleX(var(--tw-scale-x, 1))
+scaleY(var(--tw-scale-y, 1))
+`.replace(/\\s+/g, ' ').trim(),
+};
+}
+});
+// Perspective utilities
+const perspectiveUtilities = {
+".perspective-none": { perspective: "none" },
+".perspective-dramatic": { perspective: "100px" },
+".perspective-near": { perspective: "300px" },
+".perspective-normal": { perspective: "500px" },
+".perspective-midrange": { perspective: "800px" },
+".perspective-distant": { perspective: "1200px" },
+};
+// Transform style utilities
+const transformStyleUtilities = {
+".transform-style-preserve-3d": { "transform-style": "preserve-3d" },
+".transform-style-flat": { "transform-style": "flat" },
+};
+addUtilities({
+...rotateXUtilities,
+...rotateYUtilities,
+...rotateZUtilities,
+...perspectiveUtilities,
+...transformStyleUtilities,
+});
+}
+]
+};
+</script></head>
+<body class="relative min-h-screen flex flex-col justify-between overflow-x-hidden selection:bg-indigo-100 selection:text-indigo-900">
+
+    <!-- Background Layers -->
+    <div class="page-bg"></div>
+    <div class="bg-grid-pattern"></div>
+    
+    <!-- Ambient Shapes -->
+    <div class="fixed top-20 left-10 w-32 h-32 bg-purple-200/30 rounded-full blur-3xl animate-float-slow pointer-events-none"></div>
+    <div class="fixed bottom-20 right-10 w-64 h-64 bg-indigo-200/30 rounded-full blur-3xl animate-float-medium pointer-events-none"></div>
+    <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-tr from-sky-100/20 via-indigo-50/20 to-pink-50/20 rounded-full blur-[100px] pointer-events-none -z-10"></div>
+
+    <!-- Main Content Wrapper -->
+    <main class="flex-grow w-full max-w-7xl mx-auto px-6 lg:px-8 py-8 flex flex-col lg:flex-row items-center justify-center lg:justify-between gap-12 lg:gap-20">
+
+        <!-- Left Column: Brand & Story -->
+        <div class="w-full lg:w-1/2 space-y-10 fade-in-up">
+            
+            <!-- Brand -->
+            <div class="flex items-center gap-3">
+                <img src="assets/logo.png" alt="EduQuest" class="h-10 w-auto object-contain" />
+            </div>
+
+            <!-- Hero Text -->
+            <div class="space-y-6 relative">
+                <span class="inline-flex items-center gap-1.5 uppercase text-xs font-bold text-indigo-600 tracking-wider bg-indigo-50 border-indigo-100 border rounded-full pt-1 pr-3 pb-1 pl-3 shadow-sm"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-graduation-cap"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 0 6-3 6-7"></path></svg> Educator Login</span>
+                
+                <h1 class="text-4xl lg:text-5xl font-extrabold text-slate-800 tracking-tight leading-[1.15]">
+                    Welcome back to your <br class="hidden lg:block">
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500">Classroom Command Center.</span>
+                </h1>
+                
+                <p class="text-lg text-slate-500 font-medium leading-relaxed max-w-lg">
+                    Sign in to manage classes, track student adventures, and make learning feel like magic.
+                </p>
+
+                <!-- Benefit Chips -->
+                <div class="flex flex-wrap gap-3 pt-2">
+                    <div class="flex items-center gap-2 px-4 py-2 rounded-full bg-white/60 border border-slate-200/60 shadow-sm backdrop-blur-sm text-sm font-semibold text-slate-600">
+                        <div class="w-1.5 h-1.5 rounded-full bg-emerald-400"></div>
+                        Track Progress
+                    </div>
+                    <div class="flex items-center gap-2 px-4 py-2 rounded-full bg-white/60 border border-slate-200/60 shadow-sm backdrop-blur-sm text-sm font-semibold text-slate-600">
+                        <div class="w-1.5 h-1.5 rounded-full bg-amber-400"></div>
+                        Create Quizzes
+                    </div>
+                    <div class="flex items-center gap-2 px-4 py-2 rounded-full bg-white/60 border border-slate-200/60 shadow-sm backdrop-blur-sm text-sm font-semibold text-slate-600">
+                        <div class="w-1.5 h-1.5 rounded-full bg-purple-400"></div>
+                        Magic Reports
+                    </div>
+                </div>
+            </div>
+
+            <!-- Abstract Visual / Dashboard Tease -->
+            <div class="hidden lg:block relative h-48 w-full max-w-md perspective-1000">
+                <!-- Back Card -->
+                <div class="absolute top-4 left-8 w-full h-full bg-white rounded-2xl border border-slate-200 shadow-md opacity-60 scale-95 rotate-[-3deg]"></div>
+                <!-- Middle Card -->
+                <div class="absolute top-2 left-4 w-full h-full bg-white rounded-2xl border border-slate-200 shadow-lg opacity-80 scale-[0.98] rotate-[-1.5deg]"></div>
+                <!-- Front Card (Mock Dashboard Element) -->
+                <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-white to-slate-50 rounded-2xl border border-white shadow-xl flex flex-col p-5 overflow-hidden animate-float-medium">
+                   <div class="flex items-center justify-between mb-4 border-b border-slate-100 pb-3">
+                       <div class="flex gap-2">
+                           <div class="w-3 h-3 rounded-full bg-rose-400"></div>
+                           <div class="w-3 h-3 rounded-full bg-amber-400"></div>
+                           <div class="w-3 h-3 rounded-full bg-emerald-400"></div>
+                       </div>
+                       <div class="h-2 w-20 bg-slate-100 rounded-full"></div>
+                   </div>
+                   <div class="space-y-3">
+                       <div class="flex items-center gap-3 p-2 bg-indigo-50/50 rounded-lg">
+                           <div class="w-8 h-8 rounded bg-indigo-100 flex items-center justify-center text-indigo-500">
+                               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bar-chart-3"><path d="M3 3v18h18"></path><path d="M18 17V9"></path><path d="M13 17V5"></path><path d="M8 17v-3"></path></svg>
+                           </div>
+                           <div class="space-y-1">
+                               <div class="h-2 w-24 bg-slate-200 rounded-full"></div>
+                               <div class="h-1.5 w-16 bg-slate-100 rounded-full"></div>
+                           </div>
+                       </div>
+                       <div class="flex items-center gap-3 p-2">
+                            <div class="w-8 h-8 rounded bg-purple-100 flex items-center justify-center text-purple-500">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-users"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                            </div>
+                           <div class="space-y-1">
+                               <div class="h-2 w-32 bg-slate-200 rounded-full"></div>
+                               <div class="h-1.5 w-20 bg-slate-100 rounded-full"></div>
+                           </div>
+                       </div>
+                   </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Right Column: Login Card -->
+        <div class="w-full lg:w-[480px] relative z-10 fade-in-up delay-200">
+            
+            <!-- Decorative sparkle on card -->
+            <div class="absolute -top-6 -right-6 text-yellow-400 animate-pulse">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path></svg>
+            </div>
+
+            <div class="glass-card rounded-[2rem] p-8 md:p-10 relative overflow-hidden">
+                
+                <!-- Card Inner Glow -->
+                <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 opacity-80"></div>
+                <div class="absolute -top-[100px] -left-[100px] w-64 h-64 bg-indigo-100/50 rounded-full blur-3xl pointer-events-none"></div>
+
+                <!-- Card Header -->
+                <div class="relative mb-8">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h2 class="text-2xl font-bold text-slate-800">Educator Login</h2>
+                            <p class="text-sm text-slate-500 font-medium mt-1">Access your faculty dashboard.</p>
+                        </div>
+                        <div class="px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-500 text-[10px] font-extrabold uppercase tracking-widest">
+                            Portal
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Login Form -->
+                <form id="login-form" class="space-y-6">
+                    
+                    <!-- Email Field -->
+                    <div class="input-group">
+                        <div class="absolute left-4 top-[1.1rem] text-slate-400 pointer-events-none z-10">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mail"><rect width="20" height="16" x="2" y="4" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg>
+                        </div>
+                        <input type="email" id="email" class="input-field peer w-full bg-slate-50/50 border border-slate-200 rounded-xl pl-11 pr-4 pt-6 pb-2 text-sm font-semibold text-slate-700 outline-none placeholder-transparent" placeholder="Email Address">
+                        <label for="email" class="input-label absolute left-11 transition-all duration-200 pointer-events-none">Email Address</label>
+                    </div>
+
+                    <!-- Password Field -->
+                    <div class="input-group">
+                         <div class="absolute left-4 top-[1.1rem] text-slate-400 pointer-events-none z-10">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-lock"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        </div>
+                        <input type="password" id="password" class="input-field peer w-full bg-slate-50/50 border border-slate-200 rounded-xl pl-11 pr-11 pt-6 pb-2 text-sm font-semibold text-slate-700 outline-none placeholder-transparent" placeholder="Password">
+                        <label for="password" class="input-label absolute left-11 transition-all duration-200 pointer-events-none">Password</label>
+                        
+                        <!-- Toggle Password Visibility -->
+                        <button type="button" class="absolute right-4 top-[1.1rem] text-slate-400 hover:text-indigo-500 transition-colors cursor-pointer" onclick="togglePassword()">
+                            <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                            <svg id="eye-off-icon" class="hidden" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"></path><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"></path><line x1="2" x2="22" y1="2" y2="22"></line></svg>
+                        </button>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="group relative w-full flex items-center justify-center gap-2 py-3.5 px-4 border border-transparent rounded-xl text-sm font-bold text-white bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 transform hover:scale-[1.02] shadow-lg shadow-indigo-200/50">
+                        <span>Sign In</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right transition-transform group-hover:translate-x-1"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        <!-- Button Glow Effect -->
+                        <div class="absolute inset-0 rounded-xl bg-white opacity-0 group-hover:opacity-10 transition-opacity"></div>
+                    </button>
+
+                </form>
+
+                <!-- Footer Links inside Card -->
+                <div class="mt-8 pt-6 border-t border-slate-100 text-center space-y-4">
+                    <p class="text-xs font-medium text-slate-400">
+                        Need an account? 
+                        <a href="#" class="text-indigo-600 font-bold hover:underline">Contact Administrator</a>
+                    </p>
+                    
+                    <div class="flex flex-wrap items-center justify-center gap-2">
+                        <a href="student-login.html" class="inline-flex items-center gap-1.5 hover:text-slate-600 transition-colors hover:bg-white hover:shadow-sm text-xs font-semibold text-slate-400 bg-slate-50 border-slate-200 border rounded-full pt-1.5 pr-3 pb-1.5 pl-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-backpack"><path d="M4 10a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"></path><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"></path><path d="M8 21v-5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v5"></path><path d="M8 10h8"></path><path d="M9 21v-2a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"></path></svg>
+                            Sign in as Student
+                        </a>
+                        <a href="educatoradmin-login.html" class="inline-flex items-center gap-1.5 hover:text-slate-600 transition-colors hover:bg-white hover:shadow-sm text-xs font-semibold text-slate-400 bg-slate-50 border-slate-200 border rounded-full pt-1.5 pr-3 pb-1.5 pl-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-cog"><circle cx="12" cy="8" r="5"></circle><path d="M20 21a8 8 0 0 0-16 0"></path><path d="M12 12v4"></path><path d="M12 16h.01"></path></svg>
+                            Sign in as educator admin
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Page Footer -->
+    <footer class="w-full py-6 text-center z-10 fade-in-up delay-300">
+        <div class="flex flex-col gap-2">
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">© 2026 EduQuest. All rights reserved.</p>
+            <div class="flex justify-center gap-4 text-xs font-semibold text-slate-400/80">
+                <a href="#" class="hover:text-indigo-500 transition-colors">Privacy</a>
+                <span>·</span>
+                <a href="#" class="hover:text-indigo-500 transition-colors">Terms</a>
+                <span>·</span>
+                <a href="#" class="hover:text-indigo-500 transition-colors">Help Center</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+      const API_BASE = '/api';
+      lucide.createIcons();
+
+      function togglePassword() {
+          const passwordInput = document.getElementById('password');
+          const eyeIcon = document.getElementById('eye-icon');
+          const eyeOffIcon = document.getElementById('eye-off-icon');
+          
+          if (passwordInput.type === 'password') {
+              passwordInput.type = 'text';
+              eyeIcon.classList.add('hidden');
+              eyeOffIcon.classList.remove('hidden');
+          } else {
+              passwordInput.type = 'password';
+              eyeIcon.classList.remove('hidden');
+              eyeOffIcon.classList.add('hidden');
+          }
+      }
+
+      document.getElementById("login-form").addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value.trim();
+
+        if (!email || !password) {
+          alert("Please enter email and password");
+          return;
+        }
+
+        try {
+          const res = await fetch(API_BASE + "/educators/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password })
+          });
+
+          const data = await res.json().catch(() => ({}));
+
+          if (!res.ok) {
+            throw new Error(data.error || "Login failed");
+          }
+
+          localStorage.removeItem('studentId');
+          localStorage.removeItem('educatorId');
+          localStorage.removeItem('adminId');
+          localStorage.removeItem('platformAdminId');
+          localStorage.removeItem('role');
+          localStorage.removeItem('userId');
+          localStorage.setItem('role', 'educator');
+          localStorage.setItem('userId', data.id);
+          localStorage.setItem("educatorName", data.name);
+
+          window.location.href = "educator-dashboard.html";
+
+        } catch (err) {
+          console.error("Login error:", err);
+          alert(err.message || "Login failed");
+        }
+      });
+    </script>
+
+</body></html>

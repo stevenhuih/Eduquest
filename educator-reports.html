@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduQuest - Reports Center</title>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="js/api.js"></script>
+<script src="js/educator-navbar.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+:root {
+--font-body: 'Nunito', sans-serif;
+--font-heading: 'Plus Jakarta Sans', sans-serif;
+}
+body {
+font-family: var(--font-body);
+-webkit-font-smoothing: antialiased;
+background-color: #F8FAFC;
+overflow-x: hidden;
+}
+/* ANIMATED BACKGROUND */
+.cinematic-bg {
+position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -50;
+background: radial-gradient(circle at 15% 15%, rgba(224, 231, 255, 0.4) 0%, transparent 40%),
+radial-gradient(circle at 85% 10%, rgba(255, 228, 230, 0.4) 0%, transparent 40%),
+radial-gradient(circle at 50% 50%, rgba(240, 249, 255, 0.5) 0%, transparent 50%),
+radial-gradient(circle at 80% 90%, rgba(220, 252, 231, 0.3) 0%, transparent 40%);
+background-size: 150% 150%;
+animation: breathe 15s ease-in-out infinite alternate;
+}
+.cinematic-grid {
+position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -49;
+background-image: radial-gradient(#6366f1 0.7px, transparent 0.7px);
+background-size: 24px 24px;
+opacity: 0.08;
+mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+}
+/* GLASSMORPHISM UTILITIES */
+.glass-panel {
+background: rgba(255, 255, 255, 0.75);
+backdrop-filter: blur(16px);
+-webkit-backdrop-filter: blur(16px);
+border: 1px solid rgba(255, 255, 255, 0.9);
+box-shadow: 0 4px 20px -2px rgba(99, 102, 241, 0.05), 0 10px 40px -10px rgba(99, 102, 241, 0.05);
+}
+.glass-card-hover {
+transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.glass-card-hover:hover {
+transform: translateY(-4px) scale(1.005);
+background: rgba(255, 255, 255, 0.95);
+box-shadow: 0 12px 30px -5px rgba(99, 102, 241, 0.1);
+border-color: rgba(255, 255, 255, 1);
+}
+/* KEYFRAMES */
+@keyframes breathe {
+0% { transform: scale(1); }
+100% { transform: scale(1.05); }
+}
+@keyframes float {
+0%, 100% { transform: translateY(0px); }
+50% { transform: translateY(-10px); }
+}
+@keyframes pulse-glow {
+0%, 100% { box-shadow: 0 0 0 0px rgba(99, 102, 241, 0.2); }
+50% { box-shadow: 0 0 0 8px rgba(99, 102, 241, 0); }
+}
+@keyframes slide-up-fade {
+from { opacity: 0; transform: translateY(30px); }
+to { opacity: 1; transform: translateY(0); }
+}
+@keyframes gradient-x {
+0%, 100% { background-position: 0% 50%; }
+50% { background-position: 100% 50%; }
+}
+/* UTILITY CLASSES */
+.animate-float { animation: float 6s ease-in-out infinite; }
+.animate-float-delayed { animation: float 8s ease-in-out 1s infinite; }
+.animate-enter { animation: slide-up-fade 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; opacity: 0; }
+.animate-gradient { animation: gradient-x 3s ease infinite; }
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.font-heading { font-family: var(--font-heading); }
+/* Toggle Switch */
+.toggle-checkbox:checked { right: 0; border-color: #6366f1; }
+.toggle-checkbox:checked + .toggle-label { background-color: #6366f1; }
+/* Report Specific */
+.select-chevron {
+background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+background-position: right 0.75rem center;
+background-repeat: no-repeat;
+background-size: 1.2em 1.2em;
+}
+/* Segmented Control Animation */
+.segment-indicator {
+transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+/* Hide scrollbar for clean look in lists */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+</style>
+<link id="all-fonts-link-font-geist" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-geist">.font-geist { font-family: 'Geist', sans-serif !important; }</style><link id="all-fonts-link-font-roboto" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-roboto">.font-roboto { font-family: 'Roboto', sans-serif !important; }</style><link id="all-fonts-link-font-montserrat" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-montserrat">.font-montserrat { font-family: 'Montserrat', sans-serif !important; }</style><link id="all-fonts-link-font-poppins" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-poppins">.font-poppins { font-family: 'Poppins', sans-serif !important; }</style><link id="all-fonts-link-font-playfair" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;900&amp;display=swap"><style id="all-fonts-style-font-playfair">.font-playfair { font-family: 'Playfair Display', serif !important; }</style><link id="all-fonts-link-font-instrument-serif" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:wght@400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-instrument-serif">.font-instrument-serif { font-family: 'Instrument Serif', serif !important; }</style><link id="all-fonts-link-font-merriweather" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&amp;display=swap"><style id="all-fonts-style-font-merriweather">.font-merriweather { font-family: 'Merriweather', serif !important; }</style><link id="all-fonts-link-font-bricolage" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-bricolage">.font-bricolage { font-family: 'Bricolage Grotesque', sans-serif !important; }</style><link id="all-fonts-link-font-jakarta" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap"><style id="all-fonts-style-font-jakarta">.font-jakarta { font-family: 'Plus Jakarta Sans', sans-serif !important; }</style><link id="all-fonts-link-font-manrope" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap"><style id="all-fonts-style-font-manrope">.font-manrope { font-family: 'Manrope', sans-serif !important; }</style><link id="all-fonts-link-font-space-grotesk" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-space-grotesk">.font-space-grotesk { font-family: 'Space Grotesk', sans-serif !important; }</style><link id="all-fonts-link-font-work-sans" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700;800&amp;display=swap"><style id="all-fonts-style-font-work-sans">.font-work-sans { font-family: 'Work Sans', sans-serif !important; }</style><link id="all-fonts-link-font-pt-serif" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=PT+Serif:wght@400;700&amp;display=swap"><style id="all-fonts-style-font-pt-serif">.font-pt-serif { font-family: 'PT Serif', serif !important; }</style><link id="all-fonts-link-font-geist-mono" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-geist-mono">.font-geist-mono { font-family: 'Geist Mono', monospace !important; }</style><link id="all-fonts-link-font-space-mono" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&amp;display=swap"><style id="all-fonts-style-font-space-mono">.font-space-mono { font-family: 'Space Mono', monospace !important; }</style><link id="all-fonts-link-font-quicksand" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-quicksand">.font-quicksand { font-family: 'Quicksand', sans-serif !important; }</style></head>
+<body class="selection:bg-indigo-200 selection:text-indigo-900 pb-20 text-slate-600">
+
+    <!-- GLOBAL ATMOSPHERE -->
+    <div class="cinematic-bg"></div>
+    <div class="cinematic-grid"></div>
+
+    <!-- NAVIGATION -->
+    <nav class="fixed top-0 w-full z-40 pt-4 pb-2 px-4 transition-all duration-300">
+      <div class="max-w-7xl mx-auto glass-panel rounded-full px-4 py-3 flex items-center justify-between">
+        <!-- Brand -->
+        <div class="flex items-center gap-3 pl-2">
+          <img src="assets/logo.png" alt="EduQuest" class="h-9 w-auto object-contain" />
+        </div>
+
+        <!-- Links (Educator Context) -->
+        <div class="hidden md:flex items-center gap-1 p-1 rounded-full border bg-slate-100/50 border-slate-200/50">
+          <a href="educator-dashboard.html" class="transition-all hover:text-indigo-600 hover:bg-white/60 text-sm font-semibold text-slate-500 rounded-full pt-2 pr-5 pb-2 pl-5">Dashboard</a>
+          <a href="educator-class.html" class="transition-all hover:text-indigo-600 hover:bg-white/60 text-sm font-semibold text-slate-500 rounded-full pt-2 pr-5 pb-2 pl-5">My Classes</a>
+          <a href="educator-reports.html" class="text-sm font-bold text-indigo-600 bg-white border-slate-200/60 border rounded-full pt-2 pr-5 pb-2 pl-5 shadow-sm">Reports</a>
+        </div>
+
+        <!-- Profile -->
+        <div class="flex items-center gap-4 pr-2">
+            <button class="relative p-2 hover:text-indigo-500 transition-colors text-slate-400">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bell"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" class=""></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+                <span class="absolute top-2 right-2.5 w-2 h-2 bg-rose-500 rounded-full border border-white"></span>
+            </button>
+            <div class="hidden sm:flex flex-col items-end">
+                <span id="navbar-educator-name" class="text-xs font-bold font-heading text-slate-700"></span>
+                <span id="navbar-role-badge" class="text-[10px] font-bold text-indigo-500 rounded-full pt-0.5 pr-2 pb-0.5 pl-2 bg-indigo-50">Educator</span>
+            </div>
+            <div class="cursor-pointer transition-all hover:ring-indigo-100 bg-white w-10 h-10 border-indigo-100 border-2 ring-transparent ring-2 rounded-full pt-0.5 pr-0.5 pb-0.5 pl-0.5 relative" onclick="window.location.href='educator-profile.html'" role="button">
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Frizzle&amp;backgroundColor=e0e7ff" alt="Profile" class="w-full h-full object-cover rounded-full">
+            </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="w-full relative z-10">
+        
+        <!-- 1. HEADER SECTION -->
+        <header class="relative pt-32 pb-24 overflow-hidden">
+            <!-- Background atmosphere -->
+            <div class="absolute inset-0 bg-gradient-to-b from-indigo-50/50 via-white to-transparent"></div>
+            <div class="blur-[100px] animate-float bg-sky-200/20 w-[500px] h-[500px] rounded-full absolute top-20 right-0"></div>
+            <div class="absolute bottom-0 left-10 w-[300px] h-[300px] bg-purple-200/20 rounded-full blur-[80px] animate-float-delayed"></div>
+
+            <div class="flex flex-col md:flex-row animate-enter max-w-7xl z-10 mr-auto ml-auto pr-6 pl-6 relative gap-x-8 gap-y-8 items-end justify-between">
+                <div class="max-w-2xl">
+                    <div class="inline-flex text-[11px] uppercase font-extrabold text-indigo-600 tracking-widest bg-white/80 border-indigo-100 border rounded-full mb-6 pt-1.5 pr-3 pb-1.5 pl-3 shadow-sm backdrop-blur-sm gap-x-2 gap-y-2 items-center">
+                        Reports Center
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" class="animate-pulse"><path d="M12 2v20M2 12h20"></path></svg>
+                    </div>
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight font-heading text-slate-900 mb-4 leading-[1.1]">
+                        Reports Center
+                    </h1>
+                    <p class="text-lg text-slate-500 font-medium max-w-lg leading-relaxed">
+                        Generate insights for classes and individual students, then share them when ready.
+                    </p>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    
+                </div>
+            </div>
+        </header>
+
+        <!-- 2. REPORT BUILDER PANEL -->
+        <section class="max-w-7xl mx-auto px-6 -mt-10 relative z-20 animate-enter delay-100">
+            <div class="glass-panel rounded-3xl p-8 border border-white shadow-2xl shadow-indigo-100/50 backdrop-blur-xl bg-white/70">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                    
+                    <!-- Left: Configuration Form -->
+                    <div class="lg:col-span-2 space-y-8">
+                        
+                        <!-- Segmented Toggle (Class vs Student) -->
+                        <div class="relative w-full bg-slate-100/80 p-1.5 rounded-2xl flex border border-slate-200">
+                            <!-- JS will move this pill -->
+                            <div id="segment-pill" class="absolute top-1.5 left-1.5 bottom-1.5 w-[calc(50%-6px)] bg-white rounded-xl shadow-sm border border-slate-100 segment-indicator z-0"></div>
+                            
+                            <button id="btn-class" onclick="toggleReportType('class')" class="relative z-10 w-1/2 text-sm font-bold text-indigo-600 py-3 rounded-xl transition-colors focus:outline-none flex items-center justify-center gap-2">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                                Class Report
+                            </button>
+                            <button id="btn-student" onclick="toggleReportType('student')" class="relative z-10 w-1/2 text-sm font-bold text-slate-500 hover:text-indigo-500 py-3 rounded-xl transition-colors focus:outline-none flex items-center justify-center gap-2">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                                Individual Student Report
+                            </button>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Report Type -->
+                            <div class="space-y-2">
+                                <label class="text-xs font-bold text-slate-600 ml-1">Report Type</label>
+                                <div class="relative">
+                                    <select class="select-chevron appearance-none w-full bg-white border border-slate-200 text-slate-700 text-sm font-semibold rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm">
+                                        <option>Overview &amp; Summary</option>
+                                        <option>Quiz Performance</option>
+                                        <option>Challenge Performance</option>
+                                        <option>Engagement Analytics</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <!-- Class Select -->
+                            <div class="space-y-2">
+                                <label class="text-xs font-bold text-slate-600 ml-1">Class</label>
+                                <div class="relative">
+                                    <select id="class-select" class="select-chevron appearance-none w-full bg-white border border-slate-200 text-slate-700 text-sm font-semibold rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm">
+                                        <option value="">Select a class</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Student Select (Hidden by default) -->
+                            <div id="student-select-group" class="space-y-2 md:col-span-2 hidden">
+                                <label class="text-xs font-bold text-slate-600 ml-1">Student</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                                    </div>
+                                    <select id="student-select" class="select-chevron appearance-none w-full bg-white border border-slate-200 text-slate-700 text-sm font-semibold rounded-xl pl-10 pr-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm">
+                                        <option value="">Select a student</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Right: Actions -->
+                    <div class="flex flex-col border-slate-100 border-l pt-10 pr-0 pb-15 pl-0 gap-x-4 justify-center gap-y-10 lg:pl-10 lg:pr-10 lg:pb-0">
+    <div class="relative overflow-hidden rounded-2xl border border-indigo-100 bg-gradient-to-br from-indigo-50/80 via-white to-white p-5 shadow-[0_2px_10px_-4px_rgba(99,102,241,0.1)]">
+        <div class="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-indigo-500/5 blur-2xl"></div>
+        <div class="relative flex gap-4">
+            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white text-indigo-600 shadow-sm ring-1 ring-indigo-50">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-send"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg>
+            </div>
+            <div class="">
+                <h4 class="mb-1.5 text-[11px] font-bold uppercase tracking-wider text-indigo-600">Delivery Insight</h4>
+                <p class="text-xs font-medium leading-relaxed text-slate-600">
+                    You'll be able to send this report directly to <span id="delivery-text" class="font-bold text-slate-800 underline decoration-indigo-300 decoration-wavy underline-offset-2 transition-colors hover:text-indigo-700">parents or students</span> after generating it.
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="space-y-3">
+        <button id="btn-generate-report" class="group relative flex w-full items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 py-4 text-sm font-bold text-white shadow-xl shadow-indigo-500/30 transition-all hover:-translate-y-0.5 hover:shadow-indigo-500/40 active:scale-[0.98]">
+            <div class="absolute inset-0 rounded-2xl bg-white/10 opacity-0 transition-opacity group-hover:opacity-100"></div>
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sparkles"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path></svg>
+            <span>Generate Report</span>
+            </button>
+    </div>
+</div>
+                </div>
+            </div>
+        </section>
+
+        <div class="flex flex-col lg:flex-row gap-8 max-w-7xl mx-auto px-6 py-10 relative z-10">
+            
+            <!-- 3. REPORT PREVIEW (Main Col) -->
+            <section class="flex-1 animate-enter delay-200">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-heading font-bold text-slate-800">Report Preview</h2>
+                    <span class="flex items-center gap-2 px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-[10px] font-extrabold uppercase tracking-wide">
+                        <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span> Auto-Generated
+                    </span>
+                </div>
+
+                <!-- Preview Paper (target for PDF export) -->
+                <div id="report-preview-panel" class="bg-white border border-slate-200 shadow-lg rounded-3xl p-8 relative overflow-hidden transition-all duration-500">
+                    <!-- Background pattern -->
+                    <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150 mix-blend-overlay pointer-events-none"></div>
+                    <div class="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-indigo-50 to-transparent rounded-bl-full opacity-50"></div>
+
+                    <!-- CLASS REPORT CONTENT (Visible by default) -->
+                    <div id="report-content-class" class="space-y-8">
+                        <!-- Header -->
+                        <div class="border-b border-slate-100 pb-6 flex flex-col md:flex-row justify-between gap-6">
+                            <div class="">
+                                <div class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Class Report</div>
+                                <h1 id="report-class-title" class="text-3xl font-heading font-extrabold text-slate-900 mb-1">—</h1>
+                                <p class="text-sm font-semibold text-slate-500">Overview &amp; Summary • <span id="report-class-range" class="text-indigo-600">—</span></p>
+                            </div>
+                            <div class="text-right">
+                                <div id="report-class-generated" class="inline-block px-3 py-1 rounded-lg bg-slate-100 text-xs font-bold text-slate-600">—</div>
+                            </div>
+                        </div>
+
+                        <!-- Metrics -->
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div class="p-4 rounded-2xl bg-indigo-50/50 border border-indigo-100">
+                                <span class="text-[10px] font-bold text-indigo-400 uppercase tracking-wider">Avg Score</span>
+                                <div id="report-avg-score" class="text-3xl font-heading font-extrabold text-indigo-900 mt-1">—</div>
+                            </div>
+                            <div class="p-4 rounded-2xl bg-fuchsia-50/50 border border-fuchsia-100">
+                                <span class="text-[10px] font-bold text-fuchsia-400 uppercase tracking-wider">Participation</span>
+                                <div id="report-participation" class="text-3xl font-heading font-extrabold text-fuchsia-900 mt-1">—</div>
+                            </div>
+                            <div class="p-4 rounded-2xl bg-amber-50/50 border border-amber-100">
+                                <span class="text-[10px] font-bold text-amber-500 uppercase tracking-wider">Challenges</span>
+                                <div id="report-challenges" class="text-3xl font-heading font-extrabold text-amber-900 mt-1">—</div>
+                            </div>
+                            <div class="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-100">
+                                <span class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">Total XP</span>
+                                <div id="report-total-xp" class="text-3xl font-heading font-extrabold text-emerald-900 mt-1">—</div>
+                            </div>
+                        </div>
+
+                        <!-- Content Grid -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <!-- Engagement Graph -->
+                            <div class="md:col-span-2 p-5 rounded-2xl border border-slate-100 bg-white shadow-sm">
+                                <h4 class="font-bold text-slate-700 text-xs uppercase tracking-wide mb-4">Engagement Activity</h4>
+                                <div class="h-48 w-full">
+                                    <canvas id="engagement-chart" width="400" height="180"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- Leaderboard -->
+                            <div class="p-5 rounded-2xl border border-slate-100 bg-white shadow-sm flex flex-col">
+                                <h4 class="font-bold text-slate-700 text-xs uppercase tracking-wide mb-4">Top Performers</h4>
+                                <div id="report-top-performers" class="space-y-3 flex-1">
+                                    <p class="text-xs text-slate-400">Generate a report to see top performers.</p>
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STUDENT REPORT CONTENT (Hidden by default) -->
+                    <div id="report-content-student" class="space-y-8 hidden">
+                        <!-- Header -->
+                        <div class="border-b border-slate-100 pb-6 flex flex-col md:flex-row items-start md:items-end justify-between gap-6">
+                            <div class="flex items-center gap-4">
+                                <div class="w-16 h-16 rounded-full p-1 border-2 border-indigo-100 bg-white">
+                                    <img id="report-student-avatar" src="https://api.dicebear.com/7.x/notionists/svg?seed=student" class="w-full h-full rounded-full bg-slate-50" alt="">
+                                </div>
+                                <div>
+                                    <div class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Student Report</div>
+                                    <h1 id="report-student-name" class="text-3xl font-heading font-extrabold text-slate-900">—</h1>
+                                    <div class="text-sm font-semibold text-slate-500 mt-1" id="report-student-meta">—</div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div id="report-student-generated" class="inline-block px-3 py-1 rounded-lg bg-slate-100 text-xs font-bold text-slate-600">—</div>
+                            </div>
+                        </div>
+
+                        <!-- Metrics -->
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div class="p-4 rounded-2xl bg-indigo-50/50 border border-indigo-100">
+                                <span class="text-[10px] font-bold text-indigo-400 uppercase tracking-wider">Total XP</span>
+                                <div id="report-student-xp" class="text-3xl font-heading font-extrabold text-indigo-900 mt-1">—</div>
+                            </div>
+                            <div class="p-4 rounded-2xl bg-orange-50/50 border border-orange-100">
+                                <span class="text-[10px] font-bold text-orange-400 uppercase tracking-wider">Current Streak</span>
+                                <div id="report-student-streak" class="text-3xl font-heading font-extrabold text-orange-900 mt-1 flex items-center gap-1">— <span class="text-base">🔥</span></div>
+                            </div>
+                            <div class="p-4 rounded-2xl bg-sky-50/50 border border-sky-100">
+                                <span class="text-[10px] font-bold text-sky-500 uppercase tracking-wider">Quizzes</span>
+                                <div id="report-student-quizzes" class="text-3xl font-heading font-extrabold text-sky-900 mt-1">—</div>
+                            </div>
+                            <div class="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-100">
+                                <span class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">Growth</span>
+                                <div id="report-student-growth" class="text-3xl font-heading font-extrabold text-emerald-900 mt-1">—</div>
+                            </div>
+                        </div>
+
+                        <!-- Content Grid -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Recent Scores -->
+                            <div class="p-5 rounded-2xl border border-slate-100 bg-white shadow-sm">
+                                <h4 class="font-bold text-slate-700 text-xs uppercase tracking-wide mb-4">Recent Quiz Scores</h4>
+                                <div id="report-student-scores" class="space-y-3">
+                                    <p class="text-xs text-slate-400">Generate a report to see recent scores.</p>
+                                        </div>
+                                    </div>
+
+                            <!-- Strengths / Weaknesses -->
+                            <div class="p-5 rounded-2xl border border-slate-100 bg-white shadow-sm">
+                                <h4 class="font-bold text-slate-700 text-xs uppercase tracking-wide mb-4">Strengths &amp; Weaknesses</h4>
+                                <div id="report-student-strengths-weaknesses" class="space-y-3">
+                                    <p class="text-xs text-slate-400">Generate a report to see strengths and areas to improve.</p>
+                                        </div>
+                                    </div>
+
+                            <!-- Weakest topics -->
+                            <div class="p-5 rounded-2xl border border-slate-100 bg-white shadow-sm">
+                                <h4 class="font-bold text-slate-700 text-xs uppercase tracking-wide mb-4">Weakest Topics</h4>
+                                <div id="report-student-weakest-topics" class="space-y-2">
+                                    <p class="text-xs text-slate-400">Generate a report to see weakest topics.</p>
+                                        </div>
+                                    </div>
+
+                            <!-- Recommended practice -->
+                            <div class="p-5 rounded-2xl border border-amber-100 bg-amber-50/50 shadow-sm">
+                                <h4 class="font-bold text-amber-800 text-xs uppercase tracking-wide mb-4">Recommended Practice</h4>
+                                <div id="report-student-recommendations" class="space-y-2">
+                                    <p class="text-xs text-slate-500">Generate a report to see recommendations.</p>
+                                </div>
+                            </div>
+
+                            <!-- Progress trend -->
+                            <div class="p-5 rounded-2xl border border-slate-100 bg-white shadow-sm md:col-span-2">
+                                <h4 class="font-bold text-slate-700 text-xs uppercase tracking-wide mb-4">Progress Trend</h4>
+                                <div id="report-student-progress-trend" class="flex flex-wrap items-center gap-4">
+                                    <p class="text-xs text-slate-400">Generate a report to see progress trend.</p>
+                                        </div>
+                                        </div>
+                        </div>
+                    </div>
+
+                    <!-- AI Insight Box (Shared) -->
+                    <div id="report-insight-box" class="mt-6 rounded-2xl p-6 bg-gradient-to-r from-violet-50 to-fuchsia-50 border border-violet-100 relative overflow-hidden group">
+                        <div class="absolute top-0 right-0 p-8 opacity-10 text-violet-600 group-hover:scale-110 transition-transform duration-700">
+                            <svg width="64" height="64" viewBox="0 0 24 24" fill="currentColor"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path></svg>
+                        </div>
+                        <div class="flex flex-col sm:flex-row gap-4 relative z-10">
+                            <div class="w-10 h-10 rounded-xl bg-white shadow-sm text-violet-600 flex items-center justify-center shrink-0 animate-float">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path></svg>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center gap-4 mb-2 border-b border-violet-200/50 pb-2">
+                                    <span class="text-xs font-bold text-violet-800 uppercase tracking-wide">Insight</span>
+                                </div>
+                                <p id="report-insight-text" class="text-sm font-medium text-slate-700 leading-relaxed">
+                                    Generate a report to see insights and recommendations.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. SIDEBAR: SEND/EXPORT (Context Aware) -->
+            <aside class="w-full lg:w-80 space-y-6 animate-enter delay-300">
+                
+                <!-- CLASS MODE: Export Card -->
+                <div id="action-card-class" class="bg-white border border-slate-200 shadow-md rounded-2xl p-6">
+                    <h3 class="font-bold font-heading text-slate-800 text-lg mb-4">Export Report</h3>
+                    <p class="text-xs text-slate-500 mb-6">Share this overview with the class or save for records.</p>
+                    
+                    <div class="space-y-3">
+                        <button type="button" onclick="downloadReportPDF()" class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl border border-slate-200 bg-white hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600 transition-all text-sm font-bold text-slate-600 shadow-sm group">
+                            <svg class="group-hover:scale-110 transition-transform" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline><path d="M12 18v-6"></path><path d="m9 15 3 3 3-3"></path></svg>
+                            Download PDF
+                        </button>
+                        <button type="button" onclick="exportReportCSV()" class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl border border-slate-200 bg-white hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-600 transition-all text-sm font-bold text-slate-600 shadow-sm group">
+                            <svg class="group-hover:scale-110 transition-transform" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect><line x1="12" x2="12" y1="3" y2="21"></line><path d="M7.5 8h9"></path><path d="M7.5 16h9"></path></svg>
+                            Export CSV
+                        </button>
+                    </div>
+                </div>
+
+                <!-- STUDENT MODE: Send Card (Hidden by default) -->
+                <div id="action-card-student" class="bg-white border border-slate-200 shadow-md rounded-2xl p-6 hidden">
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="p-2 bg-indigo-50 text-indigo-600 rounded-lg">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" x2="11" y1="2" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                        </div>
+                        <h3 class="font-bold font-heading text-slate-800 text-lg">Send to Student</h3>
+                    </div>
+                    <p class="text-xs text-slate-500 mb-4">Report will be sent to the student's EduQuest Inbox. Generate a report first, then send.</p>
+                    <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl mb-6 border border-slate-100">
+                        <span id="send-student-name" class="text-sm font-bold text-slate-800">—</span>
+                        </div>
+                    <div class="flex items-center justify-between p-3 rounded-xl border border-slate-200 bg-indigo-50/50 border-indigo-100 mb-6">
+                                <span class="text-sm font-bold text-slate-700">EduQuest Inbox</span>
+                        <span class="text-xs font-semibold text-indigo-600">✓ Included</span>
+                        </div>
+                    <button type="button" id="btn-send-report" class="w-full py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold shadow-lg shadow-indigo-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 group">
+                            <span>Send Report</span>
+                            <svg class="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" x2="11" y1="2" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                    </button>
+                    <div class="border-t border-slate-100 pt-4 mt-4 space-y-3">
+                            <div class="text-xs font-bold text-slate-500 uppercase">Export</div>
+                            <button type="button" onclick="downloadReportPDF()" class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl border border-slate-200 bg-white hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600 transition-all text-sm font-bold text-slate-600 shadow-sm group">
+                                <svg class="group-hover:scale-110 transition-transform" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline><path d="M12 18v-6"></path><path d="m9 15 3 3 3-3"></path></svg>
+                                Download PDF
+                            </button>
+                            <button type="button" onclick="exportReportCSV()" class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl border border-slate-200 bg-white hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-600 transition-all text-sm font-bold text-slate-600 shadow-sm group">
+                                <svg class="group-hover:scale-110 transition-transform" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect><line x1="12" x2="12" y1="3" y2="21"></line><path d="M7.5 8h9"></path><path d="M7.5 16h9"></path></svg>
+                                Export CSV
+                        </button>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+
+        <!-- 5. SAVED REPORTS LIBRARY -->
+        
+
+    </main>
+
+    <!-- Toast for Send Report feedback -->
+    <div id="report-toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 px-6 py-3 rounded-xl bg-emerald-600 text-white text-sm font-bold shadow-lg z-50 hidden transition-opacity duration-300">
+      Report sent to student inbox.
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="py-12 border-t mt-10 relative z-10 bg-slate-900 text-slate-300 border-slate-800">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+          <div class="space-y-4">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-indigo-600 text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-compass w-5 h-5">
+                  <path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z"></path>
+                  <circle cx="12" cy="12" r="10"></circle>
+                </svg>
+              </div>
+              <span class="text-lg font-bold tracking-tight text-white">EduQuest</span>
+            </div>
+            <p class="text-xs leading-relaxed font-medium max-w-xs text-slate-400">Making learning an addictive adventure for students around the world.</p>
+          </div>
+          <div class="">
+            <h4 class="font-bold mb-4 text-sm text-white">Product</h4>
+            <ul class="space-y-2 text-xs font-medium text-slate-400">
+              <li class=""><a href="#" class="transition-colors hover:text-indigo-400">Features</a></li>
+              <li><a href="#" class="transition-colors hover:text-indigo-400">Pricing</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="font-bold mb-4 text-sm text-white">Resources</h4>
+            <ul class="space-y-2 text-xs font-medium text-slate-400">
+              <li><a href="#" class="transition-colors hover:text-indigo-400">Help Center</a></li>
+              <li><a href="#" class="transition-colors hover:text-indigo-400">Community</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="font-bold mb-4 text-sm text-white">Legal</h4>
+            <ul class="space-y-2 text-xs font-medium text-slate-400">
+              <li><a href="#" class="transition-colors hover:text-indigo-400">Privacy</a></li>
+              <li><a href="#" class="transition-colors hover:text-indigo-400">Terms</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="border-t pt-6 flex justify-center border-slate-800">
+          <p class="text-xs font-medium text-slate-500">© 2024 EduQuest. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        if (localStorage.getItem('role') !== 'educator') {
+          window.location.href = 'educator-login.html';
+          return;
+        }
+        var educatorId = localStorage.getItem('userId');
+        if (!educatorId) {
+          window.location.href = 'educator-login.html';
+          return;
+        }
+
+      lucide.createIcons();
+
+        var API_BASE = '/api';
+      var engagementChart = null;
+      var lastReportData = null;
+      var lastReportType = null;
+      var lastReportMeta = { className: null, studentName: null };
+      var lastGeneratedReportId = null;
+
+      function getTimeRangeParams() {
+        var start = new Date();
+        var end = new Date();
+        start.setDate(start.getDate() - 6);
+        return { startDate: start.toISOString().slice(0, 10), endDate: end.toISOString().slice(0, 10) };
+      }
+
+      async function loadClasses() {
+        var sel = document.getElementById('class-select');
+        if (!sel) return;
+        sel.innerHTML = '<option value="">Select a class</option>';
+        try {
+          var res = await fetch(API_BASE + '/classes/educator/' + educatorId + '/assigned', { headers: getAuthHeaders() });
+          if (!res.ok) {
+            var errBody = await res.json().catch(function () { return {}; });
+            console.error('Load classes error:', res.status, errBody);
+            sel.innerHTML = '<option value="">Unable to load classes</option>';
+            return;
+          }
+          var classes = await res.json();
+          if (!Array.isArray(classes)) {
+            console.error('Load classes: response is not an array', classes);
+            sel.innerHTML = '<option value="">Unable to load classes</option>';
+            return;
+          }
+          classes.forEach(function (c) {
+            var opt = document.createElement('option');
+            opt.value = c.id;
+            opt.textContent = c.name || ('Class ' + c.id);
+            sel.appendChild(opt);
+          });
+        } catch (err) {
+          console.error('Load classes error:', err);
+          sel.innerHTML = '<option value="">Unable to load classes</option>';
+        }
+      }
+
+      async function loadStudentsForClass(classId) {
+        var sel = document.getElementById('student-select');
+        if (!sel) return;
+        sel.innerHTML = '<option value="">Select a student</option>';
+        if (!classId) return;
+        try {
+          var res = await fetch(API_BASE + '/classes/' + classId + '/student-analytics', { headers: getAuthHeaders() });
+          if (!res.ok) {
+            var errBody = await res.json().catch(function () { return {}; });
+            console.error('Load students error:', res.status, errBody);
+            sel.innerHTML = '<option value="">Unable to load students</option>';
+            return;
+          }
+          var students = await res.json();
+          if (!Array.isArray(students)) {
+            console.error('Load students: response is not an array', students);
+            sel.innerHTML = '<option value="">Unable to load students</option>';
+            return;
+          }
+          students.forEach(function (s) {
+            var opt = document.createElement('option');
+            opt.value = s.id;
+            opt.textContent = s.name || ('Student ' + s.id);
+            sel.appendChild(opt);
+          });
+        } catch (err) {
+          console.error('Load students error:', err);
+          sel.innerHTML = '<option value="">Unable to load students</option>';
+        }
+      }
+
+      function renderEngagementChart(engagementByDay) {
+        var canvas = document.getElementById('engagement-chart');
+        if (!canvas) return;
+        if (engagementChart) { engagementChart.destroy(); engagementChart = null; }
+        var dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        var data = Array.isArray(engagementByDay) && engagementByDay.length === 7 ? engagementByDay : [0, 0, 0, 0, 0, 0, 0];
+        var today = new Date();
+        var labels = [];
+        for (var i = 6; i >= 0; i--) {
+          var d = new Date(today);
+          d.setDate(d.getDate() - i);
+          labels.push(dayNames[d.getDay()]);
+        }
+        var ctx = canvas.getContext('2d');
+        engagementChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: labels,
+            datasets: [{
+              label: 'Attempts',
+              data: data,
+              backgroundColor: 'rgba(99, 102, 241, 0.6)',
+              borderColor: 'rgb(99, 102, 241)',
+              borderWidth: 1
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: { beginAtZero: true, ticks: { stepSize: 1 } }
+            },
+            plugins: { legend: { display: false } }
+          }
+        });
+      }
+
+      function applyClassReport(data, className) {
+        var range = getTimeRangeParams();
+        document.getElementById('report-class-title').textContent = className || 'Class Report';
+        document.getElementById('report-class-range').textContent = 'Last 7 days';
+        document.getElementById('report-class-generated').textContent = 'Generated ' + new Date().toLocaleDateString();
+        document.getElementById('report-avg-score').textContent = (data.avg_score != null ? data.avg_score : 0) + '%';
+        document.getElementById('report-participation').textContent = (data.participation_rate != null ? data.participation_rate : 0) + '%';
+        document.getElementById('report-challenges').textContent = data.total_challenges_completed != null ? data.total_challenges_completed : 0;
+        document.getElementById('report-total-xp').textContent = data.total_xp != null ? data.total_xp : 0;
+        var top = document.getElementById('report-top-performers');
+        top.innerHTML = '';
+        (data.top_performers || []).slice(0, 5).forEach(function (p, i) {
+          var div = document.createElement('div');
+          div.className = 'flex items-center gap-3';
+          div.innerHTML = '<div class="w-6 h-6 rounded-full ' + (i === 0 ? 'bg-amber-100 text-amber-600' : 'bg-slate-100 text-slate-500') + ' flex items-center justify-center text-[10px] font-bold">' + (i + 1) + '</div><span class="text-xs font-bold text-slate-700 flex-1">' + (p.name || '—') + '</span><span class="text-xs font-bold text-emerald-500">' + (p.avg_score != null ? p.avg_score : 0) + '%</span>';
+          top.appendChild(div);
+        });
+        if (!data.top_performers || data.top_performers.length === 0) top.innerHTML = '<p class="text-xs text-slate-400">No attempt data yet.</p>';
+        renderEngagementChart(data.engagement_by_day);
+        var insight = data.insights || {};
+        document.getElementById('report-insight-text').textContent = insight.summary_text || 'No insights yet.';
+      }
+
+      function applyStudentReport(data, studentName, studentId) {
+        document.getElementById('report-student-name').textContent = studentName || 'Student Report';
+        document.getElementById('report-student-avatar').src = 'https://api.dicebear.com/7.x/notionists/svg?seed=' + encodeURIComponent(studentId || 'student');
+        document.getElementById('report-student-generated').textContent = 'Generated ' + new Date().toLocaleDateString();
+        document.getElementById('report-student-xp').textContent = data.total_xp != null ? data.total_xp : 0;
+        document.getElementById('report-student-streak').innerHTML = (data.current_streak != null ? data.current_streak : 0) + ' <span class="text-base">🔥</span>';
+        document.getElementById('report-student-quizzes').textContent = data.quizzes_completed != null ? data.quizzes_completed : 0;
+        document.getElementById('report-student-growth').textContent = (data.growth_rate != null ? data.growth_rate : 0) + '%';
+        var scoresEl = document.getElementById('report-student-scores');
+        scoresEl.innerHTML = '';
+        (data.recent_scores || []).slice(0, 10).forEach(function (r) {
+          var pct = r.score != null ? r.score : 0;
+          var div = document.createElement('div');
+          div.className = 'flex items-center justify-between';
+          div.innerHTML = '<span class="text-xs font-bold text-slate-600">' + (r.quiz_title || 'Quiz') + '</span><div class="flex items-center gap-2 w-1/2"><div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-emerald-500" style="width:' + pct + '%"></div></div><span class="text-xs font-bold text-emerald-600 w-8 text-right">' + pct + '%</span></div>';
+          scoresEl.appendChild(div);
+        });
+        if (!data.recent_scores || data.recent_scores.length === 0) scoresEl.innerHTML = '<p class="text-xs text-slate-400">No quiz attempts yet.</p>';
+        var swEl = document.getElementById('report-student-strengths-weaknesses');
+        swEl.innerHTML = '';
+        (data.strengths || []).forEach(function (t) {
+          var li = document.createElement('li');
+          li.className = 'flex gap-2 items-start';
+          li.innerHTML = '<div class="mt-0.5 w-4 h-4 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><polyline points="20 6 9 17 4 12"></polyline></svg></div><p class="text-xs text-slate-600 leading-snug">Strength: ' + t + '.</p>';
+          swEl.appendChild(li);
+        });
+        (data.weaknesses || []).forEach(function (t) {
+          var li = document.createElement('li');
+          li.className = 'flex gap-2 items-start';
+          li.innerHTML = '<div class="mt-0.5 w-4 h-4 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center shrink-0"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><line x1="12" x2="12" y1="5" y2="19"></line><line x1="5" x2="19" y1="12" y2="12"></line></svg></div><p class="text-xs text-slate-600 leading-snug">Needs practice: ' + t + '.</p>';
+          swEl.appendChild(li);
+        });
+        if (swEl.children.length === 0) swEl.innerHTML = '<p class="text-xs text-slate-400">No topic data yet.</p>';
+
+        // Weakest topics list (from weaknesses, optionally with fail counts)
+        var weakestEl = document.getElementById('report-student-weakest-topics');
+        weakestEl.innerHTML = '';
+        var weakList = data.weaknesses && data.weaknesses.length ? data.weaknesses : [];
+        var failMap = {};
+        (data.topic_fail_counts || []).forEach(function (x) { failMap[x.topic_name] = x.fail_count; });
+        if (weakList.length === 0) weakestEl.innerHTML = '<p class="text-xs text-slate-400">No weak topics identified yet.</p>';
+        else {
+          weakList.forEach(function (topic) {
+            var div = document.createElement('div');
+            var failCnt = failMap[topic];
+            var label = topic + (failCnt != null && failCnt > 0 ? ' <span class="text-slate-400 font-normal">(' + failCnt + ' failed attempt' + (failCnt !== 1 ? 's' : '') + ')</span>' : '');
+            div.className = 'flex items-center gap-2 text-sm';
+            div.innerHTML = '<span class="w-2 h-2 rounded-full bg-amber-400 shrink-0"></span><span class="text-slate-700 font-medium">' + label + '</span>';
+            weakestEl.appendChild(div);
+          });
+        }
+
+        // Recommended practice: fail >3 → "Assign targeted quiz on {topic}"; engagement declining → weekly challenge
+        var recEl = document.getElementById('report-student-recommendations');
+        recEl.innerHTML = '';
+        var recommendations = [];
+        (data.topic_fail_counts || []).forEach(function (x) {
+          if (x.fail_count > 3) recommendations.push('Assign targeted quiz on ' + (x.topic_name || 'topic'));
+        });
+        if (data.engagement_trend === 'declining' || data.streak_dropped) recommendations.push('Engagement declining — suggest weekly challenge');
+        if (recommendations.length === 0) recEl.innerHTML = '<p class="text-xs text-slate-500">No specific recommendations at this time.</p>';
+        else {
+          recommendations.forEach(function (text) {
+            var div = document.createElement('div');
+            div.className = 'flex gap-2 items-start text-sm';
+            div.innerHTML = '<span class="text-amber-500 shrink-0 mt-0.5">•</span><span class="text-amber-900 font-medium">' + text + '</span>';
+            recEl.appendChild(div);
+          });
+        }
+
+        // Progress trend (engagement_trend + last 7 days)
+        var trendEl = document.getElementById('report-student-progress-trend');
+        trendEl.innerHTML = '';
+        var trend = data.engagement_trend || 'stable';
+        var trendLabel = trend === 'improving' ? 'Improving' : trend === 'declining' ? 'Declining' : 'Stable';
+        var trendColor = trend === 'improving' ? 'text-emerald-600' : trend === 'declining' ? 'text-amber-600' : 'text-slate-600';
+        var hist = data.engagement_history || [];
+        var dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        var today = new Date();
+        var labels = [];
+        for (var i = 6; i >= 0; i--) {
+          var d = new Date(today); d.setDate(d.getDate() - i);
+          labels.push(dayNames[d.getDay()]);
+        }
+        var maxVal = Math.max.apply(null, hist) || 1;
+        var barsHtml = labels.map(function (lbl, idx) {
+          var h = maxVal > 0 ? Math.round((hist[idx] || 0) / maxVal * 32) : 0;
+          return '<div class="flex flex-col items-center gap-1"><div class="w-6 h-8 flex items-end justify-center"><div class="w-4 bg-indigo-200 rounded-t min-h-[2px]" style="height:' + Math.max(2, h) + 'px"></div></div><span class="text-[10px] font-bold text-slate-500">' + lbl + '</span></div>';
+        }).join('');
+        trendEl.innerHTML = '<div class="flex items-center gap-3 mr-6"><span class="text-xs font-bold uppercase tracking-wide ' + trendColor + '">Last 7 days: ' + trendLabel + '</span></div><div class="flex items-end gap-1">' + barsHtml + '</div>';
+        if (hist.length === 0) trendEl.innerHTML = '<p class="text-xs text-slate-400">No activity in the last 7 days.</p>';
+
+        document.getElementById('report-insight-text').textContent = 'Student report generated. Review strengths, weaknesses, and recommendations above.';
+      }
+
+      async function generateReport() {
+        var isClassMode = document.getElementById('btn-class').classList.contains('text-indigo-600');
+        var range = getTimeRangeParams();
+        var id = isClassMode ? document.getElementById('class-select').value : document.getElementById('student-select').value;
+        if (!id) { alert(isClassMode ? 'Please select a class.' : 'Please select a student.'); return; }
+        var url = API_BASE + '/reports/' + (isClassMode ? 'class/' : 'student/') + id + '?startDate=' + encodeURIComponent(range.startDate) + '&endDate=' + encodeURIComponent(range.endDate);
+        try {
+          var res = await fetch(url, { headers: getAuthHeaders() });
+          var data = await res.json();
+          if (!res.ok) {
+            console.error('Report fetch error:', res.status, data);
+            alert(data.error || 'Failed to load report');
+            return;
+          }
+          if (!data || typeof data !== 'object' || data.error) {
+            console.error('Report response invalid:', data);
+            alert('Invalid report data');
+            return;
+          }
+          lastReportData = data;
+          lastReportType = isClassMode ? 'class' : 'student';
+          if (isClassMode) {
+            var classSel = document.getElementById('class-select');
+            var opt = classSel && classSel.options[classSel.selectedIndex];
+            lastReportMeta.className = opt ? opt.textContent : null;
+            lastReportMeta.studentName = null;
+            applyClassReport(data, lastReportMeta.className);
+          } else {
+            var studentSel = document.getElementById('student-select');
+            var sOpt = studentSel && studentSel.options[studentSel.selectedIndex];
+            lastReportMeta.studentName = sOpt ? sOpt.textContent : null;
+            lastReportMeta.className = null;
+            applyStudentReport(data, lastReportMeta.studentName, id);
+          }
+        } catch (err) {
+          console.error('Generate report error:', err);
+          alert('Failed to load report');
+        }
+      }
+
+      function downloadReportPDF() {
+        var isClassMode = document.getElementById('btn-class').classList.contains('text-indigo-600');
+        var range = getTimeRangeParams();
+        var id = isClassMode ? document.getElementById('class-select').value : document.getElementById('student-select').value;
+        if (!id) {
+          alert(isClassMode ? 'Please select a class.' : 'Please select a student.');
+          return;
+        }
+        function doDownload(blob, defaultName) {
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement('a');
+          a.href = url;
+          a.download = defaultName || 'EduQuest-Report-' + new Date().toISOString().slice(0, 10) + '.pdf';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }
+        if (!isClassMode && lastGeneratedReportId) {
+          fetch(API_BASE + '/reports/file/' + lastGeneratedReportId, { headers: getAuthHeaders() })
+            .then(function (r) {
+              if (!r.ok) throw new Error('Download failed');
+              return r.blob();
+            })
+            .then(function (blob) { doDownload(blob, 'EduQuest-Report-' + new Date().toISOString().slice(0, 10) + '.pdf'); })
+            .catch(function () { alert('Failed to download PDF.'); });
+          return;
+        }
+        fetch(API_BASE + '/reports/generate-pdf', {
+          method: 'POST',
+          headers: Object.assign({ 'Content-Type': 'application/json' }, getAuthHeaders()),
+          body: JSON.stringify({ type: isClassMode ? 'class' : 'student', id: Number(id), startDate: range.startDate, endDate: range.endDate })
+        })
+          .then(function (r) {
+            if (!r.ok) throw new Error('Generate failed');
+            return r.blob();
+          })
+          .then(function (blob) { doDownload(blob); })
+          .catch(function () { alert('Failed to generate or download PDF.'); });
+      }
+
+      function exportReportCSV() {
+        var isClassMode = document.getElementById('btn-class').classList.contains('text-indigo-600');
+        var range = getTimeRangeParams();
+        var id = isClassMode ? document.getElementById('class-select').value : document.getElementById('student-select').value;
+        if (!id) {
+          alert(isClassMode ? 'Please select a class.' : 'Please select a student.');
+          return;
+        }
+        var q = '?type=' + (isClassMode ? 'class' : 'student') + '&id=' + encodeURIComponent(id) + '&startDate=' + encodeURIComponent(range.startDate) + '&endDate=' + encodeURIComponent(range.endDate);
+        fetch(API_BASE + '/reports/export-csv' + q, { headers: getAuthHeaders() })
+          .then(function (r) {
+            if (!r.ok) throw new Error('Export failed');
+            return r.blob();
+          })
+          .then(function (blob) {
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = 'EduQuest-Report-' + new Date().toISOString().slice(0, 10) + '.csv';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+          })
+          .catch(function () { alert('Failed to export CSV.'); });
+      }
+
+      window.downloadReportPDF = downloadReportPDF;
+      window.exportReportCSV = exportReportCSV;
+
+      window.toggleReportType = function (type) {
+        const pill = document.getElementById('segment-pill');
+        const btnClass = document.getElementById('btn-class');
+        const btnStudent = document.getElementById('btn-student');
+        const studentSelect = document.getElementById('student-select-group');
+        const previewClass = document.getElementById('report-content-class');
+        const previewStudent = document.getElementById('report-content-student');
+        const actionClass = document.getElementById('action-card-class');
+        const actionStudent = document.getElementById('action-card-student');
+        const deliveryText = document.getElementById('delivery-text');
+
+        if (type === 'class') {
+            pill.style.transform = 'translateX(0)';
+            btnClass.classList.remove('text-slate-500');
+            btnClass.classList.add('text-indigo-600');
+            btnStudent.classList.remove('text-indigo-600');
+            btnStudent.classList.add('text-slate-500');
+            studentSelect.classList.add('hidden');
+            deliveryText.innerText = "parents or students";
+            previewClass.classList.remove('hidden');
+            previewStudent.classList.add('hidden');
+            actionClass.classList.remove('hidden');
+            actionStudent.classList.add('hidden');
+        } else {
+            pill.style.transform = 'translateX(100%)';
+            btnStudent.classList.remove('text-slate-500');
+            btnStudent.classList.add('text-indigo-600');
+            btnClass.classList.remove('text-indigo-600');
+            btnClass.classList.add('text-slate-500');
+            studentSelect.classList.remove('hidden');
+            deliveryText.innerText = "the student";
+            previewStudent.classList.remove('hidden');
+            previewClass.classList.add('hidden');
+            actionStudent.classList.remove('hidden');
+            actionClass.classList.add('hidden');
+            var classId = document.getElementById('class-select').value;
+            loadStudentsForClass(classId);
+            var studentSel = document.getElementById('student-select');
+            var nameEl = document.getElementById('send-student-name');
+            if (nameEl && studentSel && studentSel.options[studentSel.selectedIndex]) nameEl.textContent = studentSel.options[studentSel.selectedIndex].textContent;
+            else if (nameEl) nameEl.textContent = '—';
+        }
+      }
+
+        function showToast() {
+          var toast = document.getElementById('report-toast');
+          if (!toast) return;
+          toast.classList.remove('hidden');
+          setTimeout(function () { toast.classList.add('hidden'); }, 3000);
+        }
+
+        async function sendReportToStudent() {
+          var studentId = document.getElementById('student-select').value;
+          var classId = document.getElementById('class-select').value;
+          if (!studentId) {
+            alert('Please select a student.');
+            return;
+          }
+          var btn = document.getElementById('btn-send-report');
+          if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
+          try {
+            var res = await fetch(API_BASE + '/reports/student/' + studentId + '/send', {
+              method: 'POST',
+              headers: getAuthHeaders(),
+              body: JSON.stringify({ classId: classId || null })
+            });
+            var data = await res.json().catch(function () { return {}; });
+            if (!res.ok) {
+              alert(data.error || 'Failed to send report');
+              return;
+            }
+            if (data.reportId) lastGeneratedReportId = data.reportId;
+            showToast();
+          } catch (err) {
+            console.error('Send report error:', err);
+            alert('Failed to send report');
+          } finally {
+            if (btn) { btn.disabled = false; btn.innerHTML = '<span>Send Report</span><svg class="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" x2="11" y1="2" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>'; }
+          }
+        }
+
+        loadClasses();
+        document.getElementById('btn-generate-report').addEventListener('click', generateReport);
+        document.getElementById('class-select').addEventListener('change', function () {
+          if (document.getElementById('student-select-group').classList.contains('hidden')) return;
+          loadStudentsForClass(this.value);
+        });
+        document.getElementById('student-select').addEventListener('change', function () {
+          var sel = this;
+          var nameEl = document.getElementById('send-student-name');
+          if (nameEl) nameEl.textContent = sel.options[sel.selectedIndex] ? sel.options[sel.selectedIndex].textContent : '—';
+        });
+        document.getElementById('btn-send-report').addEventListener('click', sendReportToStudent);
+      });
+    </script>
+
+</body></html>

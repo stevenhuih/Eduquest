@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduQuest - Institution Subscription</title>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+:root {
+--font-heading: 'Nunito', sans-serif;
+--font-body: 'Inter', sans-serif;
+}
+body {
+font-family: var(--font-body);
+background-color: #F8FAFC;
+color: #334155;
+-webkit-font-smoothing: antialiased;
+}
+/* --- Backgrounds --- */
+.page-bg {
+position: fixed;
+inset: 0;
+z-index: -50;
+background:
+radial-gradient(circle at 10% 10%, rgba(224, 242, 254, 0.4) 0%, transparent 40%),
+radial-gradient(circle at 90% 90%, rgba(232, 218, 255, 0.4) 0%, transparent 40%),
+linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 100%);
+}
+.bg-grid-pattern {
+position: fixed;
+inset: 0;
+z-index: -49;
+opacity: 0.25;
+background-image:
+radial-gradient(rgba(148, 163, 184, 0.3) 1px, transparent 1px);
+background-size: 24px 24px;
+mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+}
+/* --- Utilities --- */
+h1, h2, h3, h4, .brand-font {
+font-family: var(--font-heading);
+}
+.tracking-tight { letter-spacing: -0.025em; }
+/* Glass/Card Styles */
+.glass-panel {
+background: rgba(255, 255, 255, 0.85);
+backdrop-filter: blur(12px);
+-webkit-backdrop-filter: blur(12px);
+border: 1px solid rgba(255, 255, 255, 0.6);
+box-shadow:
+0 4px 6px -1px rgba(0, 0, 0, 0.05),
+0 2px 4px -1px rgba(0, 0, 0, 0.03),
+inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+}
+/* Custom Form Elements */
+.input-group label {
+font-size: 0.75rem;
+font-weight: 600;
+color: #64748B;
+margin-bottom: 0.35rem;
+display: block;
+}
+.input-field {
+width: 100%;
+border-radius: 0.5rem;
+border: 1px solid #E2E8F0;
+background-color: #fff;
+padding: 0.625rem 0.875rem;
+font-size: 0.875rem;
+font-weight: 500;
+color: #1E293B;
+transition: all 0.2s ease;
+outline: none;
+}
+.input-field:focus {
+border-color: #818CF8;
+box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+.input-field::placeholder {
+color: #94A3B8;
+}
+/* Custom Select Arrow */
+.custom-select-wrapper { position: relative; }
+.custom-select-wrapper::after {
+content: '';
+position: absolute;
+right: 14px;
+top: 50%;
+transform: translateY(-50%);
+width: 0;
+height: 0;
+border-left: 5px solid transparent;
+border-right: 5px solid transparent;
+border-top: 5px solid #94A3B8;
+pointer-events: none;
+}
+/* Custom Toggle Switch */
+.toggle-checkbox {
+appearance: none;
+display: none;
+}
+.toggle-label {
+width: 48px;
+height: 26px;
+background: #E2E8F0;
+border-radius: 999px;
+position: relative;
+cursor: pointer;
+transition: background 0.3s ease;
+}
+.toggle-label::after {
+content: '';
+position: absolute;
+top: 3px;
+left: 3px;
+width: 20px;
+height: 20px;
+background: white;
+border-radius: 50%;
+box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+.toggle-checkbox:checked + .toggle-label {
+background: #6366F1;
+}
+.toggle-checkbox:checked + .toggle-label::after {
+transform: translateX(22px);
+}
+/* Custom Checkbox */
+.custom-checkbox {
+appearance: none;
+background-color: #fff;
+margin: 0;
+color: currentColor;
+width: 1.15em;
+height: 1.15em;
+border: 1px solid #CBD5E1;
+border-radius: 0.25em;
+display: grid;
+place-content: center;
+transition: all 0.2s ease;
+flex-shrink: 0;
+cursor: pointer;
+}
+.custom-checkbox::before {
+content: "";
+width: 0.65em;
+height: 0.65em;
+transform: scale(0);
+transition: 120ms transform ease-in-out;
+box-shadow: inset 1em 1em white;
+background-color: white;
+transform-origin: center;
+clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+}
+.custom-checkbox:checked {
+background-color: #6366F1;
+border-color: #6366F1;
+}
+.custom-checkbox:checked::before {
+transform: scale(1);
+}
+/* Animations */
+@keyframes spin {
+to { transform: rotate(360deg); }
+}
+.animate-spin-custom {
+animation: spin 1s linear infinite;
+}
+.fade-in-up {
+animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+opacity: 0;
+transform: translateY(15px);
+}
+@keyframes fadeInUp {
+to { opacity: 1; transform: translateY(0); }
+}
+.slide-up-fade {
+animation: slideUpFade 0.5s ease-out forwards;
+}
+@keyframes slideUpFade {
+from { opacity: 0; transform: translateY(10px); }
+to { opacity: 1; transform: translateY(0); }
+}
+</style></head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Backgrounds -->
+    <div class="page-bg"></div>
+    <div class="bg-grid-pattern"></div>
+    
+    <!-- Navbar -->
+    <nav class="w-full h-16 flex items-center justify-center border-b border-slate-200/60 bg-white/50 backdrop-blur-md sticky top-0 z-40">
+        <div class="w-full max-w-7xl px-6 flex items-center justify-between">
+            <!-- Brand -->
+            <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-600 to-violet-600 flex items-center justify-center text-white shadow-md shadow-indigo-200 ring-2 ring-white/50">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sparkles"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"></path><path d="M20 2v4"></path><path d="M22 4h-4"></path><circle cx="4" cy="20" r="2"></circle></svg>
+                </div>
+                <span class="text-xl font-extrabold text-slate-800 tracking-tight brand-font">EduQuest</span>
+            </div>
+
+            <!-- Links -->
+            <div class="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-500">
+                <a href="#" class="hover:text-indigo-600 transition-colors">Features</a>
+                <a href="#" class="hover:text-indigo-600 transition-colors">Pricing</a>
+                <a href="#" class="hover:text-indigo-600 transition-colors">Support</a>
+            </div>
+            
+            <!-- Mobile Menu Icon (Visual only) -->
+            <div class="md:hidden text-slate-500">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-16">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start">
+
+            <!-- LEFT COL: Plan Details (Sticky) -->
+            <div class="lg:col-span-5 lg:sticky lg:top-28 space-y-6 fade-in-up" style="animation-delay: 0.1s;">
+                
+                <!-- Plan Card -->
+                <div class="glass-panel rounded-2xl p-6 lg:p-8 relative overflow-hidden group">
+                    <!-- Decorative Gradient Blob -->
+                    <div class="absolute -right-20 -top-20 w-64 h-64 bg-indigo-50 rounded-full blur-3xl opacity-60 pointer-events-none group-hover:scale-110 transition-transform duration-700"></div>
+
+                    <div class="relative z-10">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-xs font-bold text-indigo-600 uppercase tracking-wide mb-6">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-crown"><path d="m2 4 3 12h14l3-12-6 7-4-3-4 3-6-7zm5 16h10"></path></svg>
+                            Recommended
+                        </div>
+
+                        <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight mb-2">EduQuest for Institutions</h1>
+                        <p class="text-slate-500 font-medium leading-relaxed mb-8">Gamify learning across your entire school ecosystem with centralized control.</p>
+
+                        <!-- Pricing Toggle -->
+                        <div class="flex items-center gap-3 mb-8">
+                            <span class="text-sm font-semibold text-slate-500" id="monthly-label">Monthly</span>
+                            <div class="flex items-center">
+                                <input type="checkbox" id="billing-toggle" class="toggle-checkbox" onchange="togglePrice()">
+                                <label for="billing-toggle" class="toggle-label"></label>
+                            </div>
+                            <span class="text-sm font-semibold text-slate-800" id="yearly-label">Yearly <span class="text-emerald-500 text-xs font-bold ml-1">-20%</span></span>
+                        </div>
+
+                        <!-- Price Display -->
+                        <div class="flex items-end gap-1 mb-8">
+                            <span class="text-5xl font-extrabold text-slate-800 tracking-tight" id="price-amount">$299</span>
+                            <span class="text-lg font-semibold text-slate-400 mb-1.5">/ mo</span>
+                        </div>
+
+                        <!-- Benefits List -->
+                        <ul class="space-y-4 mb-8">
+                            <li class="flex items-start gap-3 text-sm font-medium text-slate-600">
+                                <div class="flex-shrink-0 w-5 h-5 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mt-0.5">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"></path></svg>
+                                </div>
+                                <span>Unlimited student &amp; teacher accounts</span>
+                            </li>
+                            <li class="flex items-start gap-3 text-sm font-medium text-slate-600">
+                                <div class="flex-shrink-0 w-5 h-5 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mt-0.5">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"></path></svg>
+                                </div>
+                                <span>Advanced institution-wide analytics</span>
+                            </li>
+                            <li class="flex items-start gap-3 text-sm font-medium text-slate-600">
+                                <div class="flex-shrink-0 w-5 h-5 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mt-0.5">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"></path></svg>
+                                </div>
+                                <span>Priority 24/7 dedicated support</span>
+                            </li>
+                            <li class="flex items-start gap-3 text-sm font-medium text-slate-600">
+                                <div class="flex-shrink-0 w-5 h-5 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mt-0.5">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"></path></svg>
+                                </div>
+                                <span>Custom Gamification Rules Engine</span>
+                            </li>
+                        </ul>
+
+                        <!-- Admin Account Note Badge -->
+                        <div class="bg-indigo-50/80 border border-indigo-100 rounded-xl p-4 flex gap-3">
+                            <div class="flex-shrink-0 text-indigo-500 mt-0.5">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>
+                            </div>
+                            <div class="space-y-1">
+                                <p class="text-xs font-bold text-indigo-900 uppercase tracking-wide">Automatic Setup</p>
+                                <p class="text-xs font-medium text-indigo-700 leading-relaxed">
+                                    Upon successful payment, we'll automatically create your <strong>Educator Admin</strong> account and email the login credentials to the billing contact.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Trust -->
+                <div class="flex items-center gap-4 text-xs font-semibold text-slate-400 justify-center">
+                    <span class="flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-check"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"></path></svg> Secure SSL</span>
+                    <span class="w-1 h-1 bg-slate-300 rounded-full"></span>
+                    <span class="flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-zap"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14H4z"></path></svg> Instant Access</span>
+                </div>
+
+            </div>
+
+            <!-- RIGHT COL: Subscription Form -->
+            <div class="lg:col-span-7 fade-in-up" style="animation-delay: 0.2s;">
+                
+                <!-- Success State (Hidden by default) -->
+                <div id="success-view" class="hidden h-full glass-panel rounded-2xl p-8 lg:p-12 flex flex-col items-center justify-center text-center space-y-6 slide-up-fade">
+                    <div class="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-500 mb-2 shadow-lg shadow-emerald-100/50">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"></path></svg>
+                    </div>
+                    <div class="space-y-2">
+                        <h2 class="text-3xl font-extrabold text-slate-800 tracking-tight">You're All Set!</h2>
+                        <p class="text-lg text-slate-500 font-medium">Your institution has been successfully onboarded.</p>
+                    </div>
+                    
+                    <div class="bg-slate-50 rounded-xl p-5 max-w-md w-full border border-slate-200 text-left space-y-3">
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-indigo-100 flex items-center justify-center text-indigo-600 flex-shrink-0">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mail-check"><path d="M22 13V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v12c0 1.1.9 2 2 2h8"></path><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path><path d="m16 19 2 2 4-4"></path></svg>
+                            </div>
+                            <div>
+                                <p class="text-sm font-bold text-slate-700">Check your inbox</p>
+                                <p class="text-xs text-slate-500 mt-1">We've sent the <strong>Educator Admin</strong> credentials and a getting started guide to the billing email address.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 w-full max-w-xs">
+                        <a href="#" class="flex items-center justify-center w-full py-3.5 px-6 rounded-xl bg-slate-900 text-white font-bold text-sm hover:bg-slate-800 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5">
+                            Go to Admin Login
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right ml-2"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </a>
+                    </div>
+                </div>
+
+
+                <!-- Active Form -->
+                <div id="subscription-form-container" class="glass-panel rounded-2xl p-6 md:p-8 space-y-10">
+                    
+                    <!-- Form Header -->
+                    <div class="border-b border-slate-200/60 pb-6">
+                        <h2 class="text-xl font-bold text-slate-800">Complete Your Subscription</h2>
+                        <p class="text-sm text-slate-500 mt-1">Enter your institution details to get started.</p>
+                    </div>
+
+                    <form id="checkout-form" onsubmit="handleSubscribe(event)">
+                        
+                        <!-- SECTION A: Institution Details -->
+                        <div class="space-y-5 mb-10">
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="w-6 h-6 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs font-bold">1</div>
+                                <h3 class="text-sm font-bold text-slate-700 uppercase tracking-wider">Institution Details</h3>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <div class="input-group md:col-span-2">
+                                    <label for="inst-name">Institution Name</label>
+                                    <input type="text" id="inst-name" required="" class="input-field" placeholder="e.g. Springfield Elementary">
+                                </div>
+                                <div class="input-group">
+                                    <label for="inst-email">Official Email</label>
+                                    <input type="email" id="inst-email" required="" class="input-field" placeholder="office@school.edu">
+                                </div>
+                                <div class="input-group">
+                                    <label for="inst-phone">Phone Number</label>
+                                    <input type="tel" id="inst-phone" required="" class="input-field" placeholder="+1 (555) 000-0000">
+                                </div>
+                                <div class="input-group">
+                                    <label for="inst-country">Country</label>
+                                    <div class="custom-select-wrapper">
+                                        <select id="inst-country" class="input-field appearance-none cursor-pointer">
+                                            <option value="US">United States</option>
+                                            <option value="UK">United Kingdom</option>
+                                            <option value="CA">Canada</option>
+                                            <option value="AU">Australia</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="input-group">
+                                    <label for="inst-timezone">Timezone</label>
+                                    <div class="custom-select-wrapper">
+                                        <select id="inst-timezone" class="input-field appearance-none cursor-pointer">
+                                            <option value="UTC-5">Eastern Time (US &amp; Canada)</option>
+                                            <option value="UTC-8">Pacific Time (US &amp; Canada)</option>
+                                            <option value="UTC+0">GMT (London)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-xs text-slate-400 italic bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+                                We'll use these details to configure your institution's dedicated workspace.
+                            </p>
+                        </div>
+
+                        <!-- SECTION B: Billing Contact -->
+                        <div class="space-y-5 mb-10">
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="w-6 h-6 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs font-bold">2</div>
+                                <h3 class="text-sm font-bold text-slate-700 uppercase tracking-wider">Billing Contact (Admin)</h3>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <div class="input-group md:col-span-2">
+                                    <label for="billing-name">Full Name</label>
+                                    <input type="text" id="billing-name" required="" class="input-field" placeholder="First Last">
+                                </div>
+                                <div class="input-group">
+                                    <label for="billing-email">Email Address</label>
+                                    <input type="email" id="billing-email" required="" class="input-field" placeholder="admin@school.edu">
+                                </div>
+                                <div class="input-group">
+                                    <label for="billing-role">Role</label>
+                                    <input type="text" id="billing-role" class="input-field" placeholder="e.g. Principal, IT Admin">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SECTION C: Payment -->
+                        <div class="space-y-5 mb-10">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-6 h-6 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs font-bold">3</div>
+                                    <h3 class="text-sm font-bold text-slate-700 uppercase tracking-wider">Payment Method</h3>
+                                </div>
+                                <div class="flex gap-2 text-slate-300">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" class="text-slate-300"><rect width="20" height="14" x="2" y="5" rx="2"></rect><line x1="2" x2="22" y1="10" y2="10"></line></svg>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                    <div class="input-group md:col-span-2">
+                                        <label for="card-name">Cardholder Name</label>
+                                        <input type="text" id="card-name" required="" class="input-field" placeholder="Name on card">
+                                    </div>
+                                    <div class="input-group md:col-span-2 relative">
+                                        <label for="card-number">Card Number</label>
+                                        <div class="relative">
+                                            <input type="text" id="card-number" required="" class="input-field pl-10" placeholder="0000 0000 0000 0000">
+                                            <div class="absolute left-3 top-2.5 text-slate-400">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-credit-card"><rect width="20" height="14" x="2" y="5" rx="2"></rect><line x1="2" x2="22" y1="10" y2="10"></line></svg>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="card-expiry">Expiry Date</label>
+                                        <input type="text" id="card-expiry" required="" class="input-field" placeholder="MM / YY">
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="card-cvc">CVC</label>
+                                        <input type="text" id="card-cvc" required="" class="input-field" placeholder="123">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 text-[11px] text-slate-400 font-semibold justify-end">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-lock"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                Payments processed securely
+                            </div>
+                        </div>
+
+                        <!-- Summary & CTA -->
+                        <div class="border-t border-slate-200/80 pt-6 space-y-6">
+                            
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="font-medium text-slate-500">Plan</span>
+                                <span class="font-bold text-slate-800" id="summary-plan-name">Institution (Monthly)</span>
+                            </div>
+                            <div class="flex justify-between items-center text-lg">
+                                <span class="font-bold text-slate-700">Total due today</span>
+                                <span class="font-extrabold text-indigo-600" id="summary-total">$299.00</span>
+                            </div>
+
+                            <label class="flex items-start gap-3 cursor-pointer group">
+                                <input type="checkbox" required="" class="custom-checkbox mt-0.5">
+                                <span class="text-xs font-medium text-slate-500 group-hover:text-slate-700 transition-colors leading-snug">
+                                    I agree to the <a href="#" class="text-indigo-600 hover:underline">Terms of Service</a> and <a href="#" class="text-indigo-600 hover:underline">Privacy Policy</a>. I understand my subscription will renew automatically.
+                                </span>
+                            </label>
+
+                            <button type="submit" id="submit-btn" class="w-full relative overflow-hidden group py-4 px-6 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold text-sm shadow-lg shadow-indigo-200 hover:shadow-indigo-300 transition-all duration-200 transform hover:-translate-y-0.5 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                <div class="absolute inset-0 bg-white/20 group-hover:opacity-10 opacity-0 transition-opacity"></div>
+                                <span id="btn-text">Subscribe &amp; Create Institution</span>
+                                <div id="btn-loader" class="hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                                    <svg class="animate-spin-custom h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                </div>
+                            </button>
+
+                        </div>
+
+                    </form>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-200 bg-white/50 backdrop-blur-sm mt-auto">
+        <div class="max-w-7xl mx-auto px-6 py-8 md:flex md:items-center md:justify-between">
+            <div class="flex justify-center space-x-6 md:order-2">
+                <a href="#" class="text-slate-400 hover:text-indigo-500 text-sm font-medium">Privacy</a>
+                <a href="#" class="text-slate-400 hover:text-indigo-500 text-sm font-medium">Terms</a>
+                <a href="#" class="text-slate-400 hover:text-indigo-500 text-sm font-medium">Contact</a>
+            </div>
+            <div class="mt-8 md:mt-0 md:order-1">
+                <p class="text-center text-xs font-bold text-slate-400 uppercase tracking-widest">© 2024 EduQuest Inc.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+
+        // Price Toggle Logic
+        function togglePrice() {
+            const isYearly = document.getElementById('billing-toggle').checked;
+            const priceEl = document.getElementById('price-amount');
+            const summaryPlan = document.getElementById('summary-plan-name');
+            const summaryTotal = document.getElementById('summary-total');
+
+            if (isYearly) {
+                // Yearly Pricing logic (-20%)
+                // $299 * 12 * 0.8 = ~2870/yr -> approx $239/mo equivalent or charge full year
+                // Let's keep it simple: $239 / mo billed yearly
+                priceEl.innerText = "$239";
+                summaryPlan.innerText = "Institution (Yearly)";
+                summaryTotal.innerText = "$2,868.00"; // 239 * 12
+            } else {
+                priceEl.innerText = "$299";
+                summaryPlan.innerText = "Institution (Monthly)";
+                summaryTotal.innerText = "$299.00";
+            }
+        }
+
+        // Form Submission Logic
+        function handleSubscribe(e) {
+            e.preventDefault();
+            
+            const btn = document.getElementById('submit-btn');
+            const btnText = document.getElementById('btn-text');
+            const btnLoader = document.getElementById('btn-loader');
+            const formContainer = document.getElementById('subscription-form-container');
+            const successView = document.getElementById('success-view');
+
+            // 1. Loading State
+            btnText.classList.add('opacity-0');
+            btnLoader.classList.remove('hidden');
+            btn.disabled = true;
+            btn.classList.add('cursor-not-allowed', 'opacity-90');
+
+            // 2. Simulate API Call (2 seconds)
+            setTimeout(() => {
+                // 3. Transition to Success
+                formContainer.style.display = 'none';
+                successView.classList.remove('hidden');
+                
+                // Scroll top of right col if needed on mobile
+                if(window.innerWidth < 1024) {
+                    successView.scrollIntoView({ behavior: 'smooth' });
+                }
+            }, 2000);
+        }
+    </script>
+
+</body></html>

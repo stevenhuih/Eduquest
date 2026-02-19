@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduQuest - Educator Profile</title>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="js/api.js"></script>
+<script src="js/educator-navbar.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet">
+<style>
+:root { --font-family: 'Nunito', sans-serif; }
+body { font-family: var(--font-family); -webkit-font-smoothing: antialiased; background-color: #fafaf9; }
+/* Subtle Pastel Background */
+.bg-pastel-mesh {
+position: fixed; inset: 0; z-index: -50;
+background:
+radial-gradient(at 0% 0%, rgba(224, 231, 255, 0.5) 0px, transparent 50%),
+radial-gradient(at 100% 0%, rgba(255, 237, 213, 0.4) 0px, transparent 50%),
+radial-gradient(at 100% 100%, rgba(220, 252, 231, 0.4) 0px, transparent 50%),
+radial-gradient(at 0% 100%, rgba(255, 228, 230, 0.4) 0px, transparent 50%);
+filter: blur(60px);
+}
+/* Micro pattern for texture */
+.bg-texture {
+position: fixed; inset: 0; z-index: -49;
+opacity: 0.3;
+background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2394a3b8' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.glass-card {
+background: rgba(255, 255, 255, 0.8);
+backdrop-filter: blur(12px);
+-webkit-backdrop-filter: blur(12px);
+border: 1px solid rgba(255, 255, 255, 0.6);
+}
+@keyframes slide-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.animate-enter { animation: slide-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
+@keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-5px); } 100% { transform: translateY(0px); } }
+.animate-float { animation: float 5s ease-in-out infinite; }
+/* Custom Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+</style></head>
+  <body class="text-slate-600 selection:bg-indigo-100 selection:text-indigo-800 pb-12">
+    <div class="bg-pastel-mesh"></div>
+    <div class="bg-texture"></div>
+
+    <!-- NAVIGATION -->
+    <nav class="fixed z-50 w-full pt-4 pr-4 pb-2 pl-4 top-0">
+      <div class="glass-card flex shadow-indigo-100/50 max-w-7xl rounded-full mr-auto ml-auto pt-3 pr-4 pb-3 pl-4 shadow-sm items-center justify-between">
+        <!-- Brand -->
+        <div class="flex items-center gap-3 pl-2">
+          <img src="assets/logo.png" alt="EduQuest" class="h-9 w-auto object-contain" />
+        </div>
+
+        <!-- Links (Educator Context) -->
+        <div class="hidden md:flex items-center gap-1 p-1 bg-slate-100/50 rounded-full border border-slate-200/50">
+          <a href="educator-dashboard.html" class="hover:text-indigo-600 hover:bg-white/60 transition-all text-sm font-semibold text-slate-500 rounded-full pt-2 pr-5 pb-2 pl-5">Dashboard</a>
+          <a href="educator-class.html" class="hover:text-indigo-600 hover:bg-white/60 transition-all text-sm font-semibold text-slate-500 rounded-full pt-2 pr-5 pb-2 pl-5">My Classes</a>
+          <a href="educator-reports.html" class="hover:text-indigo-600 hover:bg-white/60 transition-all text-sm font-semibold text-slate-500 rounded-full pt-2 pr-5 pb-2 pl-5">Reports</a>
+        </div>
+
+        <!-- Profile -->
+        <div class="flex items-center gap-4 pr-2">
+            <button class="relative p-2 text-slate-400 hover:text-indigo-500 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bell"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+                <span class="absolute top-2 right-2.5 w-2 h-2 bg-rose-500 rounded-full border border-white"></span>
+            </button>
+            <div class="hidden sm:flex flex-col items-end">
+                <span id="navbar-educator-name" class="text-xs font-bold text-slate-700"></span>
+                <span id="navbar-role-badge" class="text-[10px] font-bold text-indigo-500 bg-indigo-50 rounded-full pt-0.5 pr-2 pb-0.5 pl-2">Educator</span>
+            </div>
+            <div class="cursor-pointer hover:ring-indigo-100 transition-all bg-white w-10 h-10 border-indigo-100 border-2 rounded-full ring-transparent ring-2 pt-0.5 pr-0.5 pb-0.5 pl-0.5 relative">
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Frizzle&amp;backgroundColor=e0e7ff" alt="Profile" class="w-full h-full object-cover rounded-full">
+            </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- MAIN CONTENT - EDUCATOR PROFILE -->
+    <main class="max-w-7xl mx-auto pt-28 pb-12 px-6">
+      <!-- TOP HERO: EDUCATOR OVERVIEW -->
+      <section class="relative w-full rounded-[2.5rem] bg-white border border-white shadow-xl shadow-indigo-100/30 overflow-hidden mb-8 animate-enter group">
+        <!-- Background Elements -->
+        <div class="absolute inset-0 bg-gradient-to-r from-violet-50/50 via-white to-sky-50/50 opacity-80"></div>
+        <div class="absolute top-0 right-0 w-64 h-64 bg-indigo-100/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+        <div class="absolute bottom-0 left-0 w-64 h-64 bg-amber-100/30 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
+
+        <!-- Content -->
+        <div class="relative z-10 p-8 md:p-10 flex flex-col items-center justify-center gap-6">
+          <!-- Avatar -->
+          <div class="relative">
+            <div class="absolute inset-0 bg-indigo-400 blur-xl opacity-20 rounded-full"></div>
+            <div class="relative w-24 h-24 rounded-full p-1 bg-white border-2 border-indigo-50 shadow-lg">
+              <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Frizzle&amp;backgroundColor=e0e7ff" class="w-full h-full rounded-full object-cover">
+            </div>
+            <button class="absolute bottom-0 right-0 p-1.5 bg-white border border-slate-100 text-slate-400 hover:text-indigo-600 rounded-full shadow-sm hover:shadow-md transition-all">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-camera">
+                <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path>
+                <circle cx="12" cy="13" r="3"></circle>
+              </svg>
+            </button>
+          </div>
+          <!-- Name, Badge & Subtitle -->
+          <div class="flex flex-col items-center text-center">
+            <div class="flex items-center justify-center gap-2 mb-1">
+              <h1 id="educator-hero-name" class="text-3xl font-extrabold text-slate-800 tracking-tight">
+                —
+              </h1>
+              <span class="bg-gradient-to-r from-emerald-100 to-teal-100 text-emerald-700 border border-emerald-200 text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                Verified Educator
+              </span>
+            </div>
+            <p class="text-sm font-semibold text-slate-500 mb-2">
+              Educator profile
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- LAYOUT GRID -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <!-- LEFT COLUMN: NAVIGATION -->
+        <aside class="lg:col-span-3 space-y-6 lg:sticky lg:top-28 animate-enter" style="animation-delay: 100ms">
+          
+          <!-- Navigation Menu -->
+          <div class="bg-white rounded-[1.5rem] border border-slate-100 shadow-lg shadow-indigo-100/40 p-2 overflow-hidden">
+            <nav class="space-y-1">
+              <!-- Item 1: Personal Details (Active) -->
+              <button onclick="switchTab('details')" id="nav-details" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-indigo-50 text-indigo-600 font-bold text-sm shadow-sm transition-all text-left group">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user">
+                  <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                Personal Details
+              </button>
+
+              <!-- Item 2: Security Settings -->
+              <button onclick="switchTab('security')" id="nav-security" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-50 text-slate-500 hover:text-indigo-600 transition-all font-semibold text-sm text-left group">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield text-slate-400 group-hover:text-indigo-600 transition-colors">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"></path>
+                </svg>
+                Security Settings
+              </button>
+
+              <!-- Item 3: Platform Review -->
+              <button onclick="switchTab('stats')" id="nav-stats" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-50 text-slate-500 hover:text-indigo-600 transition-all font-semibold text-sm text-left group">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-star text-slate-400 group-hover:text-indigo-600 transition-colors">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+                Platform Review
+              </button>
+            </nav>
+          </div>
+        </aside>
+
+        <!-- RIGHT COLUMN: CONTENT SECTIONS -->
+        <div class="lg:col-span-9 animate-enter" style="animation-delay: 200ms">
+          
+          <!-- SECTION 1: PERSONAL DETAILS (UPDATED DESIGN) -->
+          <section id="details" class="tab-content relative bg-white rounded-[2rem] border border-slate-100 shadow-xl shadow-indigo-100/20 overflow-hidden transition-all duration-300 ease-in-out">
+            
+            <!-- Corner Blob Decoration -->
+            <div class="absolute -top-16 -right-16 w-64 h-64 bg-indigo-50/80 rounded-full blur-3xl z-0 pointer-events-none"></div>
+
+            <div class="p-8 md:p-10 relative z-10">
+              <!-- Header -->
+              <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
+                  <div class="flex items-center gap-4">
+                      <div class="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600 shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                      </div>
+                      <h2 class="text-2xl font-bold text-slate-800 tracking-tight">Personal Details</h2>
+                  </div>
+                  <div class="bg-slate-50 text-slate-400 text-[10px] font-bold px-3 py-1.5 rounded-full uppercase tracking-wide self-start md:self-center border border-slate-100/50">
+                    Information visible to administration
+                  </div>
+              </div>
+              
+              <!-- Form Grid -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-8">
+                  
+                  <!-- Full Name -->
+                  <div class="space-y-2">
+                      <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Full Name</label>
+                      <input type="text" id="educator-name" class="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-slate-700 font-semibold text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:bg-white transition-all outline-none shadow-sm">
+                  </div>
+
+                  <!-- Work Email -->
+                  <div class="space-y-2">
+                      <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Work Email</label>
+                      <input type="email" id="educator-email" class="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-slate-700 font-semibold text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:bg-white transition-all outline-none shadow-sm">
+                  </div>
+
+              </div>
+
+              <!-- Footer Action -->
+              <div class="flex flex-wrap items-center justify-end gap-3 mt-16">
+                  <button type="button" onclick="logout('educator-login.html')" class="px-6 py-3 rounded-xl border border-slate-200 text-slate-600 font-bold text-sm hover:bg-slate-50 hover:border-slate-300 transition-all">
+                      Log out
+                  </button>
+                  <button type="button" id="save-profile-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm px-8 py-3 rounded-xl shadow-lg shadow-indigo-200 transition-all transform hover:scale-[1.02] active:scale-95">
+                      Save Changes
+                  </button>
+              </div>
+            </div>
+          </section>
+
+           <!-- SECTION: SECURITY (HIDDEN) -->
+           <section id="security" class="tab-content hidden opacity-0 transition-all duration-300 ease-in-out bg-white rounded-[2rem] border border-slate-100 shadow-xl shadow-indigo-100/20 p-8 md:p-10">
+            
+            <h2 class="text-2xl font-bold text-slate-800 tracking-tight mb-8">Security</h2>
+
+            <!-- Password Section -->
+            <div class="mb-10">
+                <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">Password</h3>
+                
+                <div class="bg-slate-50/50 border border-slate-200 rounded-2xl p-5 space-y-4">
+                    <h4 class="text-sm font-bold text-slate-700">Change Password</h4>
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Current Password</label>
+                        <input type="password" id="current-password" placeholder="Enter current password" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-700 font-semibold text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none shadow-sm">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block">New Password</label>
+                        <input type="password" id="new-password" placeholder="At least 6 characters" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-700 font-semibold text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none shadow-sm">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Confirm New Password</label>
+                        <input type="password" id="confirm-password" placeholder="Confirm new password" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-700 font-semibold text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none shadow-sm">
+                    </div>
+                    <p id="password-message" class="text-sm font-medium hidden"></p>
+                    <button type="button" id="update-password-btn" class="px-5 py-2.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 text-sm font-bold rounded-lg transition-colors">
+                        Update Password
+                    </button>
+                </div>
+            </div>
+
+          </section>
+
+          <!-- SECTION 2: PLATFORM REVIEW (REDESIGNED) -->
+          <section id="stats" class="tab-content hidden opacity-0 transition-all duration-300 ease-in-out">
+            <div class="bg-white rounded-[2rem] border border-slate-100 shadow-xl shadow-indigo-100/20 p-8 md:p-12 relative overflow-hidden">
+                <!-- Header -->
+                <div class="flex justify-between items-start mb-10">
+                    <div>
+                        <h2 class="text-3xl font-extrabold text-slate-800 tracking-tight mb-2">Platform Review</h2>
+                        <p class="text-slate-500 font-medium text-sm">Help us improve EduQuest. Your rating takes 10 seconds.</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-indigo-50 text-indigo-500 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-square"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
+                    <!-- Review Form (full width) -->
+                    <div class="lg:col-span-12 space-y-8">
+                        <!-- Center to review (educator can review a linked admin) -->
+                        <div id="educator-review-center-wrap">
+                            <label class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 block">Center to review</label>
+                            <select id="educator-review-target" class="w-full px-4 py-3 rounded-xl bg-[#F8FAFC] border border-slate-200 text-slate-700 font-semibold text-sm focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500">
+                                <option value="">Loading...</option>
+                            </select>
+                            <p id="educator-review-no-centers" class="hidden mt-2 text-sm text-slate-500">You are not assigned to any center yet.</p>
+                        </div>
+                        <!-- Star Rating Input -->
+                        <div>
+                            <label class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 block">Rate your experience</label>
+                            <div class="flex gap-2" id="star-container">
+                                <!-- Stars injected by loop but hardcoded for single block requirement simplicity with JS handlers attached -->
+                                <button onclick="rate(1)" class="group transition-transform active:scale-95 focus:outline-none">
+                                    <svg id="star-1" class="w-10 h-10 text-slate-200 fill-transparent hover:text-amber-400 transition-colors" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                                </button>
+                                <button onclick="rate(2)" class="group transition-transform active:scale-95 focus:outline-none">
+                                    <svg id="star-2" class="w-10 h-10 text-slate-200 fill-transparent hover:text-amber-400 transition-colors" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                                </button>
+                                <button onclick="rate(3)" class="group transition-transform active:scale-95 focus:outline-none">
+                                    <svg id="star-3" class="w-10 h-10 text-slate-200 fill-transparent hover:text-amber-400 transition-colors" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                                </button>
+                                <button onclick="rate(4)" class="group transition-transform active:scale-95 focus:outline-none">
+                                    <svg id="star-4" class="w-10 h-10 text-slate-200 fill-transparent hover:text-amber-400 transition-colors" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                                </button>
+                                <button onclick="rate(5)" class="group transition-transform active:scale-95 focus:outline-none">
+                                    <svg id="star-5" class="w-10 h-10 text-slate-200 fill-transparent hover:text-amber-400 transition-colors" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                                </button>
+                            </div>
+                            <!-- Feedback Text appearing on right side of stars as requested "text on the right changes" -->
+                            <p id="rating-text" class="h-5 text-sm font-bold text-indigo-600 mt-3 ml-1 transition-opacity opacity-0 transform translate-y-2">Excellent!</p>
+                        </div>
+
+                        <!-- Feedback -->
+                        <div>
+                            <label class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 block">Additional Feedback</label>
+                            <div class="relative">
+                                <textarea id="educator-review-comment" class="w-full bg-[#F8FAFC] border border-slate-200/60 rounded-xl p-4 h-32 text-sm font-semibold text-slate-700 focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 outline-none resize-none transition-all placeholder:text-slate-400" placeholder="Tell us what to improve (optional)..."></textarea>
+                                <span class="absolute bottom-4 right-4 text-[10px] font-bold text-slate-400">0/200</span>
+                            </div>
+                        </div>
+
+                        <!-- Submit -->
+                        <button type="button" id="educator-review-submit" class="bg-violet-600 hover:bg-violet-700 text-white px-8 py-3.5 rounded-xl font-bold text-sm shadow-lg shadow-violet-200 flex items-center gap-2 transition-transform hover:-translate-y-0.5 active:translate-y-0">
+                            Submit Review 
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-send"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+          </section>
+
+        </div>
+      </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-900 text-slate-300 py-12 border-t border-slate-800">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+          <div class="space-y-4">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-compass w-5 h-5">
+                  <path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z"></path>
+                  <circle cx="12" cy="12" r="10"></circle>
+                </svg>
+              </div>
+              <span class="text-lg font-bold text-white tracking-tight">
+                EduQuest
+              </span>
+            </div>
+            <p class="text-xs leading-relaxed text-slate-400 font-medium max-w-xs">
+              Empowering educators to inspire the next generation through gamified learning.
+            </p>
+          </div>
+          <div>
+            <h4 class="font-bold text-white mb-4 text-sm">Product</h4>
+            <ul class="space-y-2 text-xs font-medium text-slate-400">
+              <li><a href="#" class="hover:text-indigo-400 transition-colors">Features</a></li>
+              <li><a href="#" class="hover:text-indigo-400 transition-colors">Pricing</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="font-bold text-white mb-4 text-sm">Resources</h4>
+            <ul class="space-y-2 text-xs font-medium text-slate-400">
+              <li><a href="#" class="hover:text-indigo-400 transition-colors">Help Center</a></li>
+              <li><a href="#" class="hover:text-indigo-400 transition-colors">Community</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="font-bold text-white mb-4 text-sm">Legal</h4>
+            <ul class="space-y-2 text-xs font-medium text-slate-400">
+              <li><a href="#" class="hover:text-indigo-400 transition-colors">Privacy</a></li>
+              <li><a href="#" class="hover:text-indigo-400 transition-colors">Terms</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="border-t border-slate-800 pt-6 flex justify-center">
+          <p class="text-xs font-medium text-slate-500">
+            © 2024 EduQuest. All rights reserved.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        if (localStorage.getItem('role') !== 'educator') {
+          window.location.href = 'educator-login.html';
+          return;
+        }
+        var educatorId = localStorage.getItem('userId');
+        if (!educatorId) {
+          window.location.href = 'educator-login.html';
+          return;
+        }
+
+        lucide.createIcons();
+        window.switchTab = function (id) {
+          const activeClass='w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-indigo-50 text-indigo-600 font-bold text-sm shadow-sm transition-all text-left group';
+          const inactiveClass='w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-50 text-slate-500 hover:text-indigo-600 transition-all font-semibold text-sm text-left group';
+          
+          const navIds = ['details', 'account', 'security', 'stats'];
+          
+          navIds.forEach(tab=>{
+              const el = document.getElementById('nav-'+tab);
+              if(el) {
+                  el.className=(tab===id)?activeClass:inactiveClass;
+                  const icon = el.querySelector('svg');
+                  if(icon){
+                      if(tab===id){
+                          icon.classList.remove('text-slate-400');
+                      } else {
+                          icon.classList.add('text-slate-400');
+                      }
+                  }
+              }
+          });
+          
+          const current=document.querySelector('.tab-content:not(.hidden)');
+          const next=document.getElementById(id);
+          
+          if(current && current!==next){
+              current.classList.replace('opacity-100','opacity-0');
+              setTimeout(()=>{
+                  current.classList.add('hidden');
+                  if(next){
+                      next.classList.remove('hidden');
+                      // Small delay to allow display:block to apply before opacity transition
+                      setTimeout(()=>{next.classList.replace('opacity-0','opacity-100')},50);
+                  }
+              },300);
+          } else if (!current && next) {
+               next.classList.remove('hidden');
+               setTimeout(()=>{next.classList.replace('opacity-0','opacity-100')},50);
+          }
+      }
+
+      var educatorReviewRating = 0;
+      window.rate = function (n) {
+        educatorReviewRating = n;
+        var texts = ["Poor", "Fair", "Good", "Very Good", "Excellent!"];
+        var textEl = document.getElementById('rating-text');
+        for (var i = 1; i <= 5; i++) {
+          var star = document.getElementById('star-' + i);
+          if (star) {
+            if (i <= n) {
+              star.classList.remove('text-slate-200', 'fill-transparent');
+              star.classList.add('text-amber-400', 'fill-amber-400');
+            } else {
+              star.classList.add('text-slate-200', 'fill-transparent');
+              star.classList.remove('text-amber-400', 'fill-amber-400');
+            }
+          }
+        }
+        if (textEl) {
+          textEl.innerText = texts[n - 1];
+          textEl.classList.remove('opacity-0', 'translate-y-2');
+        }
+      };
+
+      var API_BASE = '/api';
+
+        function getAuthHeadersOrJson() {
+          return typeof getAuthHeaders === 'function' ? getAuthHeaders() : { 'Content-Type': 'application/json' };
+        }
+
+        fetch(API_BASE + '/educators/' + educatorId, { headers: getAuthHeadersOrJson() })
+          .then(function(r) {
+            if (!r.ok) { if (r.status === 403) window.location.href = 'educator-login.html'; return null; }
+            return r.json();
+          })
+          .then(function(data) {
+            if (!data) return;
+            var nameEl = document.getElementById('educator-name');
+            var emailEl = document.getElementById('educator-email');
+            var heroEl = document.getElementById('educator-hero-name');
+            if (nameEl) nameEl.value = data.name != null ? data.name : '';
+            if (emailEl) emailEl.value = data.email != null ? data.email : '';
+            if (heroEl) heroEl.textContent = data.name != null && String(data.name).trim() ? data.name.trim() : 'Educator';
+          })
+          .catch(function() {
+            var heroEl = document.getElementById('educator-hero-name');
+            if (heroEl) heroEl.textContent = 'Unable to load';
+          });
+
+        var saveBtn = document.getElementById('save-profile-btn');
+        if (saveBtn) saveBtn.addEventListener('click', function() {
+          var nameEl = document.getElementById('educator-name');
+          var emailEl = document.getElementById('educator-email');
+          var name = nameEl ? String(nameEl.value || '').trim() : '';
+          var email = emailEl ? String(emailEl.value || '').trim() : '';
+          if (!name || !email) { alert('Name and email are required.'); return; }
+          saveBtn.disabled = true;
+          fetch(API_BASE + '/educators/' + educatorId, {
+            method: 'PUT',
+            headers: Object.assign({ 'Content-Type': 'application/json' }, getAuthHeadersOrJson()),
+            body: JSON.stringify({ name: name, email: email })
+          })
+            .then(function(r) { return r.json().then(function(data) { return { ok: r.ok, data: data }; }); })
+            .then(function(result) {
+              saveBtn.disabled = false;
+              if (result.ok) {
+                try { localStorage.setItem('educatorName', name); } catch (e) {}
+                var navName = document.getElementById('navbar-educator-name');
+                if (navName) navName.textContent = name;
+                var heroEl = document.getElementById('educator-hero-name');
+                if (heroEl) heroEl.textContent = name;
+                alert('Profile saved.');
+              } else {
+                alert((result.data && result.data.error) || 'Failed to save.');
+              }
+            })
+            .catch(function() { saveBtn.disabled = false; alert('Network error.'); });
+        });
+
+        var updatePwBtn = document.getElementById('update-password-btn');
+        var currentPw = document.getElementById('current-password');
+        var newPw = document.getElementById('new-password');
+        var confirmPw = document.getElementById('confirm-password');
+        var passwordMsg = document.getElementById('password-message');
+        function showPasswordMsg(text, isError) {
+          if (!passwordMsg) return;
+          passwordMsg.textContent = text;
+          passwordMsg.classList.remove('hidden');
+          passwordMsg.className = 'text-sm font-medium ' + (isError ? 'text-rose-600' : 'text-emerald-600');
+        }
+        if (updatePwBtn) updatePwBtn.addEventListener('click', function() {
+          var cur = currentPw ? currentPw.value : '';
+          var newVal = newPw ? newPw.value : '';
+          var conf = confirmPw ? confirmPw.value : '';
+          if (!cur || !newVal || !conf) { showPasswordMsg('Please fill all password fields.', true); return; }
+          if (newVal.length < 6) { showPasswordMsg('New password must be at least 6 characters.', true); return; }
+          if (newVal !== conf) { showPasswordMsg('New password and confirm do not match.', true); return; }
+          updatePwBtn.disabled = true;
+          if (passwordMsg) passwordMsg.classList.add('hidden');
+          fetch(API_BASE + '/educators/' + educatorId + '/change-password', {
+            method: 'POST',
+            headers: Object.assign({ 'Content-Type': 'application/json' }, getAuthHeadersOrJson()),
+            body: JSON.stringify({ currentPassword: cur, newPassword: newVal })
+          })
+            .then(function(r) { return r.json().then(function(data) { return { ok: r.ok, data: data }; }); })
+            .then(function(result) {
+              updatePwBtn.disabled = false;
+              if (result.ok) {
+                showPasswordMsg('Password updated successfully.', false);
+                if (currentPw) currentPw.value = '';
+                if (newPw) newPw.value = '';
+                if (confirmPw) confirmPw.value = '';
+              } else {
+                showPasswordMsg((result.data && result.data.error) || 'Failed to update password.', true);
+              }
+            })
+            .catch(function() { updatePwBtn.disabled = false; showPasswordMsg('Network error.', true); });
+        });
+
+        var targetSelect = document.getElementById('educator-review-target');
+        var noCenters = document.getElementById('educator-review-no-centers');
+        var headers = typeof getAuthHeaders === 'function' ? getAuthHeaders() : { 'Content-Type': 'application/json' };
+        fetch('/api/reviews/educator-targets', { headers: headers }).then(function(r){ return r.json(); }).then(function(list){
+          if (!Array.isArray(list)) return;
+          targetSelect.innerHTML = '';
+          if (list.length === 0) {
+            targetSelect.classList.add('hidden');
+            if (noCenters) noCenters.classList.remove('hidden');
+            return;
+          }
+          targetSelect.classList.remove('hidden');
+          if (noCenters) noCenters.classList.add('hidden');
+          targetSelect.appendChild(new Option('Select a center', ''));
+          list.forEach(function(a){ targetSelect.appendChild(new Option(a.center_name || 'Center #' + a.id, a.id)); });
+        }).catch(function(){ targetSelect.innerHTML = '<option value="">Unable to load</option>'; });
+
+        var btn = document.getElementById('educator-review-submit');
+        if (btn) btn.addEventListener('click', function(){
+          var targetId = targetSelect && targetSelect.value ? parseInt(targetSelect.value, 10) : 0;
+          if (!targetId) { alert('Please select a center to review.'); return; }
+          if (!educatorReviewRating || educatorReviewRating < 1 || educatorReviewRating > 5) { alert('Please select a rating (1–5).'); return; }
+          var commentEl = document.getElementById('educator-review-comment');
+          var comment = commentEl ? commentEl.value.trim() : '';
+          btn.disabled = true;
+          btn.textContent = 'Sending...';
+          fetch('/api/reviews', {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify({ target_role: 'educatoradmin', target_id: targetId, rating: educatorReviewRating, comment: comment })
+          }).then(function(r){ return r.json().then(function(data){ return { ok: r.ok, data: data }; }); }).then(function(result){
+            btn.disabled = false;
+            btn.innerHTML = 'Submit Review <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-send"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg>';
+            if (result.ok && result.data.success) alert('Thank you! Your review was submitted.'); else alert((result.data && result.data.error) || 'Failed to submit review.');
+          }).catch(function(){ btn.disabled = false; btn.innerHTML = 'Submit Review <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-send"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg>'; alert('Network error.'); });
+        });
+      });
+    </script>
+</body></html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduQuest - Choose Your Plan</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Nunito', sans-serif; background-color: #F8FAFC; }
+    .glass-panel {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.08);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-6">
+  <div class="absolute inset-0 bg-gradient-to-br from-indigo-50/80 via-white to-violet-50/80 -z-10"></div>
+
+  <div class="flex items-center gap-2 mb-10">
+    <img src="assets/logo.png" alt="EduQuest" class="h-10 w-auto object-contain" />
+  </div>
+
+  <h1 class="text-3xl font-extrabold text-slate-800 mb-2">Choose your plan</h1>
+  <p class="text-slate-500 mb-10">Select a plan to get started with EduQuest.</p>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl w-full">
+    <!-- Basic Plan -->
+    <div class="glass-panel rounded-2xl p-8 border border-slate-100" id="pricing-card-0">
+      <div class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-2">Basic</div>
+      <h2 class="text-xl font-bold text-slate-800 mb-2" id="pricing-name-0">Basic Plan</h2>
+      <p class="text-slate-500 text-sm mb-4" id="pricing-desc-0">Suitable for small tuition centers</p>
+      <p class="text-slate-600 text-sm font-medium mb-6" id="pricing-limit-0">Up to 5 classes</p>
+      <button type="button" id="choose-basic" class="w-full py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm transition-colors">
+        Choose Basic
+      </button>
+    </div>
+
+    <!-- Pro Plan -->
+    <div class="glass-panel rounded-2xl p-8 border border-indigo-200 ring-2 ring-indigo-100" id="pricing-card-1">
+      <div class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-2">Pro</div>
+      <h2 class="text-xl font-bold text-slate-800 mb-2" id="pricing-name-1">Pro Plan</h2>
+      <p class="text-slate-500 text-sm mb-4" id="pricing-desc-1">Unlimited classes</p>
+      <p class="text-slate-600 text-sm font-medium mb-6" id="pricing-limit-1">Unlimited classes</p>
+      <button type="button" id="choose-pro" class="w-full py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm transition-colors">
+        Choose Pro
+      </button>
+    </div>
+  </div>
+
+  <a href="eduquest.html" class="mt-8 text-sm font-semibold text-slate-500 hover:text-indigo-600 transition-colors">Back to home</a>
+
+  <script>
+    lucide.createIcons();
+
+    (function () {
+      fetch('/api/content/landing')
+        .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
+        .then(function (data) {
+          if (!Array.isArray(data.pricing)) return;
+          data.pricing.forEach(function (plan, i) {
+            if (i > 1) return;
+            var nameEl = document.getElementById('pricing-name-' + i);
+            var descEl = document.getElementById('pricing-desc-' + i);
+            var limitEl = document.getElementById('pricing-limit-' + i);
+            if (nameEl && plan.name) nameEl.textContent = plan.name;
+            if (descEl && plan.description) descEl.textContent = plan.description;
+            if (limitEl && plan.limitLabel) limitEl.textContent = plan.limitLabel;
+          });
+        })
+        .catch(function () {});
+    })();
+
+    function selectPlan(plan) {
+      localStorage.setItem("selectedPlan", plan);
+      var label = plan === "basic" ? "Basic" : "Pro";
+      alert("You have subscribed to the " + label + " plan.");
+      window.location.href = "educatoradmin-signup.html";
+    }
+
+    document.getElementById("choose-basic").addEventListener("click", function () { selectPlan("basic"); });
+    document.getElementById("choose-pro").addEventListener("click", function () { selectPlan("pro"); });
+  </script>
+</body>
+</html>

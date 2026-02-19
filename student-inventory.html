@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduQuest - Customize Your Explorer</title>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="js/api.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+:root { --font-family: 'Nunito', sans-serif; }
+body { font-family: var(--font-family); -webkit-font-smoothing: antialiased; background-color: #fafaf9; }
+/* Subtle Pastel Background */
+.bg-pastel-mesh {
+position: fixed; inset: 0; z-index: -50;
+background:
+radial-gradient(at 0% 0%, rgba(224, 231, 255, 0.5) 0px, transparent 50%),
+radial-gradient(at 100% 0%, rgba(255, 237, 213, 0.4) 0px, transparent 50%),
+radial-gradient(at 100% 100%, rgba(220, 252, 231, 0.4) 0px, transparent 50%),
+radial-gradient(at 0% 100%, rgba(255, 228, 230, 0.4) 0px, transparent 50%);
+filter: blur(60px);
+}
+/* Micro pattern for texture */
+.bg-texture {
+position: fixed; inset: 0; z-index: -49;
+opacity: 0.3;
+background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2394a3b8' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.glass-card {
+background: rgba(255, 255, 255, 0.8);
+backdrop-filter: blur(12px);
+-webkit-backdrop-filter: blur(12px);
+border: 1px solid rgba(255, 255, 255, 0.6);
+}
+@keyframes slide-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.animate-enter { animation: slide-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
+@keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-5px); } 100% { transform: translateY(0px); } }
+.animate-float { animation: float 5s ease-in-out infinite; }
+@keyframes breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
+.animate-breathe { animation: breathe 4s ease-in-out infinite; }
+@keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); } 50% { box-shadow: 0 0 20px 0 rgba(99, 102, 241, 0.2); } }
+.animate-pulse-glow { animation: pulse-glow 3s infinite; }
+.modal-card { transition: transform 0.2s ease; }
+.card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px -4px rgba(99, 102, 241, 0.08);
+}
+/* Quantity badge – top-right, contrasting, bold */
+.quantity-badge {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  min-width: 1.75rem;
+  padding: 0.2rem 0.4rem;
+  border-radius: 0.5rem;
+  background: #1e293b;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-align: center;
+  z-index: 10;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+/* Custom Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+</style>
+<link id="all-fonts-link-font-geist" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-geist">
+.font-geist { font-family: 'Geist', sans-serif !important; }
+</style><link id="all-fonts-link-font-roboto" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-roboto">
+.font-roboto { font-family: 'Roboto', sans-serif !important; }
+</style><link id="all-fonts-link-font-montserrat" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-montserrat">
+.font-montserrat { font-family: 'Montserrat', sans-serif !important; }
+</style><link id="all-fonts-link-font-poppins" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-poppins">
+.font-poppins { font-family: 'Poppins', sans-serif !important; }
+</style><link id="all-fonts-link-font-playfair" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;900&amp;display=swap"><style id="all-fonts-style-font-playfair">
+.font-playfair { font-family: 'Playfair Display', serif !important; }
+</style><link id="all-fonts-link-font-instrument-serif" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:wght@400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-instrument-serif">
+.font-instrument-serif { font-family: 'Instrument Serif', serif !important; }
+</style><link id="all-fonts-link-font-merriweather" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&amp;display=swap"><style id="all-fonts-style-font-merriweather">
+.font-merriweather { font-family: 'Merriweather', serif !important; }
+</style><link id="all-fonts-link-font-bricolage" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-bricolage">
+.font-bricolage { font-family: 'Bricolage Grotesque', sans-serif !important; }
+</style><link id="all-fonts-link-font-jakarta" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap"><style id="all-fonts-style-font-jakarta">
+.font-jakarta { font-family: 'Plus Jakarta Sans', sans-serif !important; }
+</style><link id="all-fonts-link-font-manrope" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap"><style id="all-fonts-style-font-manrope">
+.font-manrope { font-family: 'Manrope', sans-serif !important; }
+</style><link id="all-fonts-link-font-space-grotesk" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-space-grotesk">
+.font-space-grotesk { font-family: 'Space Grotesk', sans-serif !important; }
+</style><link id="all-fonts-link-font-work-sans" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700;800&amp;display=swap"><style id="all-fonts-style-font-work-sans">
+.font-work-sans { font-family: 'Work Sans', sans-serif !important; }
+</style><link id="all-fonts-link-font-pt-serif" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=PT+Serif:wght@400;700&amp;display=swap"><style id="all-fonts-style-font-pt-serif">
+.font-pt-serif { font-family: 'PT Serif', serif !important; }
+</style><link id="all-fonts-link-font-geist-mono" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-geist-mono">
+.font-geist-mono { font-family: 'Geist Mono', monospace !important; }
+</style><link id="all-fonts-link-font-space-mono" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&amp;display=swap"><style id="all-fonts-style-font-space-mono">
+.font-space-mono { font-family: 'Space Mono', monospace !important; }
+</style><link id="all-fonts-link-font-quicksand" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-quicksand">
+.font-quicksand { font-family: 'Quicksand', sans-serif !important; }
+</style><link id="all-fonts-link-font-newsreader" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400..800&amp;display=swap"><style id="all-fonts-style-font-newsreader">
+.font-newsreader { font-family: 'Newsreader', serif !important; }
+</style><link id="all-fonts-link-font-google-sans-flex" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-google-sans-flex">
+.font-google-sans-flex { font-family: 'Google Sans Flex', sans-serif !important; }
+</style><link id="all-fonts-link-font-oswald" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-oswald">
+.font-oswald { font-family: 'Oswald', sans-serif !important; }
+</style><link id="all-fonts-link-font-dm-sans" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-dm-sans">
+.font-dm-sans { font-family: 'DM Sans', sans-serif !important; }
+</style><link id="all-fonts-link-font-cormorant" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-cormorant">
+.font-cormorant { font-family: 'Cormorant Garamond', serif !important; }
+</style></head>
+  <body class="text-slate-600 selection:bg-indigo-100 selection:text-indigo-800 pb-12">
+    <div class="bg-pastel-mesh"></div>
+    <div class="bg-texture"></div>
+
+    <!-- NAVIGATION -->
+    <nav class="fixed top-0 w-full z-50 pt-4 pb-2 px-4">
+      <div class="max-w-7xl mx-auto glass-card rounded-full px-4 py-3 flex items-center justify-between shadow-sm shadow-indigo-100/50">
+        <!-- Brand -->
+        <div class="flex items-center gap-3 pl-2">
+          <img src="assets/logo.png" alt="EduQuest" class="h-9 w-auto object-contain" />
+        </div>
+
+        <!-- Links -->
+        <div class="hidden md:flex items-center gap-1 p-1 bg-slate-100/50 rounded-full border border-slate-200/50">
+          <a href="student-dashboard.html" class="hover:text-indigo-500 hover:bg-white/60 transition-all text-sm font-semibold text-slate-500 rounded-full pt-2 pr-5 pb-2 pl-5">
+            Home
+          </a>
+          <a href="student-class.html" class="hover:text-indigo-500 hover:bg-white/60 transition-all text-sm font-semibold text-slate-500 rounded-full pt-2 pr-5 pb-2 pl-5">
+            My Classes
+          </a>
+          <a href="student-shop.html" class="hover:text-indigo-500 hover:bg-white/60 transition-all text-sm font-semibold text-slate-500 rounded-full pt-2 pr-5 pb-2 pl-5">
+            Shop
+          </a>
+        </div>
+
+        <!-- Profile -->
+        <div class="flex items-center gap-4 pr-2">
+          <button class="relative p-2 text-slate-400 hover:text-indigo-500 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bell">
+              <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
+              <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
+            </svg>
+            <span class="absolute top-2 right-2.5 w-2 h-2 bg-rose-500 rounded-full border border-white"></span>
+          </button>
+          <div class="hidden sm:flex flex-col items-end">
+            <span id="navbar-student-name" class="text-xs font-bold text-slate-700"></span>
+            <span id="navbar-role-badge" class="text-[10px] font-bold text-indigo-500 bg-indigo-50 rounded-full pt-0.5 pr-2 pb-0.5 pl-2">Student</span>
+          </div>
+          <div class="bg-white w-10 h-10 border-indigo-100 border-2 rounded-full pt-0.5 pr-0.5 pb-0.5 pl-0.5 relative" onclick="window.location.href='student-profile.html'" role="button">
+            <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Alex&amp;backgroundColor=e0e7ff" alt="Profile" class="w-full h-full object-cover rounded-full">
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- MAIN CUSTOMIZER INTERFACE -->
+    <main class="max-w-[85rem] mx-auto pt-28 pb-12 px-6">
+      <!-- Header -->
+      <div class="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-indigo-600 via-violet-600 to-fuchsia-600 p-8 md:p-12 shadow-2xl shadow-indigo-200/50 mb-10 animate-enter group isolate">
+        <!-- Dynamic Background -->
+        <div class="absolute top-0 right-0 -mt-20 -mr-20 w-96 h-96 bg-white opacity-10 rounded-full blur-3xl group-hover:opacity-15 transition-opacity duration-700"></div>
+        <div class="absolute bottom-0 left-0 -mb-20 -ml-20 w-96 h-96 bg-indigo-950 opacity-20 rounded-full blur-3xl"></div>
+        <div class="absolute inset-0 bg-slate-900/90 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] backdrop-blur-[1px]"></div>
+
+        <!-- Content Container -->
+        <div class="relative z-10 flex flex-col lg:flex-row lg:items-end justify-between gap-8">
+          <div class="flex flex-col md:flex-row items-start md:items-center gap-6 md:gap-8">
+            <!-- Icon Box -->
+            <div class="relative">
+              <div class="absolute inset-0 bg-white/30 blur-xl rounded-full"></div>
+              <div class="relative w-24 h-24 rounded-3xl bg-white/10 backdrop-blur-xl border border-white/20 flex items-center justify-center shadow-2xl shadow-indigo-900/20 transform -rotate-6 group-hover:rotate-0 transition-transform duration-500 ease-out">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-wand-2 text-white drop-shadow-lg">
+                  <path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72Z"></path>
+                  <path d="m14 7 3 3"></path>
+                  <path d="M5 6v4"></path>
+                  <path d="M19 14v4"></path>
+                  <path d="M10 2v2"></path>
+                  <path d="M7 8H3"></path>
+                  <path d="M21 16h-4"></path>
+                  <path d="M11 3H9"></path>
+                </svg>
+              </div>
+            </div>
+
+            <!-- Text -->
+            <div class="space-y-2">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="px-3 py-1 rounded-full bg-white/20 border border-white/20 text-xs font-bold text-white uppercase tracking-wider backdrop-blur-sm shadow-sm">
+                  Inventory
+                </span>
+                
+              </div>
+              <h1 class="text-4xl md:text-5xl font-black text-white tracking-tight drop-shadow-md">
+                Your Cards
+              </h1>
+            </div>
+          </div>
+
+          <!-- Stats Cards -->
+          <div class="flex items-stretch gap-3 w-full lg:w-auto overflow-x-auto pb-2 lg:pb-0">
+            <!-- Coins -->
+            <div class="group/card flex-shrink-0 bg-white/10 hover:bg-white/20 transition-colors backdrop-blur-md rounded-2xl p-4 border border-white/20 flex items-center gap-4 min-w-[150px] cursor-pointer">
+              <div class="w-12 h-12 rounded-full bg-gradient-to-br from-amber-300 to-orange-400 flex items-center justify-center shadow-lg shadow-amber-900/20 group-hover/card:scale-110 transition-transform">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-coins text-amber-900">
+                  <circle cx="8" cy="8" r="6"></circle>
+                  <path d="M18.09 10.37A6 6 0 1 1 10.34 18"></path>
+                  <path d="M7 6h1v4"></path>
+                  <path d="m16.71 13.88.7.71-2.82 2.82"></path>
+                </svg>
+              </div>
+              <div>
+                <p class="text-[10px] font-bold text-indigo-200 uppercase tracking-wider mb-0.5">
+                  EduCoins
+                </p>
+                <p id="inventory-coins" class="text-2xl font-bold text-white">—</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3-ZONE LAYOUT -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start relative">
+        <!-- ZONE 1: Search + Rarity filters (Left Sidebar) -->
+        <aside class="lg:col-span-2 lg:sticky lg:top-28 animate-enter order-1" style="animation-delay: 100ms">
+          <div class="bg-white/80 backdrop-blur-xl rounded-[1.5rem] border border-white/60 shadow-lg shadow-indigo-100/30 overflow-hidden">
+            <div class="px-4 py-4 border-b border-slate-100">
+              <h3 class="text-sm font-extrabold text-slate-800 mb-3">Search</h3>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+                </div>
+                <input type="text" id="inventory-search" placeholder="Search by name..." class="w-full pl-9 pr-3 py-2 rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-300 transition-all">
+              </div>
+            </div>
+            <div class="px-4 py-3 border-b border-slate-100">
+              <h3 class="text-sm font-extrabold text-slate-800">Rarity</h3>
+            </div>
+            <div id="inventory-rarity-filters" class="p-2 flex flex-col gap-1 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0">
+              <p class="text-slate-400 text-xs px-3 py-2">Loading…</p>
+            </div>
+          </div>
+        </aside>
+
+        <!-- ZONE 2: ITEM GRID (Center) -->
+        <div class="lg:col-span-10 space-y-4 animate-enter order-3 lg:order-2" style="animation-delay: 200ms">
+          <!-- Filter Bar -->
+          <div class="flex items-center justify-between bg-white/60 backdrop-blur-sm px-4 py-2 rounded-xl border border-white">
+            <span id="inventory-count" class="text-xs font-bold text-slate-500">Showing 0 Items</span>
+          </div>
+
+          <!-- Cards Grid (owned cards) -->
+          <div id="inventory-cards-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            <p class="col-span-full text-slate-400 text-sm py-4">Loading your cards…</p>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- Zoom Modal (fullscreen, card only, no borders) -->
+    <div id="zoom-modal" class="hidden fixed inset-0 z-[100] items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm" role="dialog" aria-modal="true">
+      <div class="absolute inset-0" id="zoom-modal-backdrop"></div>
+      <div class="relative z-10 flex items-center justify-center w-full max-w-lg">
+        <div id="zoom-card" class="modal-card w-full max-w-md aspect-[3/4] flex items-center justify-center">
+          <img id="zoom-card-image" src="" alt="" class="w-full h-full max-h-[85vh] object-contain rounded-lg">
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-900 text-slate-300 py-12 border-t border-slate-800">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+          <div class="space-y-4">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-compass w-5 h-5">
+                  <path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z"></path>
+                  <circle cx="12" cy="12" r="10"></circle>
+                </svg>
+              </div>
+              <span class="text-lg font-bold text-white tracking-tight">
+                EduQuest
+              </span>
+            </div>
+            <p class="text-xs leading-relaxed text-slate-400 font-medium max-w-xs">
+              Making learning an addictive adventure for students around the
+              world.
+            </p>
+          </div>
+          <div>
+            <h4 class="font-bold text-white mb-4 text-sm">Product</h4>
+            <ul class="space-y-2 text-xs font-medium text-slate-400">
+              <li>
+                <a href="#" class="hover:text-indigo-400 transition-colors">
+                  Features
+                </a>
+              </li>
+              <li>
+                <a href="#" class="hover:text-indigo-400 transition-colors">
+                  Pricing
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="">
+            <h4 class="font-bold text-white mb-4 text-sm">Resources</h4>
+            <ul class="space-y-2 text-xs font-medium text-slate-400">
+              <li>
+                <a href="#" class="hover:text-indigo-400 transition-colors">
+                  Help Center
+                </a>
+              </li>
+              <li class="">
+                <a href="#" class="hover:text-indigo-400 transition-colors">
+                  Community
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="font-bold text-white mb-4 text-sm">Legal</h4>
+            <ul class="space-y-2 text-xs font-medium text-slate-400">
+              <li>
+                <a href="#" class="hover:text-indigo-400 transition-colors">
+                  Privacy
+                </a>
+              </li>
+              <li>
+                <a href="#" class="hover:text-indigo-400 transition-colors">
+                  Terms
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="border-t border-slate-800 pt-6 flex justify-center">
+          <p class="text-xs font-medium text-slate-500">
+            © 2024 EduQuest. All rights reserved.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        if (localStorage.getItem('role') !== 'student') {
+          window.location.href = 'student-login.html';
+          return;
+        }
+        var studentId = localStorage.getItem('userId');
+        if (!studentId) {
+          window.location.href = 'student-login.html';
+          return;
+        }
+        lucide.createIcons();
+        var API_BASE = '/api';
+        var allCards = [];
+      var filteredCards = [];
+      var searchQuery = '';
+      var activeRarityFilter = 'all';
+      var inventoryRarities = [];
+
+      function getCardImageUrl(card) {
+        if (!card || !card.image_path) return '';
+        var filename = card.image_path.replace(/^.*[/\\]/, '');
+        var base = (typeof API_BASE !== 'undefined' && API_BASE) ? API_BASE.replace(/\/api\/?$/, '') : window.location.origin;
+        return base + '/api/shop/card-image/' + encodeURIComponent(filename);
+      }
+
+      function openZoomModal(card) {
+        var modal = document.getElementById('zoom-modal');
+        var img = document.getElementById('zoom-card-image');
+        var nameEl = document.getElementById('zoom-card-name');
+        var rarityEl = document.getElementById('zoom-card-rarity');
+        if (!modal || !img) return;
+        var src = getCardImageUrl(card);
+        if (!src) src = 'https://api.dicebear.com/7.x/bottts/svg?seed=' + encodeURIComponent(card.name || 'card') + '&backgroundColor=transparent';
+        img.src = src;
+        img.alt = card.name || 'Card';
+        if (nameEl) nameEl.textContent = card.name || '';
+        if (rarityEl) rarityEl.textContent = card.rarity_name || card.rarity || '';
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        document.getElementById('zoom-card').style.transform = 'rotateX(0) rotateY(0)';
+      }
+
+      function closeZoomModal() {
+        var modal = document.getElementById('zoom-modal');
+        if (modal) {
+          modal.classList.add('hidden');
+          modal.classList.remove('flex');
+        }
+      }
+
+      function renderCards(entries) {
+        var grid = document.getElementById('inventory-cards-grid');
+        var countEl = document.getElementById('inventory-count');
+        if (!grid) return;
+        if (!entries || entries.length === 0) {
+          var msg = allCards.length === 0 ? 'You don\'t own any cards yet.' : 'No cards match your search.';
+          grid.innerHTML = '<p class="col-span-full text-slate-500 text-sm py-8 text-center">' + msg + '</p>';
+          if (countEl) countEl.textContent = 'Showing 0 Items';
+          return;
+        }
+        if (countEl) countEl.textContent = 'Showing ' + entries.length + ' Item' + (entries.length === 1 ? '' : 's');
+        grid.innerHTML = entries.map(function (entry) {
+          var card = entry.cardData;
+          var count = entry.count;
+          var imgSrc = getCardImageUrl(card);
+          if (!imgSrc) imgSrc = 'https://api.dicebear.com/7.x/bottts/svg?seed=' + encodeURIComponent(card.name || 'card') + '&backgroundColor=transparent';
+          var rarity = (card.rarity_name || card.rarity || 'Common').toUpperCase();
+          var badgeHtml = count > 1 ? '<span class="quantity-badge">×' + count + '</span>' : '';
+          return '<div class="js-inventory-card card-hover group relative bg-white rounded-2xl p-3 shadow-sm cursor-pointer" data-card=\'' + JSON.stringify(card).replace(/'/g, '&#39;') + '\'>' +
+            badgeHtml +
+            '<div class="absolute top-2 left-2 bg-slate-100 text-slate-600 border border-slate-200 text-[9px] font-extrabold px-1.5 py-0.5 rounded-md z-10">' + rarity + '</div>' +
+            '<div class="w-full aspect-[3/4] rounded-xl bg-slate-50 mb-3 flex items-center justify-center overflow-hidden group-hover:bg-slate-100 transition-colors">' +
+              '<img src="' + imgSrc + '" alt="' + (card.name || 'Card') + '" class="w-full h-full object-contain" onerror="this.style.display=\'none\'">' +
+            '</div>' +
+            '<div class="text-center"><h3 class="font-bold text-slate-800 text-xs truncate">' + (card.name || 'Card') + '</h3></div>' +
+          '</div>';
+        }).join('');
+        grid.querySelectorAll('.js-inventory-card').forEach(function (el) {
+          el.addEventListener('click', function () {
+            try {
+              var data = el.getAttribute('data-card');
+              if (data) openZoomModal(JSON.parse(data.replace(/&#39;/g, "'")));
+            } catch (e) {}
+          });
+        });
+      }
+
+      function applyFilters() {
+        var list = allCards.slice();
+        if (activeRarityFilter !== 'all') {
+          list = list.filter(function (entry) {
+            return (entry.cardData.rarity_name || entry.cardData.rarity || '').toLowerCase() === activeRarityFilter.toLowerCase();
+          });
+        }
+        if (searchQuery) {
+          var q = searchQuery.toLowerCase();
+          list = list.filter(function (entry) {
+            return (entry.cardData.name || '').toLowerCase().indexOf(q) !== -1;
+          });
+        }
+        filteredCards = list;
+        renderCards(filteredCards);
+      }
+
+      function buildRarityFilters(rarities) {
+        inventoryRarities = rarities && rarities.length ? rarities.slice() : ['Common'];
+        var container = document.getElementById('inventory-rarity-filters');
+        if (!container) return;
+        var order = ['all', 'common', 'uncommon', 'rare', 'epic', 'legendary', 'mythical'];
+        var sorted = inventoryRarities.slice().sort(function (a, b) {
+          var ai = order.indexOf(a.toLowerCase());
+          var bi = order.indexOf(b.toLowerCase());
+          if (ai === -1) ai = 999;
+          if (bi === -1) bi = 999;
+          return ai - bi;
+        });
+        var html = '<button type="button" class="js-inv-rarity flex-shrink-0 w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold transition-all ' + (activeRarityFilter === 'all' ? 'bg-gradient-to-r from-indigo-50 to-white border border-indigo-100 text-indigo-600 shadow-sm ring-2 ring-indigo-50/50' : 'hover:bg-white text-slate-500 hover:text-indigo-600 font-semibold') + '" data-rarity="all">' +
+          '<span class="flex items-center gap-3"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layout-grid"><rect width="7" height="7" x="3" y="3" rx="1"></rect><rect width="7" height="7" x="14" y="3" rx="1"></rect><rect width="7" height="7" x="14" y="14" rx="1"></rect><rect width="7" height="7" x="3" y="14" rx="1"></rect></svg>All</span></button>';
+        sorted.forEach(function (r) {
+          var label = (r || 'Common').replace(/^\w/, function (c) { return c.toUpperCase(); });
+          var isActive = activeRarityFilter.toLowerCase() === (r || '').toLowerCase();
+          html += '<button type="button" class="js-inv-rarity flex-shrink-0 w-full text-left px-3 py-2.5 rounded-xl text-sm transition-all ' + (isActive ? 'bg-gradient-to-r from-indigo-50 to-white border border-indigo-100 text-indigo-600 font-bold shadow-sm ring-2 ring-indigo-50/50' : 'hover:bg-white text-slate-500 hover:text-indigo-600 font-semibold') + '" data-rarity="' + (r || '') + '">' +
+            '<span class="flex items-center gap-3"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sparkles"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path></svg>' + label + '</span></button>';
+        });
+        container.innerHTML = html;
+        container.querySelectorAll('.js-inv-rarity').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            activeRarityFilter = this.getAttribute('data-rarity') || 'all';
+            buildRarityFilters(inventoryRarities);
+            applyFilters();
+          });
+        });
+      }
+
+      function loadCards() {
+        var grid = document.getElementById('inventory-cards-grid');
+        var countEl = document.getElementById('inventory-count');
+        if (!grid) return;
+        if (!studentId) {
+          grid.innerHTML = '<p class="col-span-full text-slate-400 text-sm py-4">Sign in to see your cards.</p>';
+          if (countEl) countEl.textContent = 'Showing 0 Items';
+          return;
+        }
+        grid.innerHTML = '<p class="col-span-full text-slate-400 text-sm py-4">Loading your cards…</p>';
+        fetch(API_BASE + '/students/' + studentId + '/cards', { headers: getAuthHeaders() })
+          .then(function (res) { return res.json(); })
+          .then(function (cards) {
+            if (!Array.isArray(cards) || cards.length === 0) {
+              allCards = [];
+              buildRarityFilters(['Common']);
+              applyFilters();
+              return;
+            }
+            var grouped = {};
+            cards.forEach(function (card) {
+              var id = card.id;
+              if (!id) return;
+              if (!grouped[id]) grouped[id] = { cardData: card, count: 0 };
+              grouped[id].count += 1;
+            });
+            var entries = Object.keys(grouped).map(function (id) { return grouped[id]; });
+            allCards = entries;
+            var seen = {};
+            var rarities = [];
+            entries.forEach(function (entry) {
+              var r = (entry.cardData.rarity_name || entry.cardData.rarity || 'Common').trim();
+              if (r && !seen[r.toLowerCase()]) { seen[r.toLowerCase()] = true; rarities.push(r); }
+            });
+            buildRarityFilters(rarities.length ? rarities : ['Common']);
+            applyFilters();
+          })
+          .catch(function (err) {
+            console.error('Failed to load inventory cards', err);
+            grid.innerHTML = '<p class="col-span-full text-slate-500 text-sm py-8 text-center">Something went wrong loading your cards. Please try again later.</p>';
+            if (countEl) countEl.textContent = 'Showing 0 Items';
+          });
+      }
+
+      function loadInventoryCoins() {
+        var el = document.getElementById('inventory-coins');
+        if (!el) return;
+        if (!studentId) { el.textContent = '0'; return; }
+        fetch(API_BASE + '/students/' + studentId + '/coins', { headers: getAuthHeaders() })
+          .then(function (res) { return res.json(); })
+          .then(function (data) { el.textContent = data.coins != null ? data.coins : 0; })
+          .catch(function () { el.textContent = '0'; });
+      }
+
+      (function () {
+        loadInventoryCoins();
+        loadCards();
+        var searchEl = document.getElementById('inventory-search');
+        if (searchEl) {
+          searchEl.addEventListener('input', function () {
+            searchQuery = (this.value || '').trim().toLowerCase();
+            applyFilters();
+          });
+        }
+        document.getElementById('zoom-modal-backdrop') && document.getElementById('zoom-modal-backdrop').addEventListener('click', closeZoomModal);
+        var card = document.getElementById('zoom-card');
+        if (card) {
+          card.addEventListener('mousemove', function (e) {
+            var rect = card.getBoundingClientRect();
+            var x = e.clientX - rect.left;
+            var y = e.clientY - rect.top;
+            var rotateY = (x / rect.width - 0.5) * 20;
+            var rotateX = (y / rect.height - 0.5) * -20;
+            card.style.transform = 'rotateX(' + rotateX + 'deg) rotateY(' + rotateY + 'deg)';
+          });
+          card.addEventListener('mouseleave', function () {
+            card.style.transform = 'rotateX(0) rotateY(0)';
+          });
+        }
+      })();
+      });
+    </script>
+    <script src="js/student-navbar.js"></script>
+</body></html>

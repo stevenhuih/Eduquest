@@ -1,0 +1,1142 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EduQuest - Student Shop</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="js/api.js"></script>
+    <script src="js/student-navbar.js"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&amp;display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --font-family: "Nunito", sans-serif;
+      }
+      body {
+        font-family: var(--font-family);
+        -webkit-font-smoothing: antialiased;
+        background-color: #fafaf9;
+      }
+      /* Subtle Pastel Background */
+      .bg-pastel-mesh {
+        position: fixed;
+        inset: 0;
+        z-index: -50;
+        background:
+          radial-gradient(
+            at 0% 0%,
+            rgba(224, 231, 255, 0.5) 0px,
+            transparent 50%
+          ),
+          radial-gradient(
+            at 100% 0%,
+            rgba(255, 237, 213, 0.4) 0px,
+            transparent 50%
+          ),
+          radial-gradient(
+            at 100% 100%,
+            rgba(220, 252, 231, 0.4) 0px,
+            transparent 50%
+          ),
+          radial-gradient(
+            at 0% 100%,
+            rgba(255, 228, 230, 0.4) 0px,
+            transparent 50%
+          );
+        filter: blur(60px);
+      }
+      /* Micro pattern for texture */
+      .bg-texture {
+        position: fixed;
+        inset: 0;
+        z-index: -49;
+        opacity: 0.3;
+        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2394a3b8' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      }
+      .glass-card {
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.6);
+      }
+      .hero-gradient {
+        background: linear-gradient(135deg, #fff7ed 0%, #fff1f2 100%);
+      }
+      @keyframes slide-up {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .animate-enter {
+        animation: slide-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        opacity: 0;
+      }
+      @keyframes float {
+        0% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+        100% {
+          transform: translateY(0px);
+        }
+      }
+      .animate-float {
+        animation: float 6s ease-in-out infinite;
+      }
+      /* Custom Scrollbar */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 10px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+      }
+      /* Rarity visuals – borders and optional glow for Epic+ */
+      .rarity-common {
+        border: 2px solid #94a3b8;
+      }
+      .rarity-uncommon {
+        border: 2px solid #22c55e;
+      }
+      .rarity-rare {
+        border: 2px solid #3b82f6;
+      }
+      .rarity-epic {
+        border: 2px solid #a855f7;
+        box-shadow: 0 0 12px rgba(168, 85, 247, 0.35);
+      }
+      .rarity-legendary {
+        border: 2px solid #eab308;
+        box-shadow: 0 0 14px rgba(234, 179, 8, 0.4);
+      }
+      .rarity-mythical {
+        border: 2px solid transparent;
+        background:
+          linear-gradient(white, white) padding-box,
+          linear-gradient(135deg, #a855f7, #eab308, #ec4899) border-box;
+        box-shadow:
+          0 0 20px rgba(168, 85, 247, 0.3),
+          0 0 30px rgba(234, 179, 8, 0.2);
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-geist"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-geist">
+      .font-geist {
+        font-family: "Geist", sans-serif !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-roboto"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-roboto">
+      .font-roboto {
+        font-family: "Roboto", sans-serif !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-montserrat"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-montserrat">
+      .font-montserrat {
+        font-family: "Montserrat", sans-serif !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-poppins"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-poppins">
+      .font-poppins {
+        font-family: "Poppins", sans-serif !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-playfair"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;900&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-playfair">
+      .font-playfair {
+        font-family: "Playfair Display", serif !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-instrument-serif"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:wght@400;500;600;700&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-instrument-serif">
+      .font-instrument-serif {
+        font-family: "Instrument Serif", serif !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-merriweather"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-merriweather">
+      .font-merriweather {
+        font-family: "Merriweather", serif !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-bricolage"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@300;400;500;600;700&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-bricolage">
+      .font-bricolage {
+        font-family: "Bricolage Grotesque", sans-serif !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-jakarta"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-jakarta">
+      .font-jakarta {
+        font-family: "Plus Jakarta Sans", sans-serif !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-manrope"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-manrope">
+      .font-manrope {
+        font-family: "Manrope", sans-serif !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-space-grotesk"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-space-grotesk">
+      .font-space-grotesk {
+        font-family: "Space Grotesk", sans-serif !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-work-sans"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700;800&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-work-sans">
+      .font-work-sans {
+        font-family: "Work Sans", sans-serif !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-pt-serif"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=PT+Serif:wght@400;700&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-pt-serif">
+      .font-pt-serif {
+        font-family: "PT Serif", serif !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-geist-mono"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500;600;700&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-geist-mono">
+      .font-geist-mono {
+        font-family: "Geist Mono", monospace !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-space-mono"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-space-mono">
+      .font-space-mono {
+        font-family: "Space Mono", monospace !important;
+      }
+    </style>
+    <link
+      id="all-fonts-link-font-quicksand"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&amp;display=swap"
+    />
+    <style id="all-fonts-style-font-quicksand">
+      .font-quicksand {
+        font-family: "Quicksand", sans-serif !important;
+      }
+    </style>
+  </head>
+  <body
+    class="text-slate-600 selection:bg-indigo-100 selection:text-indigo-800 pb-12"
+  >
+    <div class="bg-pastel-mesh"></div>
+    <div class="bg-texture"></div>
+
+    <!-- NAVIGATION -->
+    <nav class="fixed top-0 w-full z-50 pt-4 pb-2 px-4">
+      <div
+        class="max-w-7xl mx-auto glass-card rounded-full px-4 py-3 flex items-center justify-between shadow-sm shadow-indigo-100/50"
+      >
+        <!-- Brand -->
+        <div class="flex items-center gap-3 pl-2">
+          <img
+            src="assets/logo.png"
+            alt="EduQuest"
+            class="h-9 w-auto object-contain"
+          />
+        </div>
+
+        <!-- Links -->
+        <div
+          class="hidden md:flex items-center gap-1 p-1 bg-slate-100/50 rounded-full border border-slate-200/50"
+        >
+          <a
+            href="student-dashboard.html"
+            class="hover:text-indigo-500 hover:bg-white/60 transition-all text-sm font-semibold text-slate-500 rounded-full pt-2 pr-5 pb-2 pl-5"
+            >Home</a
+          >
+          <a
+            href="student-class.html"
+            class="hover:text-indigo-500 hover:bg-white/60 transition-all text-sm font-semibold text-slate-500 rounded-full pt-2 pr-5 pb-2 pl-5"
+            >My Classes</a
+          >
+          <a
+            href="student-shop.html"
+            class="transition-all text-sm font-bold text-indigo-600 bg-white rounded-full pt-2 pr-5 pb-2 pl-5 shadow-sm"
+            >Shop</a
+          >
+        </div>
+
+        <!-- Profile -->
+        <div class="flex items-center gap-4 pr-2">
+          <button
+            class="hover:text-indigo-500 transition-colors text-slate-400 pt-2 pr-2 pb-2 pl-2 relative"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="lucide lucide-bell"
+            >
+              <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
+              <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
+            </svg>
+            <span
+              class="absolute top-2 right-2.5 w-2 h-2 bg-rose-500 rounded-full border border-white"
+            ></span>
+          </button>
+          <div class="hidden sm:flex flex-col items-end">
+            <span
+              id="navbar-student-name"
+              class="text-xs font-bold text-slate-700"
+            ></span>
+            <span
+              class="text-[10px] font-bold text-indigo-500 bg-indigo-50 rounded-full pt-0.5 pr-2 pb-0.5 pl-2"
+              style=""
+              >Student</span
+            >
+          </div>
+          <div
+            class="bg-white w-10 h-10 border-indigo-100 border-2 rounded-full pt-0.5 pr-0.5 pb-0.5 pl-0.5 relative"
+            onclick="window.location.href = 'student-profile.html'"
+            role="button"
+          >
+            <img
+              src="https://api.dicebear.com/7.x/notionists/svg?seed=Alex&amp;backgroundColor=e0e7ff"
+              alt="Profile"
+              class="w-full h-full object-cover rounded-full"
+            />
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- MAIN CONTENT - SHOP -->
+    <main class="max-w-7xl mx-auto pt-28 pb-12 px-6">
+      <!-- SHOP HEADER -->
+      <section
+        class="relative w-full rounded-[2.5rem] bg-white border border-white shadow-xl shadow-indigo-100/30 overflow-hidden mb-8 animate-enter min-h-[240px]"
+      >
+        <!-- Hero background image -->
+        <div
+          class="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style="
+            background-image: url(&quot;assets/student-shop-hero.png&quot;);
+          "
+        ></div>
+        <!-- Gradient overlay: uniform white for text readability -->
+        <div
+          class="absolute inset-0 bg-white/60"
+        ></div>
+
+        <div
+          class="relative z-10 px-8 py-10 flex justify-between items-center min-h-[200px]"
+        >
+          <!-- Left corner: Coin balance -->
+          <div class="flex flex-col items-start">
+            <div
+              class="bg-white/60 backdrop-blur-md border border-white rounded-2xl p-2 pl-3 pr-4 shadow-sm flex items-center gap-3"
+            >
+              <div
+                class="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center text-amber-500 shadow-inner"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  stroke="none"
+                >
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"
+                  ></path>
+                  <path
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M12 18V6"
+                  ></path>
+                </svg>
+              </div>
+              <div class="text-left">
+                <p
+                  id="coin-balance"
+                  class="text-2xl font-black text-slate-700 leading-none"
+                >
+                  —
+                </p>
+                <p
+                  class="text-[10px] font-bold text-slate-400 uppercase tracking-wide"
+                >
+                  Available Coins
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Icon + Title + Description -->
+          <div
+            class="flex flex-col items-center justify-center text-center gap-4 max-w-md"
+          >
+            <div class="flex flex-col items-center gap-4">
+              <div
+                class="w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-300/50 rotate-3 ring-2 ring-white/50 overflow-hidden bg-white"
+              >
+                <img src="assets/logo.png" alt="EduQuest" class="w-full h-full object-contain p-1" />
+              </div>
+              <div>
+                <h1
+                  class="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight drop-shadow-sm"
+                >
+                  EduQuest Shop
+                </h1>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- LAYOUT GRID -->
+      <div class="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
+        <!-- LEFT COLUMN (Trading Cards) -->
+        <div
+          class="lg:col-span-3 space-y-8 animate-enter"
+          style="animation-delay: 100ms"
+        >
+          <a
+            href="student-inventory.html"
+            class="block rounded-2xl border border-indigo-100 bg-gradient-to-r from-indigo-50 to-white p-4 shadow-sm hover:shadow-md hover:border-indigo-200 transition-all flex items-center gap-4"
+          >
+            <div
+              class="w-12 h-12 rounded-xl bg-indigo-100 flex items-center justify-center text-indigo-600 flex-shrink-0"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="lucide lucide-layout-grid"
+              >
+                <rect width="7" height="7" x="3" y="3" rx="1"></rect>
+                <rect width="7" height="7" x="14" y="3" rx="1"></rect>
+                <rect width="7" height="7" x="14" y="14" rx="1"></rect>
+                <rect width="7" height="7" x="3" y="14" rx="1"></rect>
+              </svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <h3 class="font-bold text-slate-800 text-sm">
+                View Your Collection
+              </h3>
+              <p class="text-slate-500 text-xs font-medium">
+                See and manage the cards you own
+              </p>
+            </div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="lucide lucide-chevron-right text-indigo-400 flex-shrink-0"
+            >
+              <path d="m9 18 6-6-6-6"></path>
+            </svg>
+          </a>
+          <section>
+            <div class="flex items-center gap-2 mb-4">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="lucide lucide-sparkles text-amber-400"
+              >
+                <path
+                  d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"
+                ></path>
+              </svg>
+              <h2 class="text-lg font-extrabold text-slate-700">
+                Trading Cards
+              </h2>
+            </div>
+            <!-- Ownership progress -->
+            <div
+              id="ownership-progress"
+              class="mb-4 p-3 rounded-xl bg-slate-50 border border-slate-100 flex flex-col sm:flex-row sm:items-center gap-2"
+            >
+              <span id="ownership-text" class="text-sm font-bold text-slate-600"
+                >You own — / — cards</span
+              >
+              <div
+                id="ownership-bar-wrap"
+                class="flex-1 max-w-xs h-2 rounded-full bg-slate-200 overflow-hidden"
+                style="display: none"
+              >
+                <div
+                  id="ownership-bar"
+                  class="h-full rounded-full bg-indigo-500 transition-all duration-500"
+                  style="width: 0%"
+                ></div>
+              </div>
+            </div>
+            <div
+              id="cards-grid"
+              class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
+            >
+              <p class="text-slate-400 text-sm col-span-full">Loading cards…</p>
+            </div>
+          </section>
+        </div>
+
+        <!-- RIGHT COLUMN (Sidebar: search + filters) -->
+        <aside
+          class="lg:col-span-1 space-y-6 animate-enter"
+          style="animation-delay: 200ms"
+        >
+          <div
+            class="bg-white rounded-[1.5rem] border border-slate-100 shadow-sm overflow-hidden"
+          >
+            <div class="px-5 py-4 border-b border-slate-50">
+              <h3 class="text-sm font-extrabold text-slate-800 mb-3">Search</h3>
+              <div class="relative">
+                <div
+                  class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="lucide lucide-search"
+                  >
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.3-4.3"></path>
+                  </svg>
+                </div>
+                <input
+                  type="text"
+                  id="shop-search"
+                  placeholder="Search by name..."
+                  class="w-full pl-9 pr-3 py-2 rounded-xl border border-slate-200 text-sm font-semibold text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-300 transition-all"
+                />
+              </div>
+            </div>
+            <div class="px-5 py-4 border-b border-slate-50">
+              <h3 class="text-sm font-extrabold text-slate-800">Rarity</h3>
+            </div>
+            <div id="shop-rarity-filters" class="p-2 flex flex-col gap-1">
+              <p class="text-slate-400 text-xs px-3 py-2">Loading…</p>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-900 text-slate-300 py-12 border-t border-slate-800">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+          <div class="space-y-4">
+            <div class="flex items-center gap-2">
+              <div
+                class="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="lucide lucide-compass w-5 h-5"
+                >
+                  <path
+                    d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z"
+                  ></path>
+                  <circle cx="12" cy="12" r="10"></circle>
+                </svg>
+              </div>
+              <span class="text-lg font-bold text-white tracking-tight"
+                >EduQuest</span
+              >
+            </div>
+            <p
+              class="text-xs leading-relaxed text-slate-400 font-medium max-w-xs"
+            >
+              Making learning an addictive adventure for students around the
+              world.
+            </p>
+          </div>
+          <div>
+            <h4 class="font-bold text-white mb-4 text-sm">Product</h4>
+            <ul class="space-y-2 text-xs font-medium text-slate-400">
+              <li>
+                <a href="#" class="hover:text-indigo-400 transition-colors"
+                  >Features</a
+                >
+              </li>
+              <li>
+                <a href="#" class="hover:text-indigo-400 transition-colors"
+                  >Pricing</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="font-bold text-white mb-4 text-sm">Resources</h4>
+            <ul class="space-y-2 text-xs font-medium text-slate-400">
+              <li>
+                <a href="#" class="hover:text-indigo-400 transition-colors"
+                  >Help Center</a
+                >
+              </li>
+              <li>
+                <a href="#" class="hover:text-indigo-400 transition-colors"
+                  >Community</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="font-bold text-white mb-4 text-sm">Legal</h4>
+            <ul class="space-y-2 text-xs font-medium text-slate-400">
+              <li>
+                <a href="#" class="hover:text-indigo-400 transition-colors"
+                  >Privacy</a
+                >
+              </li>
+              <li>
+                <a href="#" class="hover:text-indigo-400 transition-colors"
+                  >Terms</a
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="border-t border-slate-800 pt-6 flex justify-center">
+          <p class="text-xs font-medium text-slate-500">
+            © 2024 EduQuest. All rights reserved.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- PURCHASE CONFIRMATION MODAL (Hidden by default, add 'flex' to class to show) -->
+    <div class="hidden fixed inset-0 z-[100] items-center justify-center p-4">
+      <!-- Backdrop -->
+      <div class="absolute inset-0 bg-slate-900/20 backdrop-blur-sm"></div>
+
+      <!-- Modal Card -->
+      <div
+        class="relative w-full max-w-sm bg-white rounded-[2rem] shadow-2xl shadow-indigo-500/20 border border-white p-6 animate-enter"
+      >
+        <div
+          class="absolute top-0 inset-x-0 h-24 bg-gradient-to-b from-indigo-50/50 to-transparent rounded-t-[2rem]"
+        ></div>
+
+        <div class="relative z-10 flex flex-col items-center text-center">
+          <div
+            class="w-20 h-20 rounded-2xl bg-amber-50 mb-4 flex items-center justify-center text-5xl shadow-inner border border-amber-100"
+          >
+            🦊
+          </div>
+
+          <h3 class="text-xl font-extrabold text-slate-800 mb-2">
+            Purchase Forest Fox?
+          </h3>
+          <p class="text-sm text-slate-500 font-medium mb-6">
+            This item will be added to your inventory immediately.
+          </p>
+
+          <div
+            class="w-full bg-slate-50 rounded-xl p-3 border border-slate-100 mb-6 flex justify-between items-center"
+          >
+            <span class="text-xs font-bold text-slate-400">Cost</span>
+            <span
+              class="text-sm font-black text-amber-500 flex items-center gap-1"
+            >
+              300
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <circle cx="12" cy="12" r="10"></circle>
+                <path
+                  stroke="currentColor"
+                  stroke-width="2"
+                  d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"
+                ></path>
+                <path
+                  stroke="currentColor"
+                  stroke-width="2"
+                  d="M12 18V6"
+                ></path>
+              </svg>
+            </span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 w-full">
+            <button
+              class="py-3 rounded-xl bg-white border border-slate-200 text-slate-500 font-bold text-sm hover:bg-slate-50 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              class="py-3 rounded-xl bg-indigo-600 text-white font-bold text-sm shadow-lg shadow-indigo-200 hover:bg-indigo-700 hover:scale-[1.02] transition-all"
+            >
+              Confirm
+            </button>
+          </div>
+
+          <p class="mt-4 text-[10px] text-slate-400 font-semibold">
+            Remaining balance: 950 Coins
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        if (localStorage.getItem('role') !== 'student') {
+          window.location.href = 'student-login.html';
+          return;
+        }
+        var studentId = localStorage.getItem('userId');
+        if (!studentId) {
+          window.location.href = 'student-login.html';
+          return;
+        }
+        lucide.createIcons();
+        var API_BASE = '/api';
+        var allCards = [];
+      var filteredCards = [];
+      var searchQuery = "";
+      var activeRarityFilter = "all";
+      var currentCoins = 0;
+      var shopRarities = [];
+
+      function updateCoinDisplays(coins) {
+        var n = coins != null ? coins : 0;
+        currentCoins = n;
+        var el = document.getElementById("coin-balance");
+        var sidebar = document.getElementById("coin-balance-sidebar");
+        if (el) el.textContent = n;
+        if (sidebar) {
+          sidebar.innerHTML =
+            n +
+            ' <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"></circle><path stroke="currentColor" stroke-width="2" d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><path stroke="currentColor" stroke-width="2" d="M12 18V6"></path></svg>';
+        }
+      }
+
+      function loadCoins() {
+        if (!studentId) {
+          updateCoinDisplays(0);
+          return;
+        }
+        fetch(API_BASE + "/students/" + studentId + "/coins", {
+          headers: getAuthHeaders(),
+        })
+          .then(function (res) {
+            return res.json();
+          })
+          .then(function (data) {
+            updateCoinDisplays(data.coins);
+          })
+          .catch(function () {
+            updateCoinDisplays(0);
+          });
+      }
+
+      function getCardImageUrl(card) {
+        if (!card || !card.image_path) return "";
+        var filename = card.image_path.replace(/^.*[/\\]/, "");
+        var base = (typeof API_BASE !== "undefined" && API_BASE) ? API_BASE.replace(/\/api\/?$/, "") : window.location.origin;
+        return base + "/api/shop/card-image/" + encodeURIComponent(filename);
+      }
+
+      function updateOwnershipProgress(ownedCount, totalCards) {
+        var textEl = document.getElementById("ownership-text");
+        var barWrap = document.getElementById("ownership-bar-wrap");
+        var bar = document.getElementById("ownership-bar");
+        if (textEl)
+          textEl.textContent =
+            "You own " +
+            (ownedCount != null ? ownedCount : "—") +
+            " / " +
+            (totalCards != null ? totalCards : "—") +
+            " cards";
+        if (
+          barWrap &&
+          bar &&
+          totalCards != null &&
+          totalCards > 0 &&
+          ownedCount != null
+        ) {
+          barWrap.style.display = "block";
+          var pct = Math.min(100, Math.round((ownedCount / totalCards) * 100));
+          bar.style.width = pct + "%";
+        }
+      }
+
+      function renderCards(cards) {
+        var grid = document.getElementById("cards-grid");
+        if (!grid) return;
+        if (!cards || cards.length === 0) {
+          var msg =
+            allCards.length === 0
+              ? "No cards available."
+              : "No cards match your search.";
+          grid.innerHTML =
+            '<p class="text-slate-400 text-sm col-span-full">' + msg + "</p>";
+          return;
+        }
+        grid.innerHTML = cards
+          .map(function (card) {
+            var canBuy = studentId && currentCoins >= (card.price || 0);
+            var imgSrc = getCardImageUrl(card);
+            if (!imgSrc) imgSrc = "https://api.dicebear.com/7.x/bottts/svg?seed=" + encodeURIComponent(card.name || "card") + "&backgroundColor=transparent";
+            var rarityClass = "rarity-" + (card.color_class || "common");
+            return (
+              '<div class="group bg-white rounded-2xl p-4 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all ' +
+              rarityClass +
+              '">' +
+              '<div class="w-full aspect-[3/4] rounded-xl bg-slate-50 mb-4 flex items-center justify-center overflow-hidden group-hover:bg-slate-100 transition-colors">' +
+              '<img src="' +
+              imgSrc +
+              '" alt="' +
+              (card.name || "Card") +
+              '" class="w-full h-full object-contain" onerror="this.style.display=\'none\'; this.nextElementSibling && (this.nextElementSibling.style.display=\'flex\');">' +
+              '<div class="w-full h-full flex items-center justify-center text-4xl text-slate-300" style="display:none;">🃏</div>' +
+              "</div>" +
+              '<div class="space-y-1 mb-4">' +
+              '<h3 class="font-bold text-slate-800 text-sm">' +
+              (card.name || "Card") +
+              "</h3>" +
+              '<p class="text-[11px] text-slate-400 font-medium">' +
+              (card.rarity_name || "") +
+              "</p>" +
+              "</div>" +
+              '<div class="flex items-center justify-between gap-3">' +
+              '<div class="flex items-center gap-1 text-amber-500 font-bold text-xs">' +
+              '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"></circle><path stroke="currentColor" stroke-width="2" d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><path stroke="currentColor" stroke-width="2" d="M12 18V6"></path></svg>' +
+              (card.price != null ? card.price : 0) +
+              "</div>" +
+              '<button type="button" class="js-buy-card flex-1 py-2 rounded-lg font-bold text-xs shadow-md transition-colors ' +
+              (canBuy
+                ? "bg-indigo-600 text-white shadow-indigo-100 hover:bg-indigo-700"
+                : "bg-slate-100 text-slate-400 cursor-not-allowed") +
+              '" data-card-id="' +
+              (card.id || "") +
+              '" data-price="' +
+              (card.price || 0) +
+              '" ' +
+              (canBuy ? "" : " disabled") +
+              ">Buy</button>" +
+              "</div>" +
+              "</div>"
+            );
+          })
+          .join("");
+        grid.querySelectorAll(".js-buy-card").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            var id = btn.getAttribute("data-card-id");
+            if (!studentId || !id) return;
+            if (btn.disabled) return;
+            btn.disabled = true;
+            fetch(API_BASE + "/cards/buy", {
+              method: "POST",
+              headers: getAuthHeaders(),
+              body: JSON.stringify({ cardId: parseInt(id, 10) }),
+            })
+              .then(function (res) {
+                return res.json().then(function (data) {
+                  return { ok: res.ok, data: data };
+                });
+              })
+              .then(function (r) {
+                if (r.ok && r.data.coins != null) {
+                  updateCoinDisplays(r.data.coins);
+                  alert("Card acquired!");
+                  loadCards();
+                } else {
+                  alert(r.data.error || "Purchase failed.");
+                  btn.disabled = false;
+                }
+              })
+              .catch(function () {
+                alert("Purchase failed.");
+                btn.disabled = false;
+              });
+          });
+        });
+      }
+
+      function applyFilters() {
+        var list = allCards.slice();
+        if (activeRarityFilter !== "all") {
+          list = list.filter(function (c) {
+            return (
+              (c.rarity_name || "").toLowerCase() ===
+              activeRarityFilter.toLowerCase()
+            );
+          });
+        }
+        if (searchQuery) {
+          var q = searchQuery.toLowerCase();
+          list = list.filter(function (c) {
+            return (c.name || "").toLowerCase().indexOf(q) !== -1;
+          });
+        }
+        filteredCards = list;
+        renderCards(filteredCards);
+      }
+
+      function buildRarityFilters(rarities) {
+        shopRarities =
+          rarities && rarities.length ? rarities.slice() : ["Common"];
+        var container = document.getElementById("shop-rarity-filters");
+        if (!container) return;
+        var order = [
+          "all",
+          "common",
+          "uncommon",
+          "rare",
+          "epic",
+          "legendary",
+          "mythical",
+        ];
+        var sorted = shopRarities.slice().sort(function (a, b) {
+          var ai = order.indexOf(a.toLowerCase());
+          var bi = order.indexOf(b.toLowerCase());
+          if (ai === -1) ai = 999;
+          if (bi === -1) bi = 999;
+          return ai - bi;
+        });
+        var html =
+          '<button type="button" class="js-shop-rarity flex items-center justify-between w-full p-3 rounded-xl font-bold text-sm transition-all ' +
+          (activeRarityFilter === "all"
+            ? "bg-gradient-to-r from-indigo-50 to-white text-indigo-600 shadow-sm border border-indigo-100"
+            : "hover:bg-slate-50 text-slate-500 font-semibold") +
+          '" data-rarity="all">' +
+          '<span class="flex items-center gap-3"><span class="w-6 h-6 rounded-lg bg-indigo-100 flex items-center justify-center text-indigo-600 text-xs"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layout-grid"><rect width="7" height="7" x="3" y="3" rx="1"></rect><rect width="7" height="7" x="14" y="3" rx="1"></rect><rect width="7" height="7" x="14" y="14" rx="1"></rect><rect width="7" height="7" x="3" y="14" rx="1"></rect></svg></span>All</span>' +
+          '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="lucide lucide-chevron-right opacity-50"><path d="m9 18 6-6-6-6"></path></svg></button>';
+        sorted.forEach(function (r) {
+          var label = (r || "Common").replace(/^\w/, function (c) {
+            return c.toUpperCase();
+          });
+          var isActive =
+            activeRarityFilter.toLowerCase() === (r || "").toLowerCase();
+          html +=
+            '<button type="button" class="js-shop-rarity flex items-center justify-between w-full p-3 rounded-xl text-sm transition-all ' +
+            (isActive
+              ? "bg-gradient-to-r from-indigo-50 to-white text-indigo-600 font-bold shadow-sm border border-indigo-100"
+              : "hover:bg-slate-50 text-slate-500 font-semibold") +
+            '" data-rarity="' +
+            (r || "") +
+            '">' +
+            '<span class="flex items-center gap-3"><span class="w-6 h-6 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400 text-xs"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sparkles"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path></svg></span>' +
+            label +
+            "</span>" +
+            '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="lucide lucide-chevron-right opacity-50"><path d="m9 18 6-6-6-6"></path></svg></button>';
+        });
+        container.innerHTML = html;
+        container.querySelectorAll(".js-shop-rarity").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            activeRarityFilter = this.getAttribute("data-rarity") || "all";
+            buildRarityFilters(shopRarities);
+            applyFilters();
+          });
+        });
+      }
+
+      function loadCards() {
+        var grid = document.getElementById("cards-grid");
+        if (!grid) return;
+        grid.innerHTML =
+          '<p class="text-slate-400 text-sm col-span-full">Loading cards…</p>';
+        var coinsPromise = studentId
+          ? fetch(API_BASE + "/students/" + studentId + "/coins", {
+              headers: getAuthHeaders(),
+            })
+              .then(function (r) {
+                return r.json();
+              })
+              .then(function (d) {
+                return d.coins != null ? d.coins : 0;
+              })
+          : Promise.resolve(0);
+        var catalogPromise = fetch(API_BASE + "/cards", {
+          headers: getAuthHeaders(),
+        })
+          .then(function (res) {
+            return res.json();
+          })
+          .catch(function () {
+            return [];
+          });
+        var inventoryPromise = studentId
+          ? fetch(API_BASE + "/students/" + studentId + "/cards", {
+              headers: getAuthHeaders(),
+            })
+              .then(function (res) {
+                return res.json();
+              })
+              .catch(function (e) {
+                console.error("Inventory fetch failed", e);
+                return null;
+              })
+          : Promise.resolve(null);
+        Promise.all([catalogPromise, coinsPromise, inventoryPromise])
+          .then(function (arr) {
+            var cards = Array.isArray(arr[0]) ? arr[0] : [];
+            currentCoins = arr[1] != null ? arr[1] : 0;
+            updateCoinDisplays(currentCoins);
+            var inventory = arr[2];
+            var totalCards = cards.length;
+            var ownedCount = Array.isArray(inventory) ? inventory.length : null;
+            updateOwnershipProgress(ownedCount, totalCards);
+            allCards = cards;
+            var rarities = [];
+            var seen = {};
+            cards.forEach(function (c) {
+              var r = (c.rarity_name || "Common").trim();
+              if (r && !seen[r.toLowerCase()]) {
+                seen[r.toLowerCase()] = true;
+                rarities.push(r);
+              }
+            });
+            buildRarityFilters(rarities.length ? rarities : ["Common"]);
+            applyFilters();
+          })
+          .catch(function (e) {
+            console.error("Shop load failed", e);
+            grid.innerHTML =
+              '<p class="text-slate-400 text-sm col-span-full">Something went wrong loading the shop. Please try again later.</p>';
+          });
+      }
+
+      (function () {
+        loadCoins();
+        loadCards();
+        var searchEl = document.getElementById("shop-search");
+        if (searchEl) {
+          searchEl.addEventListener("input", function () {
+            searchQuery = (this.value || "").trim().toLowerCase();
+            applyFilters();
+          });
+        }
+      })();
+      });
+    </script>
+  </body>
+</html>

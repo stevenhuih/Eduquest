@@ -1,0 +1,12 @@
+CREATE TABLE IF NOT EXISTS classes (
+  id SERIAL PRIMARY KEY,
+  name TEXT NOT NULL,
+  created_by INTEGER,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS class_students (
+  id SERIAL PRIMARY KEY,
+  class_id INTEGER REFERENCES classes(id) ON DELETE CASCADE,
+  student_id INTEGER REFERENCES students(id) ON DELETE CASCADE
+);

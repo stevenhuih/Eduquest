@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduQuest - Students</title>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="js/api.js"></script>
+  <script src="js/navbar.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+  <style>
+    :root { --font-family: 'Nunito', sans-serif; }
+    body { font-family: var(--font-family); -webkit-font-smoothing: antialiased; background-color: #fafaf9; }
+    .bg-pastel-mesh { position: fixed; inset: 0; z-index: -50; background: radial-gradient(at 0% 0%, rgba(224, 231, 255, 0.5) 0px, transparent 50%), radial-gradient(at 100% 0%, rgba(255, 237, 213, 0.4) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(220, 252, 231, 0.4) 0px, transparent 50%), radial-gradient(at 0% 100%, rgba(255, 228, 230, 0.4) 0px, transparent 50%); filter: blur(60px); }
+    .bg-texture { position: fixed; inset: 0; z-index: -49; opacity: 0.2; background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2394a3b8' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
+    .glass-card { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.6); }
+    .badge-active { display: inline-flex; align-items: center; gap: 0.375rem; padding: 0.25rem 0.625rem; border-radius: 9999px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: rgb(5, 150, 105); font-size: 10px; font-weight: 700; text-transform: uppercase; }
+  </style>
+</head>
+<body class="text-slate-600 selection:bg-indigo-100 selection:text-indigo-800 pb-12 overflow-x-hidden">
+  <div class="bg-pastel-mesh"></div>
+  <div class="bg-texture"></div>
+
+  <nav class="fixed w-full z-40 pt-4 pb-2 px-4">
+    <div class="max-w-7xl mx-auto glass-card rounded-full px-4 py-3 flex items-center justify-between shadow-sm shadow-indigo-100/50">
+      <div class="flex items-center gap-3 pl-2">
+        <img src="assets/logo.png" alt="EduQuest" class="h-9 w-auto object-contain" />
+      </div>
+      <div class="hidden md:flex items-center gap-1 p-1 bg-slate-100/50 rounded-full border border-slate-200/50">
+        <a href="educatoradmin-dashboard.html" class="hover:text-indigo-600 hover:bg-white/60 transition-all text-sm font-semibold text-slate-500 rounded-full pt-2 pr-5 pb-2 pl-5">Dashboard</a>
+        <a href="educatoradmin-subscriptionplan.html" class="hover:text-indigo-600 hover:bg-white/60 transition-all text-sm font-semibold text-slate-500 rounded-full pt-2 pr-5 pb-2 pl-5">Subscription Plan</a>
+      </div>
+      <div class="flex items-center gap-4 pr-2">
+        <div class="hidden sm:flex flex-col items-end">
+<span id="navbar-user-name" class="text-xs font-bold text-slate-700"></span>
+        <span id="navbar-role-badge" class="text-[10px] font-bold text-indigo-500 bg-indigo-50 rounded-full pt-0.5 pr-2 pb-0.5 pl-2">Educator Admin</span>
+        </div>
+        <div class="cursor-pointer hover:ring-indigo-100 transition-all bg-white w-10 h-10 border-indigo-100 border-2 rounded-full ring-transparent ring-2 pt-0.5 pr-0.5 pb-0.5 pl-0.5 relative" onclick="window.location.href='educatoradmin-profile.html'" role="button">
+          <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Frizzle&amp;backgroundColor=e0e7ff" alt="Profile" class="w-full h-full object-cover rounded-full">
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-7xl mx-auto pt-28 pb-12 px-6">
+    <header class="mb-8">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2 text-xs font-bold text-slate-400 mb-2">
+            <a href="educatoradmin-dashboard.html" class="hover:text-indigo-600 transition-colors">Dashboard</a>
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="lucide lucide-chevron-right"><path d="m9 18 6-6-6-6"></path></svg>
+            <span class="text-indigo-600">Students</span>
+          </div>
+          <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight">Students</h1>
+          <p class="text-sm font-medium text-slate-500 mt-1">Manage student accounts.</p>
+        </div>
+        <a href="educatoradmin-addstudent.html" class="inline-flex items-center gap-2 px-5 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm rounded-xl shadow-lg shadow-indigo-200 transition-all">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-plus"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="19" x2="19" y1="8" y2="14"></line><line x1="22" x2="16" y1="11" y2="11"></line></svg>
+          Add Student
+        </a>
+      </div>
+      <div class="w-full h-px bg-slate-200 mt-6"></div>
+    </header>
+
+    <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+      <div class="p-4 border-b border-slate-50 bg-slate-50/30">
+        <div class="relative">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="lucide lucide-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+          <input type="text" id="js-search" placeholder="Search students by name or email..." class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-300 transition-all">
+        </div>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider bg-slate-50/50 border-b border-slate-100">
+              <th class="px-6 py-4">Student</th>
+              <th class="px-6 py-4">Email</th>
+              <th class="px-6 py-4">Classes</th>
+              <th class="px-6 py-4">Status</th>
+              <th class="px-6 py-4 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="student-list" class="divide-y divide-slate-100">
+            <tr><td colspan="5" class="px-6 py-8 text-center text-slate-400 text-sm">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    lucide.createIcons();
+    const API_BASE = '/api';
+    if (localStorage.getItem('role') !== 'educatoradmin') { window.location.href = "educatoradmin-login.html"; }
+    const ADMIN_ID = localStorage.getItem("userId");
+
+    function renderStudents(students, classes) {
+      const tbody = document.getElementById("student-list");
+      if (!tbody) return;
+      tbody.innerHTML = "";
+      if (!Array.isArray(students)) {
+        console.error("renderStudents received non-array:", students);
+        tbody.innerHTML = "<tr><td colspan=\"5\" class=\"px-6 py-8 text-center text-slate-400 text-sm\">No students yet. <a href=\"educatoradmin-addstudent.html\" class=\"text-indigo-600 font-bold hover:underline\">Add one</a>.</td></tr>";
+        return;
+      }
+      var classesArray = Array.isArray(classes) ? classes : [];
+      if (students.length === 0) {
+        tbody.innerHTML = "<tr><td colspan=\"5\" class=\"px-6 py-8 text-center text-slate-400 text-sm\">No students yet. <a href=\"educatoradmin-addstudent.html\" class=\"text-indigo-600 font-bold hover:underline\">Add one</a>.</td></tr>";
+        return;
+      }
+      students.forEach(function (student) {
+        const studentClasses = classesArray
+          .filter(function (c) { return (c.students || []).some(function (s) { return s.id === student.id; }); })
+          .map(function (c) { return c.name; })
+          .join(", ") || "—";
+        const tr = document.createElement("tr");
+        tr.className = "group hover:bg-pink-50/30 transition-colors";
+        tr.innerHTML =
+          "<td class=\"px-6 py-4\"><div class=\"flex items-center gap-3\"><img src=\"https://api.dicebear.com/7.x/avataaars/svg?seed=" + encodeURIComponent((student.email || "") + student.id) + "\" class=\"w-9 h-9 rounded-full bg-pink-50 border border-pink-100\" alt=\"\"><div class=\"text-sm font-bold text-slate-700 group-hover:text-pink-700 transition-colors\">" + escapeHtml(student.name || "—") + "</div></div></td>" +
+          "<td class=\"px-6 py-4 text-sm font-medium text-slate-600\">" + escapeHtml(student.email || "—") + "</td>" +
+          "<td class=\"px-6 py-4 text-sm text-slate-600\">" + escapeHtml(studentClasses) + "</td>" +
+          "<td class=\"px-6 py-4\"><span class=\"badge-active\">Active</span></td>" +
+          "<td class=\"px-6 py-4 text-right\"><a href=\"educatoradmin-editstudent.html?id=" + student.id + "\" class=\"inline-block px-3 py-1.5 text-xs font-bold text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors\">Edit</a> <button type=\"button\" class=\"inline-block px-3 py-1.5 text-xs font-bold text-rose-600 hover:bg-rose-50 rounded-lg transition-colors\" data-student-id=\"" + student.id + "\">Delete</button></td>";
+        tbody.appendChild(tr);
+        var deleteBtn = tr.querySelector("button[data-student-id]");
+        if (deleteBtn) deleteBtn.addEventListener("click", function () { deleteStudent(student.id); });
+      });
+    }
+
+    async function deleteStudent(id) {
+      if (!confirm("Delete this student?")) return;
+      try {
+        var res = await fetch(API_BASE + "/students/" + id, { method: "DELETE", headers: getAuthHeaders() });
+        var data = await res.json().catch(function () { return {}; });
+        if (!res.ok) throw new Error(data.error || "Delete failed");
+        await loadStudents();
+      } catch (err) {
+        alert(err.message);
+        console.error(err);
+      }
+    }
+
+    function escapeHtml(s) {
+      var div = document.createElement("div");
+      div.textContent = s;
+      return div.innerHTML;
+    }
+
+    async function loadStudents() {
+      try {
+        const res = await fetch(API_BASE + "/students?adminId=" + encodeURIComponent(ADMIN_ID), {
+          headers: getAuthHeaders()
+        });
+        const data = await res.json();
+        var studentsArray;
+        if (Array.isArray(data)) {
+          studentsArray = data;
+        } else if (data && Array.isArray(data.students)) {
+          studentsArray = data.students;
+        } else {
+          console.error("Unexpected students response format:", data);
+          studentsArray = [];
+        }
+        const classesRes = await fetch(API_BASE + "/classes/admin/" + ADMIN_ID + "/with-students", {
+          headers: getAuthHeaders()
+        });
+        const classesData = await classesRes.json();
+        var classesArray = Array.isArray(classesData) ? classesData : (classesData && Array.isArray(classesData.classes) ? classesData.classes : []);
+        renderStudents(studentsArray, classesArray);
+      } catch (err) {
+        console.error("Failed to load students:", err);
+        var tbody = document.getElementById("student-list");
+        if (tbody) tbody.innerHTML = "<tr><td colspan=\"5\" class=\"px-6 py-8 text-center text-red-500 text-sm\">Failed to load students.</td></tr>";
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      loadStudents();
+      var search = document.getElementById("js-search");
+      if (search) {
+        search.addEventListener("input", function () {
+          var q = (search.value || "").trim().toLowerCase();
+          Promise.all([
+            fetch(API_BASE + "/students?adminId=" + encodeURIComponent(ADMIN_ID), { headers: getAuthHeaders() }).then(function (r) { return r.json(); }),
+            fetch(API_BASE + "/classes/admin/" + ADMIN_ID + "/with-students", { headers: getAuthHeaders() }).then(function (r) { return r.json(); })
+          ]).then(function (results) {
+            var rawStudents = results[0];
+            var rawClasses = results[1];
+            var students = Array.isArray(rawStudents) ? rawStudents : (rawStudents && Array.isArray(rawStudents.students) ? rawStudents.students : []);
+            var classes = Array.isArray(rawClasses) ? rawClasses : (rawClasses && Array.isArray(rawClasses.classes) ? rawClasses.classes : []);
+            var filtered = !q ? students : students.filter(function (s) {
+              return ((s.name || "").toLowerCase().indexOf(q) >= 0) || ((s.email || "").toLowerCase().indexOf(q) >= 0);
+            });
+            renderStudents(filtered, classes);
+          }).catch(function (e) { console.error("Search fetch error:", e); });
+        });
+      }
+    });
+  </script>
+</body>
+</html>

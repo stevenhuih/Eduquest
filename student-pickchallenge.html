@@ -1,0 +1,1160 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EduQuest Pick Challenge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="js/api.js"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lexend:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              void: "#02040a",
+              "glass-surface": "#1e293b",
+            },
+            fontFamily: {
+              sans: ["Inter", "sans-serif"],
+              display: ["Lexend", "sans-serif"],
+            },
+            backgroundImage: {
+              cosmic:
+                "radial-gradient(circle at 50% 0%, #2e1065 0%, #02040a 80%)",
+            },
+            animation: {
+              "pulse-slow": "pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+              float: "float 6s ease-in-out infinite",
+            },
+            keyframes: {
+              float: {
+                "0%, 100%": { transform: "translateY(0)" },
+                "50%": { transform: "translateY(-10px)" },
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      /* --- CUSTOM STYLES FROM PICKCHALLENGE.CSS --- */
+      .perspective-container {
+        perspective: 1500px;
+      }
+
+      .nav-icon-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        color: #64748b;
+        width: 60px;
+        position: relative;
+      }
+
+      .icon-circle {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: #0f172a;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        z-index: 10;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(4px);
+      }
+
+      .nav-label {
+        font-family: "Lexend", sans-serif;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        opacity: 0.5;
+        transition: all 0.3s;
+      }
+
+      .nav-icon-btn:hover .icon-circle {
+        border-color: rgba(255, 255, 255, 0.4);
+        transform: scale(1.1);
+      }
+      .nav-icon-btn:hover .nav-label {
+        opacity: 0.8;
+        color: white;
+      }
+
+      .nav-icon-btn[data-mode="daily"].active .icon-circle {
+        background: #0f172a;
+        color: #fbbf24;
+        border-color: #fbbf24;
+        box-shadow: 0 0 20px rgba(251, 191, 36, 0.4);
+        transform: scale(1.15);
+      }
+      .nav-icon-btn[data-mode="weekly"].active .icon-circle {
+        background: #0f172a;
+        color: #22d3ee;
+        border-color: #22d3ee;
+        box-shadow: 0 0 20px rgba(34, 211, 238, 0.4);
+        transform: scale(1.15);
+      }
+      .nav-icon-btn[data-mode="monthly"].active .icon-circle {
+        background: #0f172a;
+        color: #c084fc;
+        border-color: #c084fc;
+        box-shadow: 0 0 20px rgba(192, 132, 252, 0.4);
+        transform: scale(1.15);
+      }
+      .nav-icon-btn.active .nav-label {
+        opacity: 1;
+        color: white;
+      }
+
+      .quest-card {
+        width: 290px;
+        height: 440px;
+        background:
+          radial-gradient(
+            circle at 50% -20%,
+            rgba(60, 70, 90, 0.4),
+            transparent 70%
+          ),
+          linear-gradient(
+            160deg,
+            rgba(30, 41, 59, 0.6) 0%,
+            rgba(15, 23, 42, 0.9) 100%
+          );
+        background-size: 150% 150%;
+        background-position: 50% 50%;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-radius: 36px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.6);
+        position: relative;
+        cursor: pointer;
+        transition:
+          transform 0.4s ease-out,
+          opacity 0.4s ease,
+          border-color 0.4s ease,
+          box-shadow 0.4s ease;
+        display: flex;
+        flex-direction: column;
+        padding: 28px;
+        text-align: left;
+        transform-style: preserve-3d;
+        user-select: none;
+        overflow: hidden;
+      }
+
+      .quest-card:hover:not(.is-focused):not(.is-hidden) {
+        transform: translateY(-10px) rotateX(2deg) scale(1.02);
+        border-color: rgba(255, 255, 255, 0.25);
+        box-shadow:
+          0 30px 60px -20px rgba(0, 0, 0, 0.8),
+          0 0 25px -5px var(--glow-color-dim);
+      }
+
+      .quest-card::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 50%;
+        height: 100%;
+        background: linear-gradient(
+          to right,
+          transparent,
+          rgba(255, 255, 255, 0.08),
+          transparent
+        );
+        transform: skewX(-25deg);
+        pointer-events: none;
+        transition: left 0.4s ease-out;
+        opacity: 1;
+      }
+      .quest-card:hover:not(.is-focused):not(.is-hidden)::after {
+        left: 150%;
+        transition: left 0.8s ease-in-out;
+      }
+      .quest-card.is-focused::after {
+        opacity: 0;
+        display: none;
+      }
+
+      .quest-card.is-focused {
+        transform: scale(1.1) translateY(-20px) translateZ(50px);
+        z-index: 50;
+        border-color: var(--glow-color);
+        box-shadow:
+          0 0 80px -20px var(--glow-color-dim),
+          0 0 0 1px var(--glow-color) inset;
+        background: linear-gradient(
+          160deg,
+          rgba(30, 41, 59, 0.95) 0%,
+          rgba(10, 15, 30, 0.98) 100%
+        );
+        overflow: visible;
+      }
+      .quest-card.is-hidden {
+        opacity: 0;
+        transform: scale(0.9) translateY(40px);
+        pointer-events: none;
+        filter: blur(5px);
+      }
+
+      .quest-card.shake-1 {
+        animation: shake-mild 0.15s infinite linear alternate;
+      }
+      @keyframes shake-mild {
+        0% {
+          transform: scale(1.1) translateY(-20px) translateZ(50px)
+            rotate(0.5deg);
+        }
+        100% {
+          transform: scale(1.1) translateY(-20px) translateZ(50px)
+            rotate(-0.5deg);
+        }
+      }
+
+      .quest-card.shake-2 {
+        animation: shake-medium 0.1s infinite linear alternate;
+        box-shadow:
+          0 0 100px -10px var(--glow-color-dim),
+          0 0 30px var(--glow-color) inset;
+      }
+      @keyframes shake-medium {
+        0% {
+          transform: scale(1.1) translateY(-20px) translate(1px, 1px);
+        }
+        100% {
+          transform: scale(1.1) translateY(-20px) translate(-1px, -1px);
+        }
+      }
+
+      .quest-card.shake-3 {
+        animation: shake-violent 0.05s infinite linear alternate;
+        border-color: white;
+        background: var(--glow-color);
+      }
+      .quest-card.shake-3 * {
+        color: #000 !important;
+        border-color: rgba(0, 0, 0, 0.3) !important;
+      }
+      @keyframes shake-violent {
+        0% {
+          transform: scale(1.08) translateY(-20px) translate(2px, 2px)
+            rotate(1deg);
+        }
+        100% {
+          transform: scale(1.08) translateY(-20px) translate(-2px, -2px)
+            rotate(-1deg);
+        }
+      }
+
+      .quest-card.shake-decay {
+        animation: shake-die-down 0.5s ease-out forwards;
+        background: var(--glow-color);
+      }
+      .quest-card.shake-decay * {
+        color: #000 !important;
+      }
+      @keyframes shake-die-down {
+        0% {
+          transform: scale(1.08) translateY(-20px) translate(2px, 2px);
+        }
+        100% {
+          transform: scale(1.15) translateY(-30px) translate(0, 0);
+          opacity: 0;
+        }
+      }
+
+      .magic-particle {
+        position: absolute;
+        border-radius: 50%;
+        background: var(--glow-color);
+        pointer-events: none;
+        z-index: 40;
+        box-shadow: 0 0 15px var(--glow-color);
+        mix-blend-mode: screen;
+        animation: swarmOut 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+      }
+      @keyframes swarmOut {
+        0% {
+          transform: translate(-50%, -50%) scale(0);
+          opacity: 0;
+        }
+        10% {
+          opacity: 1;
+          transform: translate(-50%, -50%) scale(1.5);
+        }
+        100% {
+          transform: translate(var(--tx), var(--ty)) scale(0);
+          opacity: 0;
+        }
+      }
+
+      .card-exit-left {
+        animation: exitLeft 0.3s ease-in forwards !important;
+      }
+      @keyframes exitLeft {
+        to {
+          opacity: 0;
+          transform: translateX(-50px) scale(0.9);
+        }
+      }
+
+      .card-enter-right {
+        animation: enterRight 0.4s ease-out backwards;
+      }
+      @keyframes enterRight {
+        from {
+          opacity: 0;
+          transform: translateX(50px) scale(0.9);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0) scale(1);
+        }
+      }
+
+      .diff-container {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+      }
+      .diff-label {
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #94a3b8;
+        margin-bottom: 2px;
+      }
+      .diff-bars {
+        display: flex;
+        gap: 3px;
+      }
+      .diff-bar {
+        width: 6px;
+        height: 12px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 2px;
+        transition: all 0.3s;
+      }
+      .diff-bar.active {
+        background: var(--glow-color);
+        box-shadow: 0 0 5px var(--glow-color-dim);
+      }
+
+      .card-icon-box {
+        width: 72px;
+        height: 72px;
+        border-radius: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        margin-bottom: 24px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition:
+          transform 0.4s ease,
+          background 0.4s ease,
+          border 0.4s ease;
+      }
+      .animate-fade-in {
+        animation: fadeIn 1s ease-out;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .star {
+        position: absolute;
+        background: white;
+        border-radius: 50%;
+        animation: twinkle var(--duration, 3s) infinite ease-in-out;
+      }
+      @keyframes twinkle {
+        0%,
+        100% {
+          opacity: 0.3;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 1;
+          transform: scale(1.2);
+        }
+      }
+    </style>
+  </head>
+  <body
+    class="bg-void text-slate-200 font-sans overflow-hidden h-screen relative select-none"
+  >
+    <div class="fixed inset-0 z-0 pointer-events-none">
+      <div class="absolute inset-0 bg-cosmic"></div>
+      <div id="stars-container" class="opacity-50"></div>
+      <div
+        class="absolute bottom-[-20%] left-[20%] w-[60vw] h-[300px] bg-indigo-600/20 blur-[120px] rounded-full"
+      ></div>
+    </div>
+
+    <a
+      href="/student-manageclass.html"
+      class="absolute top-8 left-8 z-50 flex items-center gap-3 text-slate-400 hover:text-white transition-all duration-300 group font-display font-semibold tracking-wide text-sm"
+    >
+      <div
+        class="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:-translate-x-1 transition-all"
+      >
+        <i class="fas fa-arrow-left text-xs"></i>
+      </div>
+      <span>Back to Class</span>
+    </a>
+
+    <main
+      class="relative z-10 w-full h-full flex flex-col items-center justify-center py-10"
+    >
+      <div
+        id="main-header"
+        class="text-center mb-10 animate-fade-in transition-all duration-500 origin-top flex flex-col items-center w-full max-w-4xl"
+      >
+        <h1
+          class="text-4xl md:text-5xl font-extrabold text-white font-display tracking-tight mb-2 drop-shadow-2xl"
+        >
+          Choose Your
+          <span
+            class="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-cyan-400"
+            >Destiny</span
+          >
+        </h1>
+        <p
+          class="text-slate-400 text-sm mb-10 max-w-md mx-auto leading-relaxed"
+        >
+          Select a quest duration to view available challenges.
+        </p>
+
+        <div
+          class="relative flex items-center justify-center gap-16 z-20 w-[400px]"
+        >
+          <div
+            class="absolute top-[25px] left-0 w-full h-[1px] bg-white/10 -z-10"
+          ></div>
+          <button class="nav-icon-btn active group" data-mode="daily">
+            <div class="icon-circle"><i class="fas fa-bolt text-lg"></i></div>
+            <span class="nav-label">Daily Challenges</span>
+          </button>
+          <button class="nav-icon-btn group" data-mode="weekly">
+            <div class="icon-circle">
+              <i class="fas fa-lock text-lg"></i>
+            </div>
+            <span class="nav-label">Locked Challenges</span>
+          </button>
+          <button class="nav-icon-btn group" data-mode="monthly">
+            <div class="icon-circle">
+              <i class="fas fa-history text-lg"></i>
+            </div>
+            <span class="nav-label">Practice History</span>
+          </button>
+        </div>
+      </div>
+
+      <div
+        id="focus-instruction"
+        class="absolute top-[15%] left-0 w-full flex flex-col items-center justify-center opacity-0 pointer-events-none transition-all duration-500 transform -translate-y-4 z-30"
+      >
+        <h2
+          class="text-3xl font-display font-bold text-white tracking-[0.2em] uppercase drop-shadow-[0_0_10px_rgba(255,255,255,0.4)] animate-pulse"
+        >
+          Hold to Accept Quest
+        </h2>
+      </div>
+
+      <div id="tab-content-daily" class="w-full max-w-6xl mx-auto">
+        <p
+          id="daily-no-questions-msg"
+          class="text-center text-slate-400 text-sm mb-4 hidden"
+        ></p>
+        <p
+          id="daily-all-locked-msg"
+          class="text-center text-slate-400 text-sm mb-4 hidden"
+        >
+          Complete quizzes or practice to unlock new topics.
+        </p>
+        <div
+          id="cards-stage"
+          class="w-full flex flex-col md:flex-row justify-center items-center gap-8 perspective-container h-[480px] transition-all duration-500 relative z-20"
+        ></div>
+      </div>
+
+      <div id="tab-content-locked" class="w-full max-w-6xl mx-auto mt-6 hidden">
+        <div
+          id="locked-challenge-container"
+          class="flex flex-col md:flex-row flex-wrap justify-center items-center gap-6 min-h-[320px]"
+        ></div>
+      </div>
+
+      <div
+        id="tab-content-history"
+        class="w-full max-w-6xl mx-auto mt-6 hidden"
+      >
+        <div id="challenge-history-panel" class="glass-card p-4 hidden">
+          <h3 class="font-semibold text-lg mb-2 text-white">Recent Practice</h3>
+          <ul
+            id="challenge-history-list"
+            class="space-y-1 text-sm text-slate-300"
+          ></ul>
+        </div>
+      </div>
+    </main>
+
+    <div
+      id="success-overlay"
+      class="fixed inset-0 z-[100] bg-void/90 backdrop-blur-xl flex flex-col items-center justify-center opacity-0 pointer-events-none transition-all duration-700"
+    >
+      <div class="relative w-40 h-40 mb-8">
+        <div
+          class="absolute inset-0 bg-violet-500 rounded-full blur-[80px] animate-pulse-slow"
+        ></div>
+        <div
+          class="relative z-10 w-full h-full border-4 border-white/20 bg-white/5 backdrop-blur-md rounded-full flex items-center justify-center text-5xl text-white shadow-[0_0_50px_rgba(139,92,246,0.3)]"
+        >
+          <i class="fas fa-check"></i>
+        </div>
+      </div>
+      <h2
+        class="text-4xl md:text-5xl font-display font-extrabold text-white mb-4 tracking-tight drop-shadow-xl"
+      >
+        Quest Accepted
+      </h2>
+      <p class="text-slate-400 text-lg mb-12">Your journey begins now.</p>
+      <a
+        href="/student-manageclass.html"
+        class="group relative px-10 py-4 bg-white/5 border border-white/10 rounded-full font-bold font-display text-white overflow-hidden transition-all hover:border-white/30 hover:bg-white/10 hover:scale-105 hover:shadow-[0_0_30px_rgba(139,92,246,0.3)]"
+      >
+        <span class="relative z-10 flex items-center gap-3"
+          ><i class="fas fa-arrow-left"></i> Return to Class</span
+        >
+      </a>
+    </div>
+
+    <script>
+      const API_BASE = '/api';
+      if (localStorage.getItem('role') !== 'student') { window.location.href = "student-login.html"; }
+      const STUDENT_ID = localStorage.getItem("userId");
+
+      function getClassId() {
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get("classId");
+        return id ? Number(id) : null;
+      }
+      const CLASS_ID = getClassId();
+      let dailyChallenges = [];
+      let lockedChallengesList = [];
+
+      const quests = {
+        daily: [],
+        weekly: [
+          {
+            id: 201,
+            title: "Code Architect",
+            category: "CS",
+            desc: "Build a responsive landing page structure.",
+            icon: "fa-code",
+            color: "#34d399",
+            dimColor: "rgba(52, 211, 153, 0.4)",
+            xp: 500,
+            coins: 200,
+            difficulty: 3,
+          },
+          {
+            id: 202,
+            title: "History Dive",
+            category: "History",
+            desc: "Write a journal entry from Rome.",
+            icon: "fa-landmark-dome",
+            color: "#fbbf24",
+            dimColor: "rgba(251, 191, 36, 0.4)",
+            xp: 400,
+            coins: 150,
+            difficulty: 2,
+          },
+          {
+            id: 203,
+            title: "Color Theory",
+            category: "Art",
+            desc: "Create a complementary color palette.",
+            icon: "fa-palette",
+            color: "#818cf8",
+            dimColor: "rgba(129, 140, 248, 0.4)",
+            xp: 300,
+            coins: 100,
+            difficulty: 1,
+          },
+        ],
+        monthly: [
+          {
+            id: 301,
+            title: "Novel Study",
+            category: "Reading",
+            desc: "Finish 'The Giver' and submit report.",
+            icon: "fa-book-open",
+            color: "#f87171",
+            dimColor: "rgba(248, 113, 113, 0.4)",
+            xp: 2000,
+            coins: 800,
+            difficulty: 3,
+          },
+          {
+            id: 302,
+            title: "Science Fair",
+            category: "Project",
+            desc: "Complete your final presentation board.",
+            icon: "fa-atom",
+            color: "#c084fc",
+            dimColor: "rgba(192, 132, 252, 0.4)",
+            xp: 2500,
+            coins: 1000,
+            difficulty: 3,
+          },
+          {
+            id: 303,
+            title: "Fitness Goal",
+            category: "PE",
+            desc: "Log 20 hours of physical activity.",
+            icon: "fa-heart-pulse",
+            color: "#fb923c",
+            dimColor: "rgba(251, 146, 60, 0.4)",
+            xp: 1500,
+            coins: 500,
+            difficulty: 2,
+          },
+        ],
+      };
+
+      const stage = document.getElementById("cards-stage");
+      const navBtns = document.querySelectorAll(".nav-icon-btn");
+      const successOverlay = document.getElementById("success-overlay");
+      const header = document.getElementById("main-header");
+      const focusInstruction = document.getElementById("focus-instruction");
+
+      let focusedCard = null;
+      let currentMode = "daily";
+
+      function getDifficultyLabel(level) {
+        if (level === 1) return "EASY";
+        if (level === 2) return "MEDIUM";
+        return "HARD";
+      }
+
+      function getPracticeLabel(diff) {
+        const d = (diff || "medium").toLowerCase();
+        if (d === "easy") return "Easy Practice";
+        if (d === "hard") return "Hard Practice";
+        return "Medium Practice";
+      }
+
+      function mapDailyToQuest(ch) {
+        const level = window.currentStudentLevel || 1;
+        const requiredLevel = ch.requiredLevel != null ? ch.requiredLevel : 1;
+        const locked = ch.locked !== undefined ? ch.locked : level < requiredLevel;
+        const isBoss = ch.type === "boss";
+        const topic = isBoss ? "boss" : (ch.topic || "general");
+        const title = isBoss ? "Boss Challenge" : topic.replace(/^./, (c) => c.toUpperCase());
+        const recommendedDifficulty =
+          ch.recommendedDifficulty || ch.difficulty || "medium";
+        const difficultyNum =
+          recommendedDifficulty === "easy"
+            ? 1
+            : recommendedDifficulty === "hard"
+              ? 3
+              : 2;
+        const questionCount = ch.question_count != null ? ch.question_count : (isBoss ? 10 : 5);
+        const estimatedTime = ch.estimated_time != null ? ch.estimated_time : Math.max(3, questionCount);
+        const xp = ch.xp_reward != null ? ch.xp_reward : (isBoss ? 120 : 35);
+        return {
+          challengeType: isBoss ? "boss" : "normal",
+          topic,
+          topic_id: ch.topic_id,
+          difficultyStr: recommendedDifficulty,
+          question_count: questionCount,
+          estimated_time: estimatedTime,
+          title,
+          category: isBoss ? "Boss Challenge" : "Challenge",
+          desc:
+            questionCount + " questions • " + estimatedTime + " min",
+          icon: isBoss ? "fa-dragon" : "fa-bolt",
+          color: isBoss ? "#dc2626" : "#a78bfa",
+          dimColor: isBoss ? "rgba(220, 38, 38, 0.4)" : "rgba(167, 139, 250, 0.4)",
+          xp,
+          difficulty: difficultyNum,
+          practiceLabel: getPracticeLabel(recommendedDifficulty),
+          locked,
+          requiredLevel,
+          requiredTopic: ch.requiredTopic || null,
+        };
+      }
+
+      function renderCards(mode, animateEnter = false) {
+        const level = window.currentStudentLevel || 1;
+
+        stage.innerHTML = "";
+        focusedCard = null;
+        header.classList.remove("opacity-0", "translate-y-[-20px]");
+        focusInstruction.classList.add("opacity-0", "-translate-y-4");
+
+        var list;
+        if (mode === "daily") {
+          list = dailyChallenges.map(mapDailyToQuest);
+          var noQuestionsMsg = document.getElementById("daily-no-questions-msg");
+          var allLockedMsg = document.getElementById("daily-all-locked-msg");
+          if (noQuestionsMsg) {
+            if (window.dailyChallengesMessage && dailyChallenges.length === 0 && lockedChallengesList.length === 0) {
+              noQuestionsMsg.textContent = window.dailyChallengesMessage;
+              noQuestionsMsg.classList.remove("hidden");
+            } else {
+              noQuestionsMsg.classList.add("hidden");
+            }
+          }
+          if (allLockedMsg) {
+            if (dailyChallenges.length === 0 && lockedChallengesList.length > 0) {
+              allLockedMsg.classList.remove("hidden");
+            } else {
+              allLockedMsg.classList.add("hidden");
+            }
+          }
+        } else {
+          list = quests[mode];
+        }
+
+        var useCarousel = false;
+        var cardContainer = stage;
+        stage.innerHTML = "";
+
+        list.forEach((quest, index) => {
+          const unlockLevel = quest.requiredLevel != null ? quest.requiredLevel : 1;
+
+          const card = document.createElement("div");
+          var cardClasses = `quest-card ${useCarousel ? "challenge-card" : ""} ${animateEnter ? "card-enter-right" : "card-enter-initial"}`;
+          if (quest.locked) cardClasses += " opacity-50 pointer-events-none";
+          if (quest.challengeType === "boss") cardClasses += " border-2 border-rose-500/60 boss-challenge-card";
+          card.className = cardClasses;
+          card.style.animationDelay = `${index * 0.1}s`;
+          card.style.setProperty("--glow-color", quest.color);
+          card.style.setProperty("--glow-color-dim", quest.dimColor);
+
+          let barsHtml = "";
+          for (let i = 0; i < 3; i++) {
+            barsHtml += `<div class="diff-bar ${i < quest.difficulty ? "active" : ""}"></div>`;
+          }
+          const diffLabel =
+            quest.practiceLabel != null
+              ? quest.practiceLabel
+              : getDifficultyLabel(quest.difficulty);
+          var lockBadge =
+            quest.locked && quest.requiredLevel != null
+              ? `<span class="text-[10px] font-bold uppercase text-amber-300 border border-amber-400/50 bg-amber-500/20 px-2 py-1 rounded-md mt-2 inline-block">Unlocks at Level ${quest.requiredLevel}</span>`
+              : "";
+          var topicUnlockMsg =
+            quest.locked && quest.requiredTopic
+              ? '<p class="text-sm text-amber-300/90 font-medium mt-2 pointer-events-none z-10">Unlock by mastering ' +
+                quest.requiredTopic.replace(/^./, function (c) {
+                  return c.toUpperCase();
+                }) +
+                "</p>"
+              : "";
+
+          card.innerHTML = `
+            <div class="flex justify-between items-start mb-8 w-full pointer-events-none z-10">
+                <span class="text-[10px] font-bold uppercase tracking-widest ${quest.challengeType === 'boss' ? 'text-rose-300 border-rose-500/50 bg-rose-500/20' : 'text-slate-400 border-white/10 bg-white/5'} border px-2 py-1 rounded-md self-start">${quest.category}</span>
+                <div class="diff-container">
+                    <span class="diff-label">${diffLabel}</span>
+                    <div class="diff-bars">${barsHtml}</div>
+                </div>
+            </div>
+            <div class="card-icon-box text-white pointer-events-none z-10"><i class="fas ${quest.icon}"></i></div>
+            <h3 class="text-2xl font-bold text-white font-display mb-2 pointer-events-none z-10">${quest.title}</h3>
+            ${topicUnlockMsg}
+            <p class="text-sm text-slate-400 font-medium leading-relaxed mb-auto pointer-events-none z-10">${quest.desc}</p>
+            ${lockBadge}
+            <div class="mt-8 pt-4 border-t border-white/10 flex items-center justify-between w-full pointer-events-none z-10">
+                <div class="flex flex-col"><span class="text-[10px] text-slate-500 font-bold uppercase">Reward</span><span class="font-bold drop-shadow-md" style="color:${quest.color}">+${quest.xp} XP</span></div>
+            </div>
+          `;
+          card.dataset.challengeType = quest.challengeType || "normal";
+          card.dataset.difficulty = quest.difficultyStr || "medium";
+          card.dataset.count = String(quest.question_count ?? 5);
+          if (quest.xp != null) card.dataset.xpReward = String(quest.xp);
+          if (quest.challengeType !== "boss" && quest.topic != null) {
+            card.dataset.topic = quest.topic;
+            if (quest.topic_id != null) card.dataset.topicId = String(quest.topic_id);
+          }
+          setupInteraction(card, quest);
+          cardContainer.appendChild(card);
+        });
+      }
+
+      function createChallengeCard(ch) {
+        var isBoss = ch.type === "boss";
+        var topic = isBoss ? "boss" : (ch.topic || "general");
+        var title = isBoss ? "Boss Challenge" : topic.replace(/^./, function (c) { return c.toUpperCase(); });
+        var diff = ch.recommendedDifficulty || ch.difficulty || "medium";
+        var diffLabel = getPracticeLabel(diff);
+        var qCount = ch.question_count != null ? ch.question_count : (isBoss ? 10 : 5);
+        var xp = ch.xp_reward != null ? ch.xp_reward : (isBoss ? 120 : 35);
+        var card = document.createElement("div");
+        card.className =
+          "quest-card rounded-2xl border border-white/10 bg-white/5 p-6 w-full max-w-[320px] pointer-events-none" +
+          (isBoss ? " border-2 border-rose-500/60" : "");
+        card.innerHTML = `
+          <div class="flex justify-between items-start mb-4">
+            <span class="text-[10px] font-bold uppercase tracking-widest ${isBoss ? 'text-rose-300 border-rose-500/50 bg-rose-500/20' : 'text-slate-400 border-white/10 bg-white/5'} border px-2 py-1 rounded-md">${isBoss ? "Boss Challenge" : "Challenge"}</span>
+            <span class="diff-label text-slate-300 text-sm">${diffLabel}</span>
+          </div>
+          <div class="card-icon-box text-white/80 mb-4"><i class="fas ${isBoss ? 'fa-dragon' : 'fa-bolt'}"></i></div>
+          <h3 class="text-xl font-bold text-white font-display mb-2">${title}</h3>
+          <p class="text-sm text-slate-400 font-medium">${qCount} questions</p>
+          <p class="text-xs text-slate-500 mt-1">+${xp} XP</p>
+          <button type="button" class="accept-btn hidden">Accept</button>
+        `;
+        return card;
+      }
+
+      function renderLockedCards() {
+        var container = document.getElementById("locked-challenge-container");
+        if (!container) return;
+        container.innerHTML = "";
+        if (lockedChallengesList.length === 0) {
+          var empty = document.createElement("p");
+          empty.className = "text-slate-400 text-center py-8";
+          empty.textContent = "All challenges unlocked. Nice work.";
+          container.appendChild(empty);
+          return;
+        }
+        lockedChallengesList.forEach(function (ch) {
+          var card = createChallengeCard(ch);
+          card.classList.add("opacity-50", "pointer-events-none");
+          var acceptBtn = card.querySelector(".accept-btn");
+          if (acceptBtn) acceptBtn.remove();
+          if (ch.requiredTopic) {
+            var topicMsg = document.createElement("div");
+            topicMsg.className = "text-xs text-amber-300/90 mt-2";
+            topicMsg.textContent =
+              "Unlock by mastering " +
+              ch.requiredTopic.replace(/^./, function (c) {
+                return c.toUpperCase();
+              });
+            card.appendChild(topicMsg);
+          }
+          var badge = document.createElement("div");
+          badge.className = "text-xs text-slate-400 mt-2";
+          badge.textContent =
+            "Unlocks at Level " +
+            (ch.requiredLevel != null ? ch.requiredLevel : "?");
+          card.appendChild(badge);
+          container.appendChild(card);
+        });
+      }
+
+      function setupInteraction(card, quest) {
+        if (quest.locked) return;
+        let holdTimer = null;
+        let progress = 0;
+
+        card.addEventListener("mousedown", (e) => handleClick(e, card));
+        card.addEventListener("touchstart", (e) => handleClick(e, card), {
+          passive: false,
+        });
+
+        function handleClick(e, card) {
+          if (!card.classList.contains("is-focused")) {
+            e.preventDefault();
+            enterFocusMode(card);
+          } else {
+            startHold(e);
+          }
+        }
+
+        const startHold = (e) => {
+          e.preventDefault();
+          card.classList.add("is-charging");
+          holdTimer = setInterval(() => {
+            progress += 1.5;
+            if (progress > 10) card.classList.add("shake-1");
+            if (progress > 50) {
+              card.classList.remove("shake-1");
+              card.classList.add("shake-2");
+            }
+            if (progress > 85) {
+              card.classList.remove("shake-2");
+              card.classList.add("shake-3");
+            }
+            if (Math.random() * 100 < progress * 1.5)
+              spawnParticle(card, quest.color);
+            if (progress > 60) spawnParticle(card, quest.color);
+            if (progress >= 100) completeHold(card, quest);
+          }, 20);
+        };
+
+        const endHold = () => {
+          clearInterval(holdTimer);
+          progress = 0;
+          card.classList.remove("shake-1", "shake-2", "shake-3", "is-charging");
+        };
+
+        window.addEventListener("mouseup", endHold);
+        window.addEventListener("touchend", endHold);
+      }
+
+      function enterFocusMode(card) {
+        if (focusedCard === card) return;
+        focusedCard = card;
+        document.querySelectorAll(".quest-card").forEach((c) => {
+          if (c === card) {
+            c.classList.add("is-focused");
+            c.classList.remove("is-hidden");
+          } else {
+            c.classList.remove("is-focused");
+            c.classList.add("is-hidden");
+          }
+        });
+        header.classList.add("opacity-0", "translate-y-[-20px]");
+        focusInstruction.classList.remove("opacity-0", "-translate-y-4");
+      }
+
+      function exitFocusMode() {
+        if (!focusedCard) return;
+        focusedCard = null;
+        document.querySelectorAll(".quest-card").forEach((c) => {
+          c.classList.remove("is-focused", "is-hidden");
+        });
+        header.classList.remove("opacity-0", "translate-y-[-20px]");
+        focusInstruction.classList.add("opacity-0", "-translate-y-4");
+      }
+
+      window.addEventListener("click", (e) => {
+        if (e.target.closest(".nav-icon-btn")) return;
+        if (focusedCard && !e.target.closest(".quest-card.is-focused"))
+          exitFocusMode();
+      });
+
+      function spawnParticle(card, color) {
+        const p = document.createElement("div");
+        p.className = "magic-particle";
+        p.style.backgroundColor = color;
+        p.style.boxShadow = `0 0 5px ${color}`;
+        const size = Math.random() * 6 + 2 + "px";
+        p.style.width = size;
+        p.style.height = size;
+        const startX = Math.random() * 120 - 10 + "%";
+        const startY = Math.random() * 120 - 10 + "%";
+        p.style.left = startX;
+        p.style.top = startY;
+        const dx = (parseFloat(startX) - 50) * 8 + "%";
+        const dy = (parseFloat(startY) - 50) * 8 + "%";
+        p.style.setProperty("--tx", dx);
+        p.style.setProperty("--ty", dy);
+        card.appendChild(p);
+        setTimeout(() => p.remove(), 800);
+      }
+
+      function completeHold(card, quest) {
+        const challengeType = card.dataset.challengeType || "normal";
+        const difficulty = card.dataset.difficulty || "medium";
+        const count = card.dataset.count || "5";
+        const params = new URLSearchParams({ difficulty, count });
+        if (CLASS_ID != null) params.set("classId", String(CLASS_ID));
+        if (challengeType === "boss") {
+          params.set("type", "boss");
+          window.location.href = "student-challenge.html?" + params.toString();
+          return;
+        }
+        const topic = card.dataset.topic;
+        const topicId = card.dataset.topicId;
+        if (topic) {
+          params.set("topic", topic);
+          if (topicId) params.set("topicId", topicId);
+          window.location.href = "student-challenge.html?" + params.toString();
+          return;
+        }
+        card.classList.remove("shake-1", "shake-2", "shake-3");
+        card.classList.add("shake-decay");
+        const clone = card.cloneNode(true);
+        card.parentNode.replaceChild(clone, card);
+        setTimeout(() => {
+          successOverlay.style.pointerEvents = "auto";
+          successOverlay.style.opacity = "1";
+        }, 500);
+      }
+
+      function createStars() {
+        const container = document.getElementById("stars-container");
+        for (let i = 0; i < 60; i++) {
+          const star = document.createElement("div");
+          star.className = "star";
+          const size = Math.random() * 2 + "px";
+          star.style.width = size;
+          star.style.height = size;
+          star.style.left = Math.random() * 100 + "%";
+          star.style.top = Math.random() * 100 + "%";
+          star.style.setProperty("--duration", Math.random() * 3 + 2 + "s");
+          container.appendChild(star);
+        }
+      }
+
+      var tabContentDaily = document.getElementById("tab-content-daily");
+      var tabContentLocked = document.getElementById("tab-content-locked");
+      var tabContentHistory = document.getElementById("tab-content-history");
+
+      navBtns.forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          const targetBtn = e.target.closest(".nav-icon-btn");
+          const newMode = targetBtn.dataset.mode;
+          if (newMode === currentMode) return;
+          currentMode = newMode;
+          navBtns.forEach((b) => b.classList.remove("active"));
+          targetBtn.classList.add("active");
+          exitFocusMode();
+          if (tabContentDaily) tabContentDaily.classList.add("hidden");
+          if (tabContentLocked) tabContentLocked.classList.add("hidden");
+          if (tabContentHistory) tabContentHistory.classList.add("hidden");
+          if (currentMode === "daily" && tabContentDaily)
+            tabContentDaily.classList.remove("hidden");
+          if (currentMode === "weekly" && tabContentLocked)
+            tabContentLocked.classList.remove("hidden");
+          if (currentMode === "monthly" && tabContentHistory)
+            tabContentHistory.classList.remove("hidden");
+        });
+      });
+
+      async function loadDailyChallenges() {
+        if (CLASS_ID == null) {
+          window.currentStudentLevel = window.currentStudentLevel ?? 1;
+          window.currentStudentXp = window.currentStudentXp ?? 0;
+          renderCards("daily");
+          renderLockedCards();
+          return;
+        }
+        try {
+          const res = await fetch(
+            API_BASE + "/challenges/daily/" + STUDENT_ID + "/" + CLASS_ID,
+            { headers: getAuthHeaders() }
+          );
+          if (res.ok) {
+            const data = await res.json();
+            var list = Array.isArray(data) ? data : (data && data.challenges) || [];
+            dailyChallenges = list;
+            lockedChallengesList = [];
+            if (data.message && list.length === 0) {
+              window.dailyChallengesMessage = data.message;
+            } else {
+              window.dailyChallengesMessage = null;
+            }
+          }
+        } catch (e) {
+          console.error(e);
+        }
+        renderCards("daily");
+        renderLockedCards();
+      }
+
+      async function loadChallengeHistory(studentId) {
+        try {
+          const res = await fetch(
+            API_BASE + "/challenges/history/" + studentId,
+            { headers: getAuthHeaders() }
+          );
+          if (!res.ok) return;
+          const data = await res.json();
+          if (!Array.isArray(data) || data.length === 0) return;
+          const panel = document.getElementById("challenge-history-panel");
+          const list = document.getElementById("challenge-history-list");
+          if (!panel || !list) return;
+          list.innerHTML = "";
+          data.forEach((row) => {
+            const topicLabel = (row.topic || "").replace(/^./, (c) =>
+              c.toUpperCase(),
+            );
+            const scorePct = row.score != null ? row.score + "%" : "—";
+            const dateStr = row.completed_at
+              ? new Date(row.completed_at).toLocaleDateString()
+              : "";
+            const li = document.createElement("li");
+            li.textContent = topicLabel + " — " + scorePct + " — " + dateStr;
+            list.appendChild(li);
+          });
+          panel.classList.remove("hidden");
+        } catch (e) {
+          console.error(e);
+        }
+      }
+
+      async function loadXPThenChallenges() {
+        if (CLASS_ID == null) {
+          window.currentStudentLevel = 1;
+          window.currentStudentXp = 0;
+          await loadDailyChallenges();
+          return;
+        }
+        try {
+          const res = await fetch(
+            API_BASE + "/students/" + STUDENT_ID + "/xp/" + CLASS_ID,
+            { headers: getAuthHeaders() }
+          );
+          const data = await res.json();
+          const xp = data.xp || 0;
+          const level = data.level != null ? data.level : (Math.floor(xp / 100) + 1);
+          window.currentStudentLevel = level;
+          window.currentStudentXp = xp;
+          await loadDailyChallenges();
+        } catch (e) {
+          console.error(e);
+          window.currentStudentLevel = 1;
+          window.currentStudentXp = 0;
+          await loadDailyChallenges();
+        }
+      }
+
+      (async function init() {
+        await loadXPThenChallenges();
+        loadChallengeHistory(STUDENT_ID);
+        createStars();
+      })();
+
+      const extraStyle = document.createElement("style");
+      extraStyle.innerHTML = `
+        .card-enter-initial { animation: fadeIn 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) backwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .challenge-carousel-wrapper { overflow: hidden; position: relative; }
+        .challenge-carousel { display: flex; gap: 24px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 10px; }
+        .challenge-carousel .challenge-card { flex: 0 0 calc(33.333% - 16px); scroll-snap-align: start; min-width: 0; }
+        .challenge-carousel::-webkit-scrollbar { display: none; }
+        @media (max-width: 768px) {
+          .challenge-carousel .challenge-card { flex: 0 0 80%; }
+        }
+      `;
+      document.head.appendChild(extraStyle);
+    </script>
+  </body>
+</html>

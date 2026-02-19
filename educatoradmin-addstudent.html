@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduQuest - Add Student</title>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="js/api.js"></script>
+  <script src="js/navbar.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+  <style>
+    :root { --font-family: 'Nunito', sans-serif; }
+    body { font-family: var(--font-family); -webkit-font-smoothing: antialiased; background-color: #fafaf9; }
+    .bg-pastel-mesh { position: fixed; inset: 0; z-index: -50; background: radial-gradient(at 0% 0%, rgba(224, 231, 255, 0.5) 0px, transparent 50%), radial-gradient(at 100% 0%, rgba(255, 237, 213, 0.4) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(220, 252, 231, 0.4) 0px, transparent 50%), radial-gradient(at 0% 100%, rgba(255, 228, 230, 0.4) 0px, transparent 50%); filter: blur(60px); }
+    .bg-texture { position: fixed; inset: 0; z-index: -49; opacity: 0.2; background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2394a3b8' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
+    .glass-card { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.6); }
+    .input-focus:focus { outline: none; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15); border-color: #a5b4fc; }
+  </style>
+</head>
+<body class="text-slate-600 selection:bg-indigo-100 selection:text-indigo-800 pb-12 overflow-x-hidden">
+  <div class="bg-pastel-mesh"></div>
+  <div class="bg-texture"></div>
+
+  <nav class="fixed w-full z-40 pt-4 pb-2 px-4">
+    <div class="max-w-7xl mx-auto glass-card rounded-full px-4 py-3 flex items-center justify-between shadow-sm shadow-indigo-100/50">
+      <div class="flex items-center gap-3 pl-2">
+        <img src="assets/logo.png" alt="EduQuest" class="h-9 w-auto object-contain" />
+      </div>
+      <div class="hidden md:flex items-center gap-1 p-1 bg-slate-100/50 rounded-full border border-slate-200/50">
+        <a href="educatoradmin-dashboard.html" class="hover:text-indigo-600 hover:bg-white/60 transition-all text-sm font-semibold text-slate-500 rounded-full pt-2 pr-5 pb-2 pl-5">Dashboard</a>
+        <a href="educatoradmin-subscriptionplan.html" class="hover:text-indigo-600 hover:bg-white/60 transition-all text-sm font-semibold text-slate-500 rounded-full pt-2 pr-5 pb-2 pl-5">Subscription Plan</a>
+      </div>
+      <div class="flex items-center gap-4 pr-2">
+        <div class="hidden sm:flex flex-col items-end">
+<span id="navbar-user-name" class="text-xs font-bold text-slate-700"></span>
+        <span id="navbar-role-badge" class="text-[10px] font-bold text-indigo-500 bg-indigo-50 rounded-full pt-0.5 pr-2 pb-0.5 pl-2">Educator Admin</span>
+        </div>
+        <div class="cursor-pointer hover:ring-indigo-100 transition-all bg-white w-10 h-10 border-indigo-100 border-2 rounded-full ring-transparent ring-2 pt-0.5 pr-0.5 pb-0.5 pl-0.5 relative" onclick="window.location.href='educatoradmin-profile.html'" role="button">
+          <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Frizzle&amp;backgroundColor=e0e7ff" alt="Profile" class="w-full h-full object-cover rounded-full">
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-2xl mx-auto pt-28 pb-12 px-6">
+    <header class="mb-8">
+      <div class="flex items-center gap-2 text-xs font-bold text-slate-400 mb-2">
+        <a href="educatoradmin-dashboard.html" class="hover:text-indigo-600 transition-colors">Dashboard</a>
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="lucide lucide-chevron-right"><path d="m9 18 6-6-6-6"></path></svg>
+        <span class="text-indigo-600">Add Student</span>
+      </div>
+      <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight">Add Student</h1>
+      <p class="text-sm font-medium text-slate-500 mt-1">Create a new student account. They can sign in with email and the temporary password you set.</p>
+      <div class="w-full h-px bg-slate-200 mt-6"></div>
+    </header>
+
+    <div class="bg-white rounded-3xl border border-indigo-50 shadow-xl shadow-indigo-100/40 overflow-hidden">
+      <form id="add-student-form" class="p-8 space-y-6">
+        <div>
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2 ml-1">Student Name <span class="text-rose-500">*</span></label>
+          <input type="text" id="student-name" placeholder="Student name" required class="input-focus w-full px-5 py-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-sm font-bold text-slate-700 placeholder:text-slate-400 transition-all shadow-sm focus:bg-white">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2 ml-1">Email <span class="text-rose-500">*</span></label>
+          <input type="email" id="student-email" placeholder="Email" required class="input-focus w-full px-5 py-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-sm font-bold text-slate-700 placeholder:text-slate-400 transition-all shadow-sm focus:bg-white">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2 ml-1">Temporary Password <span class="text-rose-500">*</span></label>
+          <input type="password" id="student-password" placeholder="Temporary password" required class="input-focus w-full px-5 py-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-sm font-bold text-slate-700 placeholder:text-slate-400 transition-all shadow-sm focus:bg-white">
+          <p class="text-[10px] text-slate-400 mt-1 ml-1">Student will use this to sign in; they can change it later.</p>
+        </div>
+        <div>
+          <h3 class="text-sm font-bold text-slate-700 mb-2">Assign Classes</h3>
+          <div id="class-checkbox-list" class="max-h-48 overflow-y-auto space-y-2 rounded-2xl border border-slate-200 bg-slate-50/50 p-4">
+            Loading classes...
+          </div>
+        </div>
+        <div class="flex gap-3 pt-2">
+          <button type="submit" class="flex-1 py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-sm shadow-lg shadow-indigo-200 transition-all disabled:opacity-60 disabled:cursor-not-allowed">
+            Create Student
+          </button>
+          <a href="educatoradmin-dashboard.html" class="py-3.5 px-6 rounded-2xl bg-white text-slate-600 font-bold text-sm border-2 border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all text-center inline-block">
+            Cancel
+          </a>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <script>
+    lucide.createIcons();
+    const API_BASE = '/api';
+    if (localStorage.getItem('role') !== 'educatoradmin') { window.location.href = "educatoradmin-login.html"; }
+    const ADMIN_ID = localStorage.getItem("userId");
+
+    async function loadClasses() {
+      const container = document.getElementById("class-checkbox-list");
+      try {
+        const res = await fetch(API_BASE + "/classes/educatoradmin", { headers: getAuthHeaders() });
+        const classes = await res.json();
+        container.innerHTML = "";
+        if (!res.ok) {
+          container.innerHTML = "<p class='text-sm text-rose-500'>Failed to load classes.</p>";
+          return;
+        }
+        if (!Array.isArray(classes) || classes.length === 0) {
+          container.innerHTML = "<p class='text-sm text-slate-400'>No classes created yet.</p>";
+          return;
+        }
+        classes.forEach(function (c) {
+          const label = document.createElement("label");
+          label.className = "flex items-center gap-3 p-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 cursor-pointer transition-colors";
+          const cb = document.createElement("input");
+          cb.type = "checkbox";
+          cb.name = "class-check";
+          cb.value = String(c.id);
+          cb.className = "w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500";
+          label.appendChild(cb);
+          label.appendChild(document.createTextNode(c.name || "Class #" + c.id));
+          container.appendChild(label);
+        });
+      } catch (err) {
+        container.innerHTML = "Failed to load classes";
+        console.error(err);
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", loadClasses);
+
+    document.getElementById("add-student-form").addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const name = document.getElementById("student-name").value.trim();
+      const email = document.getElementById("student-email").value.trim();
+      const password = document.getElementById("student-password").value.trim();
+
+      if (!name || !email || !password) {
+        alert("Please fill all fields");
+        return;
+      }
+
+      try {
+        const adminId = localStorage.getItem("userId");
+        if (!adminId) { window.location.href = "educatoradmin-login.html"; return; }
+        const res = await fetch(API_BASE + "/students", {
+          method: "POST",
+          headers: getAuthHeaders(),
+          body: JSON.stringify({
+            name: name,
+            email: email,
+            password: password,
+            admin_id: adminId
+          })
+        });
+
+        const data = await res.json().catch(function () { return {}; });
+        if (!res.ok) {
+          throw new Error(data.error || "Failed to create student");
+        }
+
+        const newStudent = data;
+        const selectedClassIds = Array.from(
+          document.querySelectorAll("#class-checkbox-list input:checked")
+        ).map(function (cb) { return Number(cb.value); });
+
+        if (selectedClassIds.length > 0) {
+          const assignRes = await fetch(API_BASE + "/classes/assign-student", {
+            method: "POST",
+            headers: getAuthHeaders(),
+            body: JSON.stringify({
+              studentId: newStudent.id,
+              classIds: selectedClassIds
+            })
+          });
+          const assignData = await assignRes.json().catch(function () { return {}; });
+          if (!assignRes.ok) {
+            throw new Error(assignData.error || "Student created but failed to assign classes");
+          }
+        }
+
+        alert("Student created successfully");
+        window.location.href = "educatoradmin-students.html";
+      } catch (err) {
+        alert(err.message);
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduQuest - Educator Quiz Manager</title>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+:root { --font-family: 'Nunito', sans-serif; }
+body { font-family: var(--font-family); -webkit-font-smoothing: antialiased; background-color: #fafaf9; }
+/* Subtle Pastel Background */
+.bg-pastel-mesh {
+position: fixed; inset: 0; z-index: -50;
+background:
+radial-gradient(at 0% 0%, rgba(224, 231, 255, 0.5) 0px, transparent 50%),
+radial-gradient(at 100% 0%, rgba(255, 237, 213, 0.4) 0px, transparent 50%),
+radial-gradient(at 100% 100%, rgba(220, 252, 231, 0.4) 0px, transparent 50%),
+radial-gradient(at 0% 100%, rgba(255, 228, 230, 0.4) 0px, transparent 50%);
+filter: blur(60px);
+}
+/* Micro pattern for texture */
+.bg-texture {
+position: fixed; inset: 0; z-index: -49;
+opacity: 0.3;
+background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2394a3b8' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.glass-card {
+background: rgba(255, 255, 255, 0.8);
+backdrop-filter: blur(12px);
+-webkit-backdrop-filter: blur(12px);
+border: 1px solid rgba(255, 255, 255, 0.6);
+}
+@keyframes slide-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.animate-enter { animation: slide-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
+@keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-5px); } 100% { transform: translateY(0px); } }
+.animate-float { animation: float 5s ease-in-out infinite; }
+/* Custom Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+/* Drawer Slide Animation */
+.drawer { transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+.drawer-open { transform: translateX(0); }
+.drawer-closed { transform: translateX(100%); }
+/* Focus Ring Custom */
+.focus-ring:focus-within { box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15); border-color: #a5b4fc; }
+</style>
+<link id="all-fonts-link-font-geist" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-geist">.font-geist { font-family: 'Geist', sans-serif !important; }</style><link id="all-fonts-link-font-roboto" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-roboto">.font-roboto { font-family: 'Roboto', sans-serif !important; }</style><link id="all-fonts-link-font-montserrat" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-montserrat">.font-montserrat { font-family: 'Montserrat', sans-serif !important; }</style><link id="all-fonts-link-font-poppins" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-poppins">.font-poppins { font-family: 'Poppins', sans-serif !important; }</style><link id="all-fonts-link-font-playfair" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;900&amp;display=swap"><style id="all-fonts-style-font-playfair">.font-playfair { font-family: 'Playfair Display', serif !important; }</style><link id="all-fonts-link-font-instrument-serif" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:wght@400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-instrument-serif">.font-instrument-serif { font-family: 'Instrument Serif', serif !important; }</style><link id="all-fonts-link-font-merriweather" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&amp;display=swap"><style id="all-fonts-style-font-merriweather">.font-merriweather { font-family: 'Merriweather', serif !important; }</style><link id="all-fonts-link-font-bricolage" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-bricolage">.font-bricolage { font-family: 'Bricolage Grotesque', sans-serif !important; }</style><link id="all-fonts-link-font-jakarta" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap"><style id="all-fonts-style-font-jakarta">.font-jakarta { font-family: 'Plus Jakarta Sans', sans-serif !important; }</style><link id="all-fonts-link-font-manrope" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap"><style id="all-fonts-style-font-manrope">.font-manrope { font-family: 'Manrope', sans-serif !important; }</style><link id="all-fonts-link-font-space-grotesk" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-space-grotesk">.font-space-grotesk { font-family: 'Space Grotesk', sans-serif !important; }</style><link id="all-fonts-link-font-work-sans" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700;800&amp;display=swap"><style id="all-fonts-style-font-work-sans">.font-work-sans { font-family: 'Work Sans', sans-serif !important; }</style><link id="all-fonts-link-font-pt-serif" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=PT+Serif:wght@400;700&amp;display=swap"><style id="all-fonts-style-font-pt-serif">.font-pt-serif { font-family: 'PT Serif', serif !important; }</style><link id="all-fonts-link-font-geist-mono" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-geist-mono">.font-geist-mono { font-family: 'Geist Mono', monospace !important; }</style><link id="all-fonts-link-font-space-mono" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&amp;display=swap"><style id="all-fonts-style-font-space-mono">.font-space-mono { font-family: 'Space Mono', monospace !important; }</style><link id="all-fonts-link-font-quicksand" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-quicksand">.font-quicksand { font-family: 'Quicksand', sans-serif !important; }</style></head>
+  <body class="text-slate-600 selection:bg-indigo-100 selection:text-indigo-800 pb-12 overflow-x-hidden">
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/educator-navbar.js"></script>
+    <script>requireEducatorAuth();</script>
+    <div class="bg-pastel-mesh"></div>
+    <div class="bg-texture"></div>
+
+    <!-- NAVIGATION (Maintained Structure) -->
+    <nav class="fixed top-0 w-full z-40 pt-4 pb-2 px-4">
+      <div class="max-w-7xl mx-auto glass-card rounded-full px-4 py-3 flex items-center justify-between shadow-sm shadow-indigo-100/50">
+        <!-- Brand -->
+        <div class="flex items-center gap-3 pl-2">
+          <img src="assets/logo.png" alt="EduQuest" class="h-9 w-auto object-contain" />
+        </div>
+
+        <!-- Links (Educator Context) -->
+        <div class="hidden md:flex items-center gap-1 p-1 bg-slate-100/50 rounded-full border border-slate-200/50">
+          <a href="educator-dashboard.html" class="hover:text-indigo-600 hover:bg-white/60 transition-all text-sm font-semibold text-slate-500 rounded-full pt-2 pr-5 pb-2 pl-5">Dashboard</a>
+          <a href="educator-class.html" class="transition-all text-sm font-bold text-indigo-600 bg-white border-slate-200/60 border rounded-full pt-2 pr-5 pb-2 pl-5 shadow-sm">Manage Class</a>
+          
+          <a href="educator-reports.html" class="hover:text-indigo-600 hover:bg-white/60 transition-all text-sm font-semibold text-slate-500 rounded-full pt-2 pr-5 pb-2 pl-5">Reports</a>
+        </div>
+
+        <!-- Profile -->
+        <div class="flex items-center gap-4 pr-2">
+            <button class="relative p-2 text-slate-400 hover:text-indigo-500 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bell"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+                <span class="absolute top-2 right-2.5 w-2 h-2 bg-rose-500 rounded-full border border-white"></span>
+            </button>
+            <div class="hidden sm:flex flex-col items-end">
+                <span id="navbar-educator-name" class="text-xs font-bold text-slate-700"></span>
+                <span id="navbar-role-badge" class="text-[10px] font-bold text-indigo-500 bg-indigo-50 rounded-full pt-0.5 pr-2 pb-0.5 pl-2">Educator</span>
+            </div>
+            <div class="cursor-pointer hover:ring-indigo-100 transition-all bg-white w-10 h-10 border-indigo-100 border-2 rounded-full ring-transparent ring-2 pt-0.5 pr-0.5 pb-0.5 pl-0.5 relative" onclick="window.location.href='educator-profile.html'" role="button">
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Frizzle&amp;backgroundColor=e0e7ff" alt="Profile" class="w-full h-full object-cover rounded-full">
+            </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- MAIN CONTENT - EDUCATOR QUIZ PAGE -->
+    <main class="max-w-7xl mx-auto pt-28 pb-12 px-6 relative z-10">
+        
+        <!-- HEADER -->
+        <header class="mb-8 animate-enter">
+            <div class="relative bg-white rounded-[2rem] border border-white p-8 shadow-xl shadow-indigo-100/20 overflow-hidden group">
+                <!-- Background Decor -->
+                <div class="absolute inset-0 bg-gradient-to-r from-violet-50/80 via-white to-sky-50/80 opacity-60"></div>
+                <div class="absolute top-0 right-0 w-64 h-64 bg-fuchsia-100/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+                <div class="absolute bottom-0 left-10 w-32 h-32 bg-indigo-100/30 rounded-full blur-2xl translate-y-1/2"></div>
+
+                <div class="relative z-10 flex flex-col items-center justify-center text-center">
+                    <div class="flex items-center justify-center gap-3 mb-2">
+                        <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-indigo-50 border border-indigo-100 text-indigo-700 text-[11px] font-extrabold uppercase tracking-wide">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-rocket"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"></path><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"></path><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"></path><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"></path></svg>
+                            <span id="quiz-class-pill-label">Loading...</span>
+                        </div>
+                    </div>
+                    <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight mb-1">Quizzes</h1>
+                    <p class="text-sm font-medium text-slate-500 max-w-lg">Create and edit quizzes to fuel your students' learning adventure.</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Search bar -->
+        <div class="mb-8 animate-enter" style="animation-delay: 100ms;">
+            <div class="relative group w-full max-w-xl">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search text-slate-400 group-focus-within:text-indigo-500 transition-colors"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+                </div>
+                <input type="text" id="quiz-search-input" placeholder="Search quizzes..." class="w-full pl-12 pr-5 py-3 rounded-xl bg-white border border-slate-200 text-sm font-semibold text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-400 transition-all shadow-sm">
+            </div>
+        </div>
+
+        <!-- QUIZ GRID -->
+        <div id="quiz-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-enter gap-x-6 gap-y-6" style="animation-delay: 200ms">
+            
+            <!-- CARD: CREATE NEW (Empty State Action) -->
+            <button class="group flex flex-col min-h-[280px] border-dashed hover:border-indigo-400 hover:bg-indigo-50/30 transition-all duration-300 cursor-pointer bg-slate-50/50 border-slate-300 border-2 rounded-3xl items-center justify-center" id="grid-create-quiz-btn" role="button">
+                <div class="flex group-hover:text-indigo-500 group-hover:scale-110 group-hover:shadow-indigo-100 transition-all duration-300 text-slate-300 bg-white w-16 h-16 border-slate-200 border rounded-full mb-4 shadow-sm items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
+                </div>
+                <h3 class="text-lg font-bold text-slate-600 group-hover:text-indigo-700 transition-colors">Start a new quiz</h3>
+                <p class="text-xs font-medium text-slate-400 mt-1">Create from scratch or template</p>
+            </button>
+
+            <!-- QUIZ CARDS INJECTED HERE BY JS -->
+            <!-- CARD TEMPLATE (hidden, used by JS) -->
+            <div class="group relative bg-white rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-indigo-100/40 hover:-translate-y-1 transition-all duration-300 flex flex-col hidden" id="quiz-card-template">
+                <!-- Top Decor -->
+                <div class="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-t-3xl"></div>
+                
+                <div class="p-6 pb-4 flex-1">
+                    <!-- Header -->
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-apple"><path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 14 5 22 8 22c1.25 0 2.5-1.06 4-1.06Z"></path><path d="M10 2c1 .5 2 2 2 5"></path></svg>
+                            </div>
+                            <div class="">
+                                <h3 class="js-quiz-title text-lg font-extrabold text-slate-800 leading-tight">Gravity Basics</h3>
+                                <span class="js-quiz-subtitle text-xs font-bold text-slate-400"></span>
+                            </div>
+                        </div>
+                        <span class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-extrabold uppercase tracking-wide border border-emerald-200">Published</span>
+                    </div>
+
+                    <!-- Description -->
+                    <p class="text-xs font-medium text-slate-500 mb-5 line-clamp-2 js-quiz-desc">Quiz for your class.</p>
+
+                    <!-- Stats Grid -->
+                    <div class="grid grid-cols-3 gap-2 py-3 border-y border-slate-50">
+                        <div class="text-center">
+                            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Questions</div>
+                            <div class="text-sm font-black text-slate-700 js-quiz-qcount">0</div>
+                        </div>
+                        <div class="text-center border-l border-slate-50">
+                            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Class</div>
+                            <div class="text-sm font-black text-emerald-500 js-quiz-subtitle"></div>
+                        </div>
+                        <div class="text-center border-l border-slate-50">
+                            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">ID</div>
+                            <div class="text-sm font-black text-slate-700 js-quiz-id">—</div>
+                        </div>
+                    </div>
+
+                    <!-- Meta -->
+                    <div class="flex items-center gap-3 mt-4">
+                        <span class="flex items-center gap-1 text-[11px] font-bold text-slate-400 bg-slate-50 px-2 py-1 rounded-md js-quiz-meta-questions">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-help-circle"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><path d="M12 17h.01"></path></svg>
+                            <span class="js-quiz-qcount2">0</span> Questions
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Actions Footer -->
+                <div class="p-4 border-t border-slate-100 flex items-center justify-between bg-slate-50/50 rounded-b-3xl">
+                    <a href="#" class="js-quiz-edit flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-indigo-600 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"></path><path d="m15 5 4 4"></path></svg>
+                        Edit
+                    </a>
+                    <div class="flex items-center gap-2">
+                        <button type="button" class="js-quiz-delete p-2 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-white hover:shadow-sm border border-transparent hover:border-rose-100 transition-all" title="Delete">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash-2"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" x2="10" y1="11" y2="17"></line><line x1="14" x2="14" y1="11" y2="17"></line></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- PREVIEW SIDE PANEL (DRAWER) -->
+    <!-- Hidden by default, slides in on click -->
+    <aside id="previewDrawer" class="fixed inset-y-0 right-0 w-full md:w-[480px] bg-white/95 backdrop-blur-xl border-l border-slate-200 z-50 shadow-2xl drawer drawer-closed flex flex-col">
+        <!-- Close Button -->
+        <div class="absolute top-4 left-[-60px] md:left-[-60px]">
+            <button onclick="toggleDrawer()" class="bg-white/80 p-3 rounded-full shadow-lg text-slate-500 hover:text-indigo-600 hover:scale-105 transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+            </button>
+        </div>
+
+        <!-- Drawer Content -->
+        <div class="flex-1 overflow-y-auto p-8 relative">
+             <!-- Top gradient -->
+             <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-emerald-400 to-teal-400"></div>
+
+             <div class="mb-6">
+                 <div class="flex items-center gap-2 mb-2">
+                    <span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-extrabold uppercase tracking-wide border border-emerald-200">Published</span>
+                    <span class="px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 text-[10px] font-extrabold uppercase tracking-wide border border-slate-200">10 Questions</span>
+                 </div>
+                 <h2 class="text-2xl font-extrabold text-slate-800 leading-tight mb-2">Gravity Basics</h2>
+                 <p class="text-sm text-slate-500 font-medium">Previewing quiz content as it appears to students.</p>
+             </div>
+
+             <!-- Preview Stats -->
+             <div class="bg-slate-50 rounded-xl p-4 border border-slate-100 mb-8 flex items-center justify-between">
+                 <div class="text-center">
+                     <div class="text-xs font-bold text-slate-400 uppercase">Avg Score</div>
+                     <div class="text-lg font-black text-emerald-500">88%</div>
+                 </div>
+                 <div class="w-px h-8 bg-slate-200"></div>
+                 <div class="text-center">
+                     <div class="text-xs font-bold text-slate-400 uppercase">High Score</div>
+                     <div class="text-lg font-black text-indigo-500">100%</div>
+                 </div>
+                 <div class="w-px h-8 bg-slate-200"></div>
+                 <div class="text-center">
+                     <div class="text-xs font-bold text-slate-400 uppercase">Est. Time</div>
+                     <div class="text-lg font-black text-slate-700">12m</div>
+                 </div>
+             </div>
+
+             <!-- Questions List -->
+             <h3 class="text-xs font-extrabold text-slate-400 uppercase tracking-widest mb-4 pl-1">Questions Preview</h3>
+             <div class="space-y-4">
+                 <!-- Q1 -->
+                 <div class="p-4 rounded-xl bg-white border border-slate-100 shadow-sm hover:border-indigo-100 transition-colors">
+                     <div class="flex justify-between items-start mb-2">
+                         <span class="text-xs font-bold text-indigo-500 bg-indigo-50 px-2 py-1 rounded-md">Q1 • Multiple Choice</span>
+                         <span class="text-xs font-bold text-slate-400">10 pts</span>
+                     </div>
+                     <p class="text-sm font-bold text-slate-700 leading-relaxed">Which of the following best describes the force of gravity?</p>
+                     <div class="mt-3 space-y-2">
+                         <div class="flex items-center gap-3 p-2 rounded-lg bg-emerald-50/50 border border-emerald-100">
+                             <div class="w-4 h-4 rounded-full border-2 border-emerald-400 flex items-center justify-center"><div class="w-2 h-2 bg-emerald-400 rounded-full"></div></div>
+                             <span class="text-xs font-bold text-slate-600">A force of attraction between objects with mass</span>
+                         </div>
+                         <div class="flex items-center gap-3 p-2 rounded-lg bg-white border border-slate-100 opacity-60">
+                             <div class="w-4 h-4 rounded-full border-2 border-slate-300"></div>
+                             <span class="text-xs font-bold text-slate-500">A repulsive force generated by magnets</span>
+                         </div>
+                     </div>
+                 </div>
+
+                 <!-- Q2 -->
+                 <div class="p-4 rounded-xl bg-white border border-slate-100 shadow-sm hover:border-indigo-100 transition-colors">
+                     <div class="flex justify-between items-start mb-2">
+                         <span class="text-xs font-bold text-indigo-500 bg-indigo-50 px-2 py-1 rounded-md">Q2 • True / False</span>
+                         <span class="text-xs font-bold text-slate-400">10 pts</span>
+                     </div>
+                     <p class="text-sm font-bold text-slate-700 leading-relaxed">Gravity exists only on Earth, not in space.</p>
+                     <div class="mt-3 space-y-2">
+                         <div class="flex items-center gap-3 p-2 rounded-lg bg-white border border-slate-100 opacity-60">
+                             <div class="w-4 h-4 rounded-full border-2 border-slate-300"></div>
+                             <span class="text-xs font-bold text-slate-500">True</span>
+                         </div>
+                         <div class="flex items-center gap-3 p-2 rounded-lg bg-emerald-50/50 border border-emerald-100">
+                             <div class="w-4 h-4 rounded-full border-2 border-emerald-400 flex items-center justify-center"><div class="w-2 h-2 bg-emerald-400 rounded-full"></div></div>
+                             <span class="text-xs font-bold text-slate-600">False</span>
+                         </div>
+                     </div>
+                 </div>
+
+                 <!-- Q3 -->
+                 <div class="p-4 rounded-xl bg-white border border-slate-100 shadow-sm hover:border-indigo-100 transition-colors">
+                     <div class="flex justify-between items-start mb-2">
+                         <span class="text-xs font-bold text-indigo-500 bg-indigo-50 px-2 py-1 rounded-md">Q3 • Short Answer</span>
+                         <span class="text-xs font-bold text-slate-400">20 pts</span>
+                     </div>
+                     <p class="text-sm font-bold text-slate-700 leading-relaxed">Who formulated the law of universal gravitation?</p>
+                     <div class="mt-3 p-3 bg-slate-50 rounded-lg border border-slate-100 border-dashed text-xs text-slate-400 font-medium">
+                         Student will type answer here...
+                     </div>
+                 </div>
+             </div>
+        </div>
+
+        <!-- Drawer Footer -->
+        <div class="p-6 border-t border-slate-100 bg-slate-50/50">
+            <button class="w-full py-3 rounded-xl bg-indigo-600 text-white font-bold text-sm shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition-all flex items-center justify-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"></path><path d="m15 5 4 4"></path></svg>
+                Edit Quiz Content
+            </button>
+        </div>
+    </aside>
+
+    <!-- Overlay for Drawer -->
+    <div id="drawerOverlay" onclick="toggleDrawer()" class="fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-40 hidden transition-opacity opacity-0"></div>
+
+    <!-- FOOTER (Maintained) -->
+    <footer class="bg-slate-900 text-slate-300 py-12 border-t border-slate-800 mt-12">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+          <div class="space-y-4">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-compass w-5 h-5">
+                  <path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z"></path>
+                  <circle cx="12" cy="12" r="10"></circle>
+                </svg>
+              </div>
+              <span class="text-lg font-bold text-white tracking-tight">EduQuest</span>
+            </div>
+            <p class="text-xs leading-relaxed text-slate-400 font-medium max-w-xs">Making learning an addictive adventure for students around the world.</p>
+          </div>
+          <div>
+            <h4 class="font-bold text-white mb-4 text-sm">Product</h4>
+            <ul class="space-y-2 text-xs font-medium text-slate-400">
+              <li><a href="#" class="hover:text-indigo-400 transition-colors">Features</a></li>
+              <li><a href="#" class="hover:text-indigo-400 transition-colors">Pricing</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="font-bold text-white mb-4 text-sm">Resources</h4>
+            <ul class="space-y-2 text-xs font-medium text-slate-400">
+              <li><a href="#" class="hover:text-indigo-400 transition-colors">Help Center</a></li>
+              <li><a href="#" class="hover:text-indigo-400 transition-colors">Community</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="font-bold text-white mb-4 text-sm">Legal</h4>
+            <ul class="space-y-2 text-xs font-medium text-slate-400">
+              <li><a href="#" class="hover:text-indigo-400 transition-colors">Privacy</a></li>
+              <li><a href="#" class="hover:text-indigo-400 transition-colors">Terms</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="border-t border-slate-800 pt-6 flex justify-center">
+          <p class="text-xs font-medium text-slate-500">© 2024 EduQuest. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      lucide.createIcons();
+
+      const params = new URLSearchParams(window.location.search);
+      const _rawClassId = params.get('classId');
+      const CLASS_ID = (_rawClassId != null && _rawClassId !== '' && !isNaN(Number(_rawClassId))) ? Number(_rawClassId) : null;
+      const API_BASE = '/api';
+
+      (function loadQuizzes() {
+        const grid = document.getElementById('quiz-grid');
+        const template = document.getElementById('quiz-card-template');
+        if (!grid || !template) return;
+        if (CLASS_ID == null) {
+          grid.innerHTML = '<p class="col-span-full text-slate-500 text-center py-8">This page must be opened from a class.</p>';
+          return;
+        }
+        fetch(API_BASE + '/quizzes/class/' + CLASS_ID, { headers: getAuthHeaders() })
+          .then(function (r) { return r.ok ? r.json() : []; })
+          .then(function (quizzes) {
+            if (!quizzes || quizzes.length === 0) {
+              var emptyMsg = document.createElement('p');
+              emptyMsg.className = 'col-span-full text-slate-500 text-center py-8';
+              emptyMsg.textContent = 'No quizzes yet for this class.';
+              grid.insertBefore(emptyMsg, template);
+              return;
+            }
+            quizzes.forEach(function (q) {
+              if (q.question_count === undefined) {
+                console.warn('Quiz missing question_count:', q);
+              }
+              var questionCount = (q.question_count != null) ? q.question_count : 0;
+              const card = template.cloneNode(true);
+              card.id = '';
+              card.classList.remove('hidden');
+              var titleEl = card.querySelector('.js-quiz-title');
+              var subtitleEl = card.querySelector('.js-quiz-subtitle');
+              var qcountEl = card.querySelector('.js-quiz-qcount');
+              var qcount2El = card.querySelector('.js-quiz-qcount2');
+              var idEl = card.querySelector('.js-quiz-id');
+              var editLink = card.querySelector('.js-quiz-edit');
+              var deleteBtn = card.querySelector('.js-quiz-delete');
+              if (titleEl) titleEl.textContent = q.title || 'Untitled Quiz';
+              if (subtitleEl) subtitleEl.textContent = document.getElementById('quiz-class-label') ? document.getElementById('quiz-class-label').textContent : '';
+              if (qcountEl) qcountEl.textContent = questionCount;
+              if (qcount2El) qcount2El.textContent = questionCount;
+              if (idEl) idEl.textContent = '#' + q.id;
+              if (editLink) { editLink.href = 'educator-editquiz.html?id=' + q.id; }
+              if (deleteBtn) {
+                deleteBtn.addEventListener('click', function (e) {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  if (!confirm('Are you sure you want to delete this quiz? This cannot be undone.')) return;
+                  var btn = this;
+                  btn.disabled = true;
+                  btn.setAttribute('aria-busy', 'true');
+                  var originalHtml = btn.innerHTML;
+                  btn.innerHTML = '<span class="text-xs font-bold text-slate-500">Deleting...</span>';
+                  fetch(API_BASE + '/quizzes/' + q.id, { method: 'DELETE', headers: getAuthHeaders() })
+                    .then(function (r) {
+                      if (r.ok) {
+                        card.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+                        card.style.opacity = '0';
+                        card.style.transform = 'scale(0.98)';
+                        setTimeout(function () { card.remove(); }, 280);
+                      } else {
+                        btn.disabled = false;
+                        btn.removeAttribute('aria-busy');
+                        btn.innerHTML = originalHtml;
+                        alert('Failed to delete quiz. Please try again.');
+                      }
+                    })
+                    .catch(function () {
+                      btn.disabled = false;
+                      btn.removeAttribute('aria-busy');
+                      btn.innerHTML = originalHtml;
+                      alert('Failed to delete quiz. Please try again.');
+                    });
+                });
+              }
+              grid.insertBefore(card, template);
+            });
+          })
+          .catch(function () {});
+      })();
+
+      (function initQuizSearch() {
+        var searchInput = document.getElementById('quiz-search-input');
+        var grid = document.getElementById('quiz-grid');
+        if (!searchInput || !grid) return;
+        searchInput.addEventListener('input', function () {
+          var term = (searchInput.value || '').trim().toLowerCase();
+          Array.from(grid.children).forEach(function (child) {
+            if (child.id === 'quiz-card-template' || child.id === 'grid-create-quiz-btn') return;
+            var titleEl = child.querySelector('.js-quiz-title');
+            if (!titleEl) return;
+            var title = (titleEl.textContent || '').trim().toLowerCase();
+            child.style.display = term === '' || title.indexOf(term) !== -1 ? '' : 'none';
+          });
+        });
+      })();
+
+      (function loadQuizClassLabel() {
+        var labelEl = document.getElementById('quiz-class-label');
+        var pillEl = document.getElementById('quiz-class-pill-label');
+        var setClassDisplay = function (name) {
+          if (labelEl) labelEl.textContent = name;
+          if (pillEl) pillEl.textContent = name ? 'Class: ' + name : '—';
+          document.querySelectorAll('.js-quiz-subtitle').forEach(function (el) { el.textContent = name || ''; });
+        };
+        if (CLASS_ID == null) {
+          setClassDisplay('—');
+          return;
+        }
+        fetch(API_BASE + '/classes/' + CLASS_ID, { headers: getAuthHeaders() })
+          .then(function (r) {
+            if (r.status === 403) console.warn('Class Fetch 403 for classId:', CLASS_ID);
+            if (!r.ok) throw new Error('Failed to load class');
+            return r.json();
+          })
+          .then(function (cls) {
+            if (!cls || !cls.name) console.warn('Class Fetch empty or missing name for classId:', CLASS_ID, cls);
+            var name = cls && cls.name ? cls.name : 'Unknown class';
+            setClassDisplay(name);
+          })
+          .catch(function () {
+            setClassDisplay('Unknown class');
+          });
+      })();
+
+      function goToCreateQuiz() {
+        if (CLASS_ID == null) {
+          alert('Please open quizzes from a class.');
+          return;
+        }
+        window.location.href = 'educator-createquiz.html?classId=' + CLASS_ID;
+      }
+      var headerCreateBtn = document.getElementById('header-create-quiz-btn');
+      var gridCreateBtn = document.getElementById('grid-create-quiz-btn');
+      if (CLASS_ID == null) {
+        if (headerCreateBtn) { headerCreateBtn.disabled = true; headerCreateBtn.setAttribute('aria-disabled', 'true'); }
+        if (gridCreateBtn) { gridCreateBtn.disabled = true; gridCreateBtn.setAttribute('aria-disabled', 'true'); }
+      }
+      if (headerCreateBtn) headerCreateBtn.addEventListener('click', goToCreateQuiz);
+      if (gridCreateBtn) gridCreateBtn.addEventListener('click', goToCreateQuiz);
+
+      // Simple Drawer Toggle Logic
+      function toggleDrawer() {
+        const drawer = document.getElementById('previewDrawer');
+        const overlay = document.getElementById('drawerOverlay');
+        
+        if (drawer.classList.contains('drawer-closed')) {
+            drawer.classList.remove('drawer-closed');
+            drawer.classList.add('drawer-open');
+            overlay.classList.remove('hidden');
+            setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        } else {
+            drawer.classList.remove('drawer-open');
+            drawer.classList.add('drawer-closed');
+            overlay.classList.add('opacity-0');
+            setTimeout(() => overlay.classList.add('hidden'), 300);
+            document.body.style.overflow = '';
+        }
+      }
+    </script>
+  
+</body></html>

@@ -1,0 +1,9 @@
+-- Educators created before created_by column was added have created_by IS NULL.
+-- They will NOT appear in educator admin dashboard (GET /api/educators filters by created_by = req.userId).
+--
+-- To backfill manually, run (replace <educator_admin_id> with the actual educator_admin id):
+--
+--   UPDATE educators SET created_by = <educator_admin_id> WHERE created_by IS NULL AND id IN (...);
+--
+-- To find educators with NULL created_by:
+--   SELECT id, name, email, created_by FROM educators WHERE created_by IS NULL;

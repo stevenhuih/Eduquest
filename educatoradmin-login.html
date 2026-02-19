@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduQuest - Educator Admin Login</title>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+:root {
+--font-heading: 'Nunito', sans-serif;
+--font-body: 'Inter', sans-serif;
+}
+body {
+font-family: var(--font-body);
+background-color: #F8FAFC;
+color: #334155;
+-webkit-font-smoothing: antialiased;
+overflow-x: hidden;
+}
+/* --- Backgrounds --- */
+.page-bg {
+position: fixed;
+inset: 0;
+z-index: -50;
+background:
+radial-gradient(circle at 0% 0%, rgba(224, 231, 255, 0.5) 0%, transparent 50%),
+radial-gradient(circle at 100% 100%, rgba(230, 240, 255, 0.5) 0%, transparent 50%),
+linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 100%);
+}
+.bg-grid-pattern {
+position: fixed;
+inset: 0;
+z-index: -49;
+opacity: 0.3;
+background-image:
+linear-gradient(rgba(148, 163, 184, 0.1) 1px, transparent 1px),
+linear-gradient(90deg, rgba(148, 163, 184, 0.1) 1px, transparent 1px);
+background-size: 40px 40px;
+mask-image: radial-gradient(circle at 50% 50%, black 40%, transparent 100%);
+}
+/* --- Floating Shapes Animation --- */
+.floating-shape {
+position: absolute;
+filter: blur(50px);
+opacity: 0.4;
+z-index: -48;
+animation: float 20s infinite alternate ease-in-out;
+}
+@keyframes float {
+0% { transform: translate(0, 0) rotate(0deg); }
+100% { transform: translate(30px, -30px) rotate(10deg); }
+}
+/* --- Typography --- */
+h1, h2, h3, h4, .brand-font { font-family: var(--font-heading); }
+.tracking-tight { letter-spacing: -0.025em; }
+/* --- Glass Components --- */
+.glass-panel {
+background: rgba(255, 255, 255, 0.75);
+backdrop-filter: blur(16px);
+-webkit-backdrop-filter: blur(16px);
+border: 1px solid rgba(255, 255, 255, 0.8);
+box-shadow:
+0 10px 40px -10px rgba(0, 0, 0, 0.05),
+0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+}
+/* --- Form Elements --- */
+.input-wrapper { position: relative; }
+.floating-input {
+width: 100%;
+background: white;
+border: 1px solid #E2E8F0;
+border-radius: 0.75rem;
+padding: 1rem 1rem 1rem 2.75rem; /* Left padding for icon */
+font-size: 0.95rem;
+font-weight: 500;
+color: #1E293B;
+outline: none;
+transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.floating-input:focus {
+border-color: #818CF8;
+box-shadow: 0 0 0 4px rgba(129, 140, 248, 0.1);
+}
+.floating-label {
+position: absolute;
+left: 2.75rem;
+top: 1rem;
+font-size: 0.95rem;
+color: #94A3B8;
+pointer-events: none;
+transition: all 0.2s ease;
+transform-origin: left top;
+font-weight: 500;
+}
+/* Float Label Logic */
+.floating-input:focus ~ .floating-label,
+.floating-input:not(:placeholder-shown) ~ .floating-label {
+transform: translateY(-0.7rem) scale(0.75);
+color: #6366F1;
+font-weight: 700;
+}
+.input-icon {
+position: absolute;
+left: 1rem;
+top: 1.1rem;
+color: #94A3B8;
+transition: color 0.2s ease;
+}
+.floating-input:focus ~ .input-icon { color: #6366F1; }
+/* Custom Checkbox */
+.custom-checkbox {
+appearance: none;
+width: 1.1em;
+height: 1.1em;
+border: 1px solid #CBD5E1;
+border-radius: 0.35em;
+background-color: white;
+display: grid;
+place-content: center;
+transition: all 0.2s;
+cursor: pointer;
+}
+.custom-checkbox::before {
+content: "";
+width: 0.65em;
+height: 0.65em;
+transform: scale(0);
+background-color: white;
+transform-origin: center;
+clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+transition: transform 0.1s ease-in-out;
+}
+.custom-checkbox:checked {
+background-color: #4F46E5; /* Indigo 600 */
+border-color: #4F46E5;
+}
+.custom-checkbox:checked::before { transform: scale(1); }
+/* Animations */
+.slide-up {
+animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+opacity: 0;
+transform: translateY(20px);
+}
+@keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+.fade-in { animation: fadeIn 0.8s ease-out forwards; opacity: 0; }
+@keyframes fadeIn { to { opacity: 1; } }
+</style>
+<link id="all-fonts-link-font-geist" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-geist">.font-geist { font-family: 'Geist', sans-serif !important; }</style><link id="all-fonts-link-font-roboto" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-roboto">.font-roboto { font-family: 'Roboto', sans-serif !important; }</style><link id="all-fonts-link-font-montserrat" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-montserrat">.font-montserrat { font-family: 'Montserrat', sans-serif !important; }</style><link id="all-fonts-link-font-poppins" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-poppins">.font-poppins { font-family: 'Poppins', sans-serif !important; }</style><link id="all-fonts-link-font-playfair" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;900&amp;display=swap"><style id="all-fonts-style-font-playfair">.font-playfair { font-family: 'Playfair Display', serif !important; }</style><link id="all-fonts-link-font-instrument-serif" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:wght@400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-instrument-serif">.font-instrument-serif { font-family: 'Instrument Serif', serif !important; }</style><link id="all-fonts-link-font-merriweather" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&amp;display=swap"><style id="all-fonts-style-font-merriweather">.font-merriweather { font-family: 'Merriweather', serif !important; }</style><link id="all-fonts-link-font-bricolage" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-bricolage">.font-bricolage { font-family: 'Bricolage Grotesque', sans-serif !important; }</style><link id="all-fonts-link-font-jakarta" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap"><style id="all-fonts-style-font-jakarta">.font-jakarta { font-family: 'Plus Jakarta Sans', sans-serif !important; }</style><link id="all-fonts-link-font-manrope" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap"><style id="all-fonts-style-font-manrope">.font-manrope { font-family: 'Manrope', sans-serif !important; }</style><link id="all-fonts-link-font-space-grotesk" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-space-grotesk">.font-space-grotesk { font-family: 'Space Grotesk', sans-serif !important; }</style><link id="all-fonts-link-font-work-sans" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700;800&amp;display=swap"><style id="all-fonts-style-font-work-sans">.font-work-sans { font-family: 'Work Sans', sans-serif !important; }</style><link id="all-fonts-link-font-pt-serif" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=PT+Serif:wght@400;700&amp;display=swap"><style id="all-fonts-style-font-pt-serif">.font-pt-serif { font-family: 'PT Serif', serif !important; }</style><link id="all-fonts-link-font-geist-mono" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-geist-mono">.font-geist-mono { font-family: 'Geist Mono', monospace !important; }</style><link id="all-fonts-link-font-space-mono" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&amp;display=swap"><style id="all-fonts-style-font-space-mono">.font-space-mono { font-family: 'Space Mono', monospace !important; }</style><link id="all-fonts-link-font-quicksand" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-quicksand">.font-quicksand { font-family: 'Quicksand', sans-serif !important; }</style></head>
+<body class="min-h-screen flex flex-col lg:flex-row overflow-hidden relative">
+
+    <!-- Background Elements -->
+    <div class="page-bg"></div>
+    <div class="bg-grid-pattern"></div>
+    
+    <!-- Abstract Shapes -->
+    <div class="floating-shape w-96 h-96 bg-indigo-200/30 rounded-full top-[-10%] left-[-10%]"></div>
+    <div class="floating-shape w-80 h-80 bg-violet-200/30 rounded-full bottom-[-10%] right-[-5%]" style="animation-delay: -5s;"></div>
+    <div class="floating-shape w-64 h-64 bg-blue-100/40 rounded-full top-[40%] right-[40%] blur-3xl" style="animation-delay: -10s;"></div>
+
+    <!-- LEFT COLUMN: Brand & Context -->
+    <div class="w-full lg:w-[45%] xl:w-[40%] relative flex flex-col justify-between p-8 lg:p-12 xl:p-16 z-10 fade-in">
+        
+        <!-- Header/Logo -->
+        <div class="flex items-center gap-3">
+            <img src="assets/logo.png" alt="EduQuest" class="h-10 w-auto object-contain" />
+        </div>
+
+        <!-- Main Content -->
+        <div class="my-auto py-10">
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100/80 border border-slate-200 text-xs font-bold text-slate-600 uppercase tracking-wide mb-6 backdrop-blur-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path></svg>
+                Educator Admin Portal
+            </div>
+
+            <h1 class="lg:text-5xl leading-[1.1] text-4xl font-extrabold text-slate-800 tracking-tight mb-4">Welcome back,<br>Educator Admin.</h1>
+            <p class="text-lg text-slate-500 font-medium leading-relaxed max-w-md mb-10">
+                Sign in to manage teachers, monitor institutional performance, and configure your school's gamified learning environment.
+            </p>
+
+            <ul class="space-y-4 mb-10">
+                <li class="flex items-center gap-3">
+                    <div class="flex-shrink-0 w-8 h-8 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-users"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    </div>
+                    <span class="font-semibold text-slate-600">Invite &amp; manage educators</span>
+                </li>
+                <li class="flex items-center gap-3">
+                    <div class="flex-shrink-0 w-8 h-8 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bar-chart-3"><path d="M3 3v18h18"></path><path d="M18 17V9"></path><path d="M13 17V5"></path><path d="M8 17v-3"></path></svg>
+                    </div>
+                    <span class="font-semibold text-slate-600">Monitor class performance</span>
+                </li>
+                <li class="flex items-center gap-3">
+                    <div class="flex-shrink-0 w-8 h-8 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-settings-2"><path d="M20 7h-9"></path><path d="M14 17H5"></path><circle cx="17" cy="17" r="3"></circle><circle cx="7" cy="7" r="3"></circle></svg>
+                    </div>
+                    <span class="font-semibold text-slate-600">Configure institution settings</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Footer/Copyright -->
+        <div class="hidden lg:block">
+            <p class="text-xs text-slate-400 font-semibold tracking-wide">© 2026 EDUQUEST INC. SECURE LOGIN.</p>
+        </div>
+    </div>
+
+    <!-- RIGHT COLUMN: Login Card -->
+    <div class="w-full lg:w-[55%] xl:w-[60%] flex items-center justify-center p-4 lg:p-8 relative z-10">
+        
+        <!-- Center Login Card -->
+        <div class="glass-panel w-full max-w-[440px] p-8 md:p-10 rounded-[28px] slide-up relative overflow-hidden">
+            
+            <!-- Subtle geometric accent inside card -->
+            <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-indigo-50 to-transparent pointer-events-none"></div>
+            <div class="absolute top-0 right-0 w-full h-1 bg-gradient-to-r from-transparent via-indigo-300 to-transparent opacity-50"></div>
+
+            <div class="relative z-10">
+                <!-- Card Header -->
+                <div class="flex justify-between items-start mb-8">
+                    <div class="">
+                        <h2 class="text-2xl font-bold text-slate-800 tracking-tight">Educator Admin Login</h2>
+                        <p class="text-slate-500 text-sm mt-1.5 font-medium leading-snug">
+                            Use the credentials sent to your email after subscription.
+                        </p>
+                    </div>
+                    <div class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-indigo-50 border border-indigo-100 text-[10px] font-bold text-indigo-700 uppercase tracking-wide">
+                        <div class="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse"></div>
+                        Admin
+                    </div>
+                </div>
+
+                <!-- Login Form -->
+                <form id="admin-login-form" class="space-y-6">
+                    
+                    <!-- Email Field -->
+                    <div class="space-y-1">
+                        <div class="input-wrapper group">
+                            <input type="email" id="email" required="" placeholder=" " class="floating-input peer">
+                            <label for="email" class="floating-label">Admin Email</label>
+                            
+                            <!-- Icon -->
+                            <div class="input-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mail"><rect width="20" height="16" x="2" y="4" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg>
+                            </div>
+                        </div>
+                        <p class="text-[11px] text-slate-400 font-medium pl-1">
+                            Use your official institution email address.
+                        </p>
+                    </div>
+
+                    <!-- Password Field -->
+                    <div class="input-wrapper group">
+                        <input type="password" id="password" required="" placeholder=" " class="floating-input peer pr-10">
+                        <label for="password" class="floating-label">Password</label>
+                        
+                        <!-- Icon Left -->
+                        <div class="input-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-lock"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        </div>
+
+                        <!-- Toggle Visibility Icon Right -->
+                        <button type="button" class="absolute right-3.5 top-3.5 text-slate-400 hover:text-slate-600 focus:outline-none transition-colors" onclick="togglePassword()">
+                            <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                        </button>
+                    </div>
+
+                    <!-- Sign In Button -->
+                    <button type="submit" class="w-full relative py-3.5 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-700 to-slate-800 text-white font-bold text-sm shadow-lg shadow-indigo-200 hover:shadow-indigo-300 transition-all duration-300 transform hover:scale-[1.02] focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 overflow-hidden group">
+                        <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+                        <span class="relative flex items-center justify-center gap-2">
+                            Sign In as Educator Admin
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </span>
+                    </button>
+
+                </form>
+
+                <!-- Support Section -->
+                <div class="mt-8 pt-6 border-t border-slate-100">
+                    <div class="flex items-start gap-3 bg-slate-50/80 rounded-lg p-3 border border-slate-200/50 mb-6">
+                        <div class="flex-shrink-0 text-slate-400 mt-0.5">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>
+                        </div>
+                        <p class="text-xs text-slate-500 leading-snug">
+                            Don't see your admin credentials? Please check with your billing contact or <a href="#" class="text-indigo-600 font-semibold hover:underline">EduQuest Support</a>.
+                        </p>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row items-center justify-center gap-4 text-xs font-semibold text-slate-400">
+                        <a href="educator-login.html" class="hover:text-indigo-600 transition-colors flex items-center gap-1.5">
+                            Go to Educator Login
+                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-external-link"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" class=""></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                        </a>
+                        <span class="hidden sm:inline w-1 h-1 bg-slate-300 rounded-full"></span>
+                        <a href="student-login.html" class="hover:text-indigo-600 transition-colors flex items-center gap-1.5">
+                            Go to Student Login
+                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-external-link"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                        </a>
+                        <span class="hidden sm:inline w-1 h-1 bg-slate-300 rounded-full"></span>
+                        <a href="admin-login.html" class="hover:text-indigo-600 transition-colors flex items-center gap-1.5">
+                            Go to Admin Login
+                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-external-link"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Mobile Copyright -->
+        <div class="absolute bottom-4 left-0 w-full text-center lg:hidden">
+            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest opacity-60">© 2026 EduQuest Inc.</p>
+        </div>
+
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        const API_BASE = '/api';
+
+        document.getElementById("admin-login-form").addEventListener("submit", async function (e) {
+            e.preventDefault();
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value;
+            if (!email || !password) {
+                alert("Please enter email and password.");
+                return;
+            }
+            try {
+                const res = await fetch(API_BASE + "/admins/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await res.json().catch(function () { return {}; });
+                if (!res.ok) {
+                    alert(data.error || "Login failed");
+                    return;
+                }
+                localStorage.removeItem('studentId');
+                localStorage.removeItem('educatorId');
+                localStorage.removeItem('adminId');
+                localStorage.removeItem('platformAdminId');
+                localStorage.removeItem('role');
+                localStorage.removeItem('userId');
+                localStorage.setItem('role', 'educatoradmin');
+                localStorage.setItem('userId', data.id);
+                localStorage.setItem("centerName", data.center_name || "");
+                window.location.href = "educatoradmin-dashboard.html";
+            } catch (err) {
+                console.error(err);
+                alert("Login failed. Please try again.");
+            }
+        });
+
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const eyeIcon = document.getElementById('eye-icon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                // Eye Off Icon
+                eyeIcon.innerHTML = '<path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/>';
+            } else {
+                passwordInput.type = 'password';
+                // Eye Icon
+                eyeIcon.innerHTML = '<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path><circle cx="12" cy="12" r="3"></circle>';
+            }
+        }
+    </script>
+
+</body></html>

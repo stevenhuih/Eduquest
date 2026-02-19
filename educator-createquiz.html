@@ -1,0 +1,1602 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduQuest - Create New Quiz</title>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+:root { --font-family: 'Nunito', sans-serif; }
+body { font-family: var(--font-family); -webkit-font-smoothing: antialiased; background-color: #fafaf9; }
+/* Backgrounds */
+.bg-pastel-mesh {
+position: fixed; inset: 0; z-index: -50;
+background:
+radial-gradient(at 0% 0%, rgba(224, 231, 255, 0.5) 0px, transparent 50%),
+radial-gradient(at 100% 0%, rgba(255, 237, 213, 0.4) 0px, transparent 50%),
+radial-gradient(at 100% 100%, rgba(220, 252, 231, 0.4) 0px, transparent 50%),
+radial-gradient(at 0% 100%, rgba(255, 228, 230, 0.4) 0px, transparent 50%);
+filter: blur(60px);
+}
+.bg-texture {
+position: fixed; inset: 0; z-index: -49;
+opacity: 0.3;
+background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2394a3b8' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+/* Glass & Card Styles */
+.glass-card {
+background: rgba(255, 255, 255, 0.85);
+backdrop-filter: blur(12px);
+-webkit-backdrop-filter: blur(12px);
+border: 1px solid rgba(255, 255, 255, 0.6);
+}
+.hover-lift { transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s; }
+.hover-lift:hover { transform: translateY(-2px); }
+.js-option-box.is-correct { background: rgba(16, 185, 129, 0.08); border-color: rgb(52, 211, 153); box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1); }
+.js-option-box.is-correct .js-option-text { font-weight: 700; color: #1e293b; }
+/* Animations */
+@keyframes slide-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.animate-enter { animation: slide-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
+/* Custom Inputs & Toggles */
+.toggle-checkbox:checked { right: 0; border-color: #4f46e5; }
+.toggle-checkbox:checked + .toggle-label { background-color: #4f46e5; }
+.custom-range { -webkit-appearance: none; width: 100%; height: 6px; background: #e2e8f0; border-radius: 5px; outline: none; }
+.custom-range::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 18px; height: 18px; border-radius: 50%; background: #4f46e5; cursor: pointer; border: 2px solid white; box-shadow: 0 1px 3px rgba(0,0,0,0.3); transition: transform 0.1s; }
+.custom-range::-webkit-slider-thumb:hover { transform: scale(1.1); }
+</style>
+<link id="all-fonts-link-font-geist" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-geist">.font-geist { font-family: 'Geist', sans-serif !important; }</style><link id="all-fonts-link-font-roboto" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-roboto">.font-roboto { font-family: 'Roboto', sans-serif !important; }</style><link id="all-fonts-link-font-montserrat" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-montserrat">.font-montserrat { font-family: 'Montserrat', sans-serif !important; }</style><link id="all-fonts-link-font-poppins" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-poppins">.font-poppins { font-family: 'Poppins', sans-serif !important; }</style><link id="all-fonts-link-font-playfair" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;900&amp;display=swap"><style id="all-fonts-style-font-playfair">.font-playfair { font-family: 'Playfair Display', serif !important; }</style><link id="all-fonts-link-font-instrument-serif" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:wght@400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-instrument-serif">.font-instrument-serif { font-family: 'Instrument Serif', serif !important; }</style><link id="all-fonts-link-font-merriweather" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&amp;display=swap"><style id="all-fonts-style-font-merriweather">.font-merriweather { font-family: 'Merriweather', serif !important; }</style><link id="all-fonts-link-font-bricolage" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-bricolage">.font-bricolage { font-family: 'Bricolage Grotesque', sans-serif !important; }</style><link id="all-fonts-link-font-jakarta" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap"><style id="all-fonts-style-font-jakarta">.font-jakarta { font-family: 'Plus Jakarta Sans', sans-serif !important; }</style><link id="all-fonts-link-font-manrope" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap"><style id="all-fonts-style-font-manrope">.font-manrope { font-family: 'Manrope', sans-serif !important; }</style><link id="all-fonts-link-font-space-grotesk" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-space-grotesk">.font-space-grotesk { font-family: 'Space Grotesk', sans-serif !important; }</style><link id="all-fonts-link-font-work-sans" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700;800&amp;display=swap"><style id="all-fonts-style-font-work-sans">.font-work-sans { font-family: 'Work Sans', sans-serif !important; }</style><link id="all-fonts-link-font-pt-serif" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=PT+Serif:wght@400;700&amp;display=swap"><style id="all-fonts-style-font-pt-serif">.font-pt-serif { font-family: 'PT Serif', serif !important; }</style><link id="all-fonts-link-font-geist-mono" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-geist-mono">.font-geist-mono { font-family: 'Geist Mono', monospace !important; }</style><link id="all-fonts-link-font-space-mono" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&amp;display=swap"><style id="all-fonts-style-font-space-mono">.font-space-mono { font-family: 'Space Mono', monospace !important; }</style><link id="all-fonts-link-font-quicksand" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-quicksand">.font-quicksand { font-family: 'Quicksand', sans-serif !important; }</style></head>
+<body class="text-slate-600 selection:bg-indigo-100 selection:text-indigo-800 pb-12 overflow-x-hidden">
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/educator-navbar.js"></script>
+    <script>requireEducatorAuth();</script>
+    <div class="bg-pastel-mesh"></div>
+    <div class="bg-texture"></div>
+
+    <!-- NAVIGATION (Maintained) -->
+    <nav class="fixed top-0 w-full z-50 pt-4 pb-2 px-4">
+      <div class="max-w-7xl mx-auto glass-card rounded-full px-4 py-3 flex items-center justify-between shadow-sm shadow-indigo-100/50">
+        <!-- Brand -->
+        <div class="flex items-center gap-3 pl-2">
+          <img src="assets/logo.png" alt="EduQuest" class="h-9 w-auto object-contain" />
+        </div>
+
+        <!-- Links (Educator Context) -->
+        <div class="hidden md:flex items-center gap-1 p-1 bg-slate-100/50 rounded-full border border-slate-200/50">
+          <a href="educator-dashboard.html" class="hover:text-indigo-600 hover:bg-white/60 transition-all text-sm font-semibold text-slate-500 rounded-full pt-2 pr-5 pb-2 pl-5">Dashboard</a>
+          <a href="educator-class.html" class="transition-all text-sm font-bold text-indigo-600 bg-white border-slate-200/60 border rounded-full pt-2 pr-5 pb-2 pl-5 shadow-sm">My Classes</a>
+          
+          <a href="educator-reports.html" class="hover:text-indigo-600 hover:bg-white/60 transition-all text-sm font-semibold text-slate-500 rounded-full pt-2 pr-5 pb-2 pl-5">Reports</a>
+        </div>
+
+        <!-- Profile -->
+        <div class="flex items-center gap-4 pr-2">
+            <button class="relative p-2 text-slate-400 hover:text-indigo-500 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bell"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+                <span class="absolute top-2 right-2.5 w-2 h-2 bg-rose-500 rounded-full border border-white"></span>
+            </button>
+            <div class="hidden sm:flex flex-col items-end">
+                <span id="navbar-educator-name" class="text-xs font-bold text-slate-700"></span>
+                <span id="navbar-role-badge" class="text-[10px] font-bold text-indigo-500 bg-indigo-50 rounded-full pt-0.5 pr-2 pb-0.5 pl-2" style="">Educator</span>
+            </div>
+            <div class="cursor-pointer hover:ring-indigo-100 transition-all bg-white w-10 h-10 border-indigo-100 border-2 rounded-full ring-transparent ring-2 pt-0.5 pr-0.5 pb-0.5 pl-0.5 relative" onclick="window.location.href='educator-profile.html'" role="button">
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Frizzle&amp;backgroundColor=e0e7ff" alt="Profile" class="w-full h-full object-cover rounded-full">
+            </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- MAIN CONTENT - QUIZ CREATOR -->
+    <main class="max-w-7xl mx-auto pt-28 pb-12 px-4 md:px-6 relative z-10">
+        <!-- Warning when no class in URL -->
+        <div id="no-class-warning" class="hidden mb-4 py-3 px-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-sm font-semibold flex items-center gap-2">
+          <span aria-hidden="true">⚠</span>
+          <span>This page must be opened from a class.</span>
+        </div>
+
+        <!-- 2. TOP BAR - Quiz Header -->
+        <header class="mb-6 sticky top-24 z-30 animate-enter">
+            <div class="glass-card shadow-indigo-100/30 flex flex-col md:flex-row gap-4 border-b-indigo-500/10 rounded-[1.5rem] border-b-4 pt-4 pr-6 pb-4 pl-6 shadow-xl gap-x-4 gap-y-4 items-center justify-between">
+                <!-- Left: Title & Breadcrumb -->
+                <div class="flex flex-col gap-1 w-full md:w-auto">
+                    <a href="educator-quiz.html" class="flex items-center gap-1 hover:text-indigo-500 transition-colors text-xs font-bold text-slate-400 mb-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left"><path d="m12 19-7-7 7-7"></path><path d="M19 12H5" class=""></path></svg>
+                        Back to Quizzes
+                    </a>
+                    <div class="flex gap-3 gap-x-3 gap-y-3 items-center">
+                         <div class="text-indigo-600 bg-indigo-50 rounded-lg pt-2 pr-2 pb-2 pl-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pen-tool"><path d="m12 19 7-7 3 3-7 7-3-3z"></path><path d="m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path><path d="m2 2 7.586 7.586"></path><circle cx="11" cy="11" r="2"></circle></svg>
+                        </div>
+                        <input type="text" id="quiz-title" class="md:text-2xl border-none focus:ring-0 focus:outline-none placeholder:text-slate-300 md:w-96 text-xl font-extrabold text-slate-800 bg-transparent w-full" placeholder="Enter topic name">
+                        <button class="text-slate-400 hover:text-indigo-500 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" class=""></path><path d="m15 5 4 4"></path></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right: Actions -->
+                <div class="flex items-center gap-3 w-full md:w-auto justify-end">
+                    <span class="text-xs font-bold text-slate-400 mr-2 flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-cloud-upload"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"></path><path d="M12 12v9"></path><path d="m16 16-4-4-4 4"></path></svg>
+                        Saved
+                    </span>
+                    <span class="text-xs font-medium text-slate-400">Draft saved automatically</span>
+                    <button type="button" id="preview-quiz-btn" class="px-5 py-2 rounded-xl border-2 border-indigo-500 text-indigo-600 bg-white hover:bg-indigo-50 font-bold text-sm transition-all flex items-center gap-2">
+                        Preview Quiz
+                    </button>
+                    <button type="button" id="save-quiz-btn" class="px-6 py-2 rounded-xl bg-gradient-to-r from-indigo-500 to-violet-600 text-white font-bold text-sm shadow-md shadow-indigo-200 hover:shadow-lg hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-2">
+                        Save Quiz
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- 3. PAGE CONTENT GRID -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-enter" style="animation-delay: 100ms;">
+            
+            <!-- LEFT COLUMN: Question Builder -->
+            <div class="lg:col-span-2 space-y-6">
+                
+                <!-- 3.1 Tabs -->
+                <div class="flex items-center border-b border-slate-200/70 pb-0 gap-6">
+                    <button type="button" id="js-tab-generate" class="js-tab pb-3 text-sm font-bold text-slate-400 hover:text-indigo-500 transition-colors relative group" data-panel="js-panel-generate">
+                        Generate Questions
+                        <span class="absolute bottom-[-1px] left-0 w-0 h-0.5 bg-indigo-500 transition-all group-hover:w-full"></span>
+                    </button>
+                    <button type="button" id="js-tab-custom" class="js-tab pb-3 text-sm font-bold text-indigo-600 relative" data-panel="js-panel-custom">
+                        Custom Questions
+                        <span class="absolute bottom-[-1px] left-0 w-full h-0.5 bg-gradient-to-r from-indigo-500 to-violet-500"></span>
+                    </button>
+                </div>
+
+                <!-- Generate Questions panel (visible when Generate tab active) -->
+                <div id="js-panel-generate" class="hidden space-y-6">
+                    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-20 h-20 bg-indigo-50/50 rounded-full blur-xl -translate-y-1/2 translate-x-1/2"></div>
+                        <div class="flex items-center gap-2 mb-4 relative z-10">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-500"><path d="M12 3v18"></path><path d="m8 7 4-4 4 4"></path><path d="M8 21h8"></path></svg>
+                            <h3 class="text-sm font-extrabold text-slate-800 uppercase tracking-wide">Generate from Question Bank</h3>
+                        </div>
+                        <div id="weak-topics-panel" class="hidden glass-card p-4 mb-4 relative z-10">
+                            <h3 class="font-bold mb-2 text-slate-800">Weak Topics in This Class</h3>
+                            <ul id="weak-topics-list" class="space-y-2 text-sm text-slate-600"></ul>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 relative z-10">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 mb-1.5">Topic</label>
+                                <select id="generate-topic" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-300 appearance-none">
+                                    <!-- Options populated by loadTopics() -->
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 mb-1.5">Difficulty</label>
+                                <select id="generate-difficulty" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-300 appearance-none">
+                                    <option value="all">All</option>
+                                    <option value="easy">Easy</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="hard">Hard</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 mb-1.5">Number of questions</label>
+                                <input type="number" id="generate-count" min="1" max="50" value="5" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-300">
+                            </div>
+                            <div class="flex items-end">
+                                <button type="button" id="generate-btn" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-violet-600 text-white font-bold text-sm shadow-md shadow-indigo-200 hover:shadow-lg hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2">
+                                    Generate
+                                </button>
+                            </div>
+                        </div>
+                        <div id="generated-questions-container" class="space-y-4 mt-4"></div>
+                        <div class="mt-4 pt-4 border-t border-slate-100">
+                            <button type="button" id="add-selected-btn" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-violet-600 text-white font-bold text-sm shadow-md shadow-indigo-200 hover:shadow-lg hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2">
+                                Add Selected to Quiz
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Custom Questions: Question Editor Cards -->
+                <div id="js-panel-custom" class="space-y-6">
+                    <div id="quiz-health-panel" class="glass-card mt-4 p-4 hidden bg-amber-50 border border-amber-200/80">
+                      <div class="text-sm font-bold text-slate-700 mb-2">Quiz Health Check</div>
+                      <ul id="quiz-health-list" class="text-xs text-slate-600 space-y-1"></ul>
+                    </div>
+                    <!-- Controls Summary -->
+                    <div class="flex items-center justify-between px-2">
+                        <span class="uppercase text-xs font-bold text-slate-400 tracking-wide">? Questions • Est: ?? mins</span>
+                        <div class="flex items-center gap-2">
+                            <button class="text-xs font-bold text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 px-3 py-1 rounded-lg transition-colors">Expand All</button>
+                            <button class="text-xs font-bold text-slate-500 hover:text-slate-700 hover:bg-slate-100 px-3 py-1 rounded-lg transition-colors">Collapse All</button>
+                        </div>
+                    </div>
+
+                    <!-- Question 1: Active/Editing -->
+                    <div class="js-question-card bg-white rounded-[1.5rem] border border-indigo-100 shadow-sm shadow-indigo-50/50 p-6 relative group ring-2 ring-indigo-50" data-topic-id="" data-topic="" data-difficulty-level="medium">
+                        <div class="absolute -left-3 top-6 w-6 h-6 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-400 shadow-sm cursor-grab hover:text-indigo-500 hover:border-indigo-200 z-10">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-grip-vertical"><circle cx="9" cy="12" r="1"></circle><circle cx="9" cy="5" r="1"></circle><circle cx="9" cy="19" r="1"></circle><circle cx="15" cy="12" r="1"></circle><circle cx="15" cy="5" r="1"></circle><circle cx="15" cy="19" r="1"></circle></svg>
+                        </div>
+                        
+                        <!-- Header: Number & Type -->
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center gap-3">
+                                <span class="js-card-number flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white font-bold text-sm shadow-md shadow-indigo-200">1</span>
+                                <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider">Multiple Choice</h3>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <select class="js-difficulty-select input-field rounded-xl px-3 py-1 text-sm font-semibold bg-slate-50 border border-slate-200 text-slate-600 focus:ring-2 focus:ring-indigo-100 focus:border-indigo-300 outline-none appearance-none">
+                                    <option value="easy">Easy</option>
+                                    <option value="medium" selected>Medium</option>
+                                    <option value="hard">Hard</option>
+                                </select>
+                                <select class="js-topic-select bg-slate-50 border border-slate-200 text-slate-600 text-xs font-bold rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-100 focus:border-indigo-300 outline-none transition-all appearance-none">
+                                    <!-- Options populated by loadTopics() -->
+                                </select>
+                                <div class="w-px h-6 bg-slate-100 mx-1"></div>
+                                <div class="flex items-center gap-1">
+                                    <button type="button" class="js-duplicate-question p-2 text-slate-400 hover:text-indigo-500 hover:bg-indigo-50 rounded-lg transition-colors" title="Duplicate">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-copy"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>
+                                    </button>
+                                    <button type="button" class="js-delete-question p-2 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-colors" title="Delete">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash-2"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" class=""></path><line x1="10" x2="10" y1="11" y2="17"></line><line x1="14" x2="14" y1="11" y2="17"></line></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Question Input -->
+                        <div class="mb-6 relative">
+                            <textarea rows="2" class="js-question-text w-full text-lg font-bold text-slate-800 placeholder:text-slate-300 bg-slate-50 border-0 border-b-2 border-slate-200 focus:border-indigo-500 focus:ring-0 focus:bg-white rounded-t-lg px-4 py-3 resize-none transition-all" placeholder="Enter question"></textarea>
+                            <div class="absolute right-3 top-3 flex gap-2">
+                                <button class="p-1.5 bg-white rounded-md text-slate-400 hover:text-indigo-600 shadow-sm border border-slate-100">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-image"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>
+                                </button>
+                                <button class="p-1.5 bg-white rounded-md text-slate-400 hover:text-indigo-600 shadow-sm border border-slate-100">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sigma"><path d="M18 7c0-1.1-.9-2-2-2H6.41L13 12l-6.59 7H16c1.1 0 2-.9 2-2"></path></svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Answers -->
+                        <div class="js-options-list space-y-3 mb-6">
+                            <!-- Option A -->
+                            <div class="js-option-row group/option flex items-center gap-3 p-1" data-option-row>
+                                <div class="cursor-grab text-slate-300 hover:text-indigo-400 opacity-0 group-hover/option:opacity-100 transition-opacity">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-grip-vertical"><circle cx="9" cy="12" r="1"></circle><circle cx="9" cy="5" r="1"></circle><circle cx="9" cy="19" r="1"></circle><circle cx="15" cy="12" r="1"></circle><circle cx="15" cy="5" r="1"></circle><circle cx="15" cy="19" r="1"></circle></svg>
+                                </div>
+                                <div class="js-option-box flex-1 flex items-center gap-3 bg-white border border-slate-200 rounded-xl px-4 py-3 focus-within:border-indigo-400 focus-within:ring-4 focus-within:ring-indigo-50 transition-all shadow-sm">
+                                    <input type="radio" name="q1_ans" class="js-option-correct w-5 h-5 text-indigo-600 border-slate-300 focus:ring-indigo-500 cursor-pointer">
+                                    <input type="text" class="js-option-text flex-1 bg-transparent border-none text-slate-700 font-medium placeholder:text-slate-300 focus:ring-0 text-sm" placeholder="Enter multiple choice 1">
+                                    <span class="js-correct-label text-[10px] font-extrabold uppercase text-emerald-600 tracking-wide hidden">Correct Answer</span>
+                                </div>
+                                <button type="button" class="js-remove-option text-slate-300 hover:text-rose-400 transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+                                </button>
+                            </div>
+                            <!-- Option B -->
+                            <div class="js-option-row group/option flex items-center gap-3 p-1" data-option-row>
+                                <div class="cursor-grab text-slate-300 hover:text-indigo-400 opacity-0 group-hover/option:opacity-100 transition-opacity">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-grip-vertical"><circle cx="9" cy="12" r="1"></circle><circle cx="9" cy="5" r="1"></circle><circle cx="9" cy="19" r="1"></circle><circle cx="15" cy="12" r="1"></circle><circle cx="15" cy="5" r="1"></circle><circle cx="15" cy="19" r="1"></circle></svg>
+                                </div>
+                                <div class="js-option-box flex-1 flex items-center gap-3 bg-white border border-slate-200 rounded-xl px-4 py-3 focus-within:border-indigo-400 focus-within:ring-4 focus-within:ring-indigo-50 transition-all shadow-sm is-correct">
+                                    <input type="radio" name="q1_ans" class="js-option-correct w-5 h-5 text-indigo-600 border-slate-300 focus:ring-indigo-500 cursor-pointer" checked="">
+                                    <input type="text" class="js-option-text flex-1 bg-transparent border-none text-slate-700 font-medium placeholder:text-slate-300 focus:ring-0 text-sm" placeholder="Enter multiple choice 2">
+                                    <span class="js-correct-label text-[10px] font-extrabold uppercase text-emerald-600 tracking-wide">Correct Answer</span>
+                                </div>
+                                <button type="button" class="js-remove-option text-slate-300 hover:text-rose-400 transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+                                </button>
+                            </div>
+                            <!-- Option C -->
+                            <div class="js-option-row group/option flex items-center gap-3 p-1" data-option-row>
+                                <div class="cursor-grab text-slate-300 hover:text-indigo-400 opacity-0 group-hover/option:opacity-100 transition-opacity">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-grip-vertical"><circle cx="9" cy="12" r="1"></circle><circle cx="9" cy="5" r="1"></circle><circle cx="9" cy="19" r="1"></circle><circle cx="15" cy="12" r="1"></circle><circle cx="15" cy="5" r="1"></circle><circle cx="15" cy="19" r="1"></circle></svg>
+                                </div>
+                                <div class="js-option-box flex-1 flex items-center gap-3 bg-white border border-slate-200 rounded-xl px-4 py-3 focus-within:border-indigo-400 focus-within:ring-4 focus-within:ring-indigo-50 transition-all shadow-sm">
+                                    <input type="radio" name="q1_ans" class="js-option-correct w-5 h-5 text-indigo-600 border-slate-300 focus:ring-indigo-500 cursor-pointer">
+                                    <input type="text" class="js-option-text flex-1 bg-transparent border-none text-slate-700 font-medium placeholder:text-slate-300 focus:ring-0 text-sm" placeholder="Enter multiple choice 3">
+                                    <span class="js-correct-label text-[10px] font-extrabold uppercase text-emerald-600 tracking-wide hidden">Correct Answer</span>
+                                </div>
+                                <button type="button" class="js-remove-option text-slate-300 hover:text-rose-400 transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Actions Row -->
+                        <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+                             <button type="button" class="js-add-option flex items-center gap-2 text-xs font-bold text-indigo-600 hover:text-indigo-700 transition-colors px-2 py-1 rounded hover:bg-indigo-50">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
+                                Add Option
+                            </button>
+                            
+                            <div class="flex items-center gap-4">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs font-bold text-slate-400">Points:</span>
+                                    <input type="number" value="5" min="1" class="js-points w-12 text-center text-xs font-bold text-slate-700 bg-slate-50 border border-slate-200 rounded-md py-1 focus:ring-2 focus:ring-indigo-100 focus:border-indigo-300 outline-none">
+                                </div>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <span class="text-xs font-bold text-slate-400">Feedback</span>
+                                    <div class="relative w-8 h-4">
+                                        <input type="checkbox" class="toggle-checkbox absolute block w-4 h-4 rounded-full bg-white border-4 border-indigo-400 appearance-none cursor-pointer shadow-sm transition-all duration-300 left-0">
+                                        <div class="toggle-label block overflow-hidden h-4 rounded-full bg-indigo-100 cursor-pointer"></div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Explanation (Shown after submission) -->
+                        <div class="mt-4 pt-4 border-t border-dashed border-slate-200">
+                            <label class="block text-xs font-bold text-indigo-500 mb-2">Explanation (Shown after submission)</label>
+                            <textarea rows="2" class="js-question-explanation w-full text-sm text-slate-600 bg-indigo-50/30 border border-indigo-100 rounded-lg px-3 py-2 resize-none focus:outline-none focus:ring-2 focus:ring-indigo-100" placeholder="e.g. Mitochondria are known as the powerhouse of the cell..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Add Button -->
+                    <button type="button" id="add-new-question-btn" class="w-full py-4 rounded-[1.5rem] border-2 border-dashed border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/30 text-slate-400 hover:text-indigo-600 font-bold text-sm transition-all flex items-center justify-center gap-2 group">
+                        <div class="p-1 rounded-full bg-slate-100 group-hover:bg-indigo-100 group-hover:text-indigo-600 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
+                        </div>
+                        Add New Question
+                    </button>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN: Quiz Settings -->
+            <div class="lg:col-span-1 space-y-6">
+                
+                <!-- 4.1 Quiz Details -->
+                <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-20 h-20 bg-indigo-50/50 rounded-full blur-xl -translate-y-1/2 translate-x-1/2"></div>
+                    <div class="flex items-center gap-2 mb-4 relative z-10">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-settings-2 text-indigo-500"><path d="M20 7h-9"></path><path d="M14 17H5"></path><circle cx="17" cy="17" r="3"></circle><circle cx="7" cy="7" r="3"></circle></svg>
+                        <h3 class="text-sm font-extrabold text-slate-800 uppercase tracking-wide">Quiz Details</h3>
+                    </div>
+
+                    <p class="text-sm text-slate-500 mb-4 relative z-10">Class: <span id="quiz-class-label">Loading...</span></p>
+
+                    <div class="space-y-4 relative z-10">
+                        <!-- Subject -->
+                        <div class="">
+                            <label class="block text-xs font-bold text-slate-500 mb-1.5">Subject</label>
+                            <input id="quiz-subject" type="text" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-300 placeholder:text-slate-400" placeholder="e.g. Mathematics">
+                        </div>
+                        
+                        <!-- Assign to Class -->
+                        <div class="">
+                            <label class="block text-xs font-bold text-slate-500 mb-1.5">Assign to Class</label>
+                            <p class="text-sm font-semibold text-slate-600 mb-2"><span id="selected-class-label">No class selected</span></p>
+                            <div id="assign-class-container" class="flex flex-wrap gap-2"></div>
+                        </div>
+
+                        <!-- Module -->
+                        <div class="">
+                            <label class="block text-xs font-bold text-slate-500 mb-1.5">Module / Topic</label>
+                            <input type="text" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-300 placeholder:text-slate-400" placeholder="e.g. Unit 4: Energy">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4.2 Scoring & Config -->
+                <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
+                    <div class="flex items-center gap-2 mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sliders-horizontal text-amber-500"><line x1="21" x2="14" y1="4" y2="4"></line><line x1="10" x2="3" y1="4" y2="4"></line><line x1="21" x2="12" y1="12" y2="12"></line><line x1="8" x2="3" y1="12" y2="12"></line><line x1="21" x2="16" y1="20" y2="20"></line><line x1="12" x2="3" y1="20" y2="20"></line><line x1="14" x2="14" y1="2" y2="6"></line><line x1="8" x2="8" y1="10" y2="14"></line><line x1="16" x2="16" y1="18" y2="22"></line></svg>
+                        <h3 class="text-sm font-extrabold text-slate-800 uppercase tracking-wide">Scoring &amp; Rules</h3>
+                    </div>
+
+                    <div class="space-y-5">
+                        <!-- Passing Threshold -->
+                        <div class="">
+                            <div class="flex justify-between text-xs font-bold text-slate-500 mb-2">
+                                <span>Pass Grade</span>
+                                <span class="text-indigo-600" id="js-pass-grade-label">70%</span>
+                            </div>
+                            <input type="range" id="js-pass-grade" min="0" max="100" value="70" class="custom-range">
+                        </div>
+
+                        <!-- Toggles -->
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-slate-600">Shuffle Questions</span>
+                            <div class="relative w-9 h-5">
+                                <input type="checkbox" id="js-shuffle-questions" checked="" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 border-indigo-500 appearance-none cursor-pointer shadow-sm transition-all duration-300">
+                                <div class="toggle-label block overflow-hidden h-5 rounded-full bg-indigo-500 cursor-pointer"></div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-slate-600">Allow Retakes</span>
+                            <div class="relative w-9 h-5">
+                                <input type="checkbox" id="js-allow-retakes" checked class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 border-slate-300 appearance-none cursor-pointer shadow-sm transition-all duration-300">
+                                <div class="toggle-label block overflow-hidden h-5 rounded-full bg-indigo-500 cursor-pointer"></div>
+                            </div>
+                        </div>
+
+                        <div class="p-3 bg-amber-50 rounded-xl border border-amber-100 flex gap-2">
+                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info text-amber-500 shrink-0 mt-0.5"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>
+                             <p class="text-[10px] font-bold text-amber-700 leading-tight">Students see correct answers immediately after submission.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4.3 Scheduling -->
+                <div class="bg-white border-slate-100 border rounded-2xl pt-6 pr-6 pb-6 pl-6 shadow-sm">
+                    <div class="flex items-center gap-2 mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar-clock text-rose-500"><path d="M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3.5"></path><path d="M16 2v4"></path><path d="M8 2v4"></path><path d="M3 10h5"></path><path d="M17.5 17.5 16 16.25V14"></path><path d="M22 16a6 6 0 1 1-12 0 6 6 0 0 1 12 0Z" class=""></path></svg>
+                        <h3 class="text-sm font-extrabold text-slate-800 uppercase tracking-wide">Timer &amp; Availability</h3>
+                    </div>
+
+                    <div class="space-y-4">
+                        <!-- Schedule Toggle -->
+                        
+
+                        <!-- Due Date (optional) -->
+                        <div class="relative">
+                            <label class="block text-xs font-bold text-slate-500 mb-1.5">Due Date (optional)</label>
+                            <input type="datetime-local" id="js-due-date" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-700 outline-none focus:border-indigo-300">
+                        </div>
+
+                         <!-- Time Limit -->
+                         <div class="">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-bold text-slate-600">Time Limit</span>
+                                <div class="relative w-8 h-4">
+                                    <input type="checkbox" id="js-time-limit-enabled" checked="" class="toggle-checkbox absolute block w-4 h-4 rounded-full bg-white border-4 border-indigo-400 appearance-none cursor-pointer shadow-sm transition-all duration-300">
+                                    <div class="toggle-label block overflow-hidden h-4 rounded-full bg-indigo-200 cursor-pointer"></div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 js-time-limit-wrap">
+                                <input type="number" id="js-time-limit-minutes" value="15" min="1" class="w-16 bg-slate-50 border border-slate-200 rounded-lg px-2 py-1.5 text-sm font-bold text-center outline-none focus:border-indigo-300">
+                                <span class="text-xs font-bold text-slate-500">Minutes</span>
+                            </div>
+                         </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Quiz Preview Modal -->
+    <div id="preview-modal" class="fixed inset-0 z-50 hidden" role="dialog" aria-labelledby="preview-modal-title">
+      <div id="preview-modal-backdrop" class="absolute inset-0 bg-slate-900/30 backdrop-blur-sm"></div>
+      <div class="relative max-w-3xl mx-auto mt-10 bg-white rounded-3xl shadow-2xl p-6 max-h-[85vh] overflow-y-auto mx-4">
+        <div class="flex items-center justify-between mb-6">
+          <h2 id="preview-modal-title" class="text-xl font-bold text-slate-800">Quiz Preview</h2>
+          <button type="button" id="preview-modal-close-x" class="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-colors" aria-label="Close">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+          </button>
+        </div>
+        <div id="preview-content" class="space-y-6"></div>
+        <div class="mt-6 pt-4 border-t border-slate-100 flex justify-end">
+          <button type="button" id="preview-modal-close-btn" class="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm transition-colors">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER (Maintained) -->
+    <footer class="bg-slate-900 text-slate-300 py-12 border-t border-slate-800 mt-12">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+          <div class="space-y-4">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-compass w-5 h-5">
+                  <path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z"></path>
+                  <circle cx="12" cy="12" r="10"></circle>
+                </svg>
+              </div>
+              <span class="text-lg font-bold text-white tracking-tight">EduQuest</span>
+            </div>
+            <p class="text-xs leading-relaxed text-slate-400 font-medium max-w-xs">Making learning an addictive adventure for students around the world.</p>
+          </div>
+          <div class="">
+            <h4 class="font-bold text-white mb-4 text-sm">Product</h4>
+            <ul class="space-y-2 text-xs font-medium text-slate-400">
+              <li class=""><a href="#" class="hover:text-indigo-400 transition-colors">Features</a></li>
+              <li><a href="#" class="hover:text-indigo-400 transition-colors">Pricing</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="font-bold text-white mb-4 text-sm">Resources</h4>
+            <ul class="space-y-2 text-xs font-medium text-slate-400">
+              <li><a href="#" class="hover:text-indigo-400 transition-colors">Help Center</a></li>
+              <li><a href="#" class="hover:text-indigo-400 transition-colors">Community</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="font-bold text-white mb-4 text-sm">Legal</h4>
+            <ul class="space-y-2 text-xs font-medium text-slate-400">
+              <li><a href="#" class="hover:text-indigo-400 transition-colors">Privacy</a></li>
+              <li><a href="#" class="hover:text-indigo-400 transition-colors">Terms</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="border-t border-slate-800 pt-6 flex justify-center">
+          <p class="text-xs font-medium text-slate-500">© 2024 EduQuest. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        if (localStorage.getItem('role') !== 'educator') {
+          window.location.href = 'educator-login.html';
+          return;
+        }
+        var educatorId = localStorage.getItem('userId');
+        if (!educatorId) {
+          window.location.href = 'educator-login.html';
+          return;
+        }
+
+        lucide.createIcons();
+
+        var DRAFT_KEY = 'eduquest_quiz_draft';
+        var API_BASE = '/api';
+        var EDUCATOR_ID = educatorId;
+
+      var params = new URLSearchParams(window.location.search);
+      var _rawClassId = params.get('classId');
+      var CLASS_ID = (_rawClassId != null && _rawClassId !== '' && !isNaN(Number(_rawClassId))) ? Number(_rawClassId) : null;
+      if (!_rawClassId || _rawClassId === '' || !CLASS_ID) {
+        console.error('Missing classId in URL');
+      }
+      var classTopics = [];
+      var weakTopics = [];
+      var generatedQuestions = [];
+
+      async function loadTopics() {
+        if (!CLASS_ID) return;
+        try {
+          var res = await fetch(API_BASE + '/topics/class/' + CLASS_ID, { headers: getAuthHeaders() });
+          if (res.status === 403) console.warn('Topics Fetch 403 for classId:', CLASS_ID);
+          var topics = await res.json();
+          classTopics = Array.isArray(topics) ? topics : [];
+          if (!classTopics.length && res.ok) console.warn('Topics Fetch empty for classId:', CLASS_ID);
+          populateTopicDropdowns(classTopics);
+        } catch (err) {
+          console.error('Failed to load topics', err);
+        }
+      }
+
+      function populateTopicDropdowns(topics) {
+        var generateTopic = document.getElementById('generate-topic');
+        var modalTopic = document.getElementById('modal-topic');
+        if (generateTopic) {
+          generateTopic.innerHTML = '<option value="">All</option>';
+          (topics || []).forEach(function (t) {
+            var opt = document.createElement('option');
+            opt.value = t.id;
+            opt.textContent = t.name;
+            generateTopic.appendChild(opt);
+          });
+        }
+        if (modalTopic) {
+          modalTopic.innerHTML = '';
+          (topics || []).forEach(function (t) {
+            var opt = document.createElement('option');
+            opt.value = t.id;
+            opt.textContent = t.name;
+            modalTopic.appendChild(opt);
+          });
+        }
+        document.querySelectorAll('.js-topic-select').forEach(function (sel) {
+          sel.innerHTML = '';
+          var empty = document.createElement('option');
+          empty.value = '';
+          empty.textContent = 'Select topic';
+          sel.appendChild(empty);
+          (topics || []).forEach(function (t) {
+            var opt = document.createElement('option');
+            opt.value = t.id;
+            opt.textContent = t.name;
+            sel.appendChild(opt);
+          });
+        });
+      }
+
+      function fillTopicSelect(selectEl) {
+        if (!selectEl || !classTopics.length) return;
+        selectEl.innerHTML = '';
+        var empty = document.createElement('option');
+        empty.value = '';
+        empty.textContent = 'Select topic';
+        selectEl.appendChild(empty);
+        classTopics.forEach(function (t) {
+          var opt = document.createElement('option');
+          opt.value = t.id;
+          opt.textContent = t.name;
+          selectEl.appendChild(opt);
+        });
+      }
+
+      function selectClass(id, name) {
+        document.getElementById('selected-class-label').textContent = name;
+      }
+
+      async function loadClassLabel() {
+        if (!CLASS_ID) return;
+        try {
+          var res = await fetch(API_BASE + '/classes/' + CLASS_ID, { headers: getAuthHeaders() });
+          if (res.status === 403) console.warn('Class Fetch 403 for classId:', CLASS_ID);
+          if (!res.ok) throw new Error('Failed to load class');
+          var cls = await res.json();
+          if (!cls || !cls.name) console.warn('Class Fetch empty or missing name for classId:', CLASS_ID, cls);
+          var labelEl = document.getElementById('quiz-class-label');
+          if (labelEl) labelEl.textContent = (cls && cls.name) ? cls.name : 'Unknown class';
+        } catch (err) {
+          console.error('Failed to load class label:', err);
+          document.getElementById('quiz-class-label').textContent = 'Unknown class';
+        }
+      }
+
+      async function loadClassesForAssignment() {
+        var labelEl = document.getElementById('quiz-class-label');
+        if (labelEl && CLASS_ID == null) labelEl.textContent = '—';
+        var container = document.getElementById('assign-class-container');
+        var selectedLabel = document.getElementById('selected-class-label');
+        if (!CLASS_ID) {
+          if (selectedLabel) selectedLabel.textContent = 'No class selected';
+          if (container) container.innerHTML = '';
+          return;
+        }
+        try {
+          var res = await fetch(API_BASE + '/classes/' + CLASS_ID, { headers: getAuthHeaders() });
+          if (res.status === 403) console.warn('Class Fetch 403 for classId:', CLASS_ID);
+          if (!res.ok) return;
+          var cls = await res.json();
+          if (!cls || !cls.name) console.warn('Class Fetch empty or missing name for classId:', CLASS_ID, cls);
+          if (selectedLabel) selectedLabel.textContent = (cls && cls.name) ? cls.name : 'Unknown class';
+          if (container) {
+            container.innerHTML = '';
+            var btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'class-chip flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 rounded-full text-xs font-bold text-slate-600 hover:border-indigo-200 hover:text-indigo-600 transition-colors';
+            btn.dataset.id = cls.id;
+            btn.textContent = cls.name;
+            btn.addEventListener('click', function () { selectClass(cls.id, cls.name); });
+            container.appendChild(btn);
+          }
+        } catch (err) {
+          console.error('Failed to load class', err);
+        }
+      }
+
+      function debounce(fn, ms) {
+        var t;
+        return function () {
+          clearTimeout(t);
+          t = setTimeout(fn, ms);
+        };
+      }
+
+      function normalizeQuestionText(text) {
+        if (!text) return '';
+        return String(text)
+          .toLowerCase()
+          .replace(/\s+/g, ' ')
+          .replace(/[^\w\s\d+\-*/=]/g, '')
+          .trim();
+      }
+
+      function detectDuplicateQuestions() {
+        var cards = Array.from(document.querySelectorAll('.js-question-card'));
+        var seen = {};
+        var duplicates = [];
+        cards.forEach(function (card) {
+          var input = card.querySelector('.js-question-text');
+          if (!input) return;
+          var normalized = normalizeQuestionText(input.value);
+          if (!normalized) return;
+          if (seen[normalized]) {
+            duplicates.push(card);
+            duplicates.push(seen[normalized]);
+          } else {
+            seen[normalized] = card;
+          }
+        });
+        return duplicates;
+      }
+
+      function highlightDuplicateCards(cards) {
+        document.querySelectorAll('.duplicate-warning').forEach(function (el) {
+          el.remove();
+        });
+        var seen = new Set();
+        cards = cards.filter(function (c) {
+          if (seen.has(c)) return false;
+          seen.add(c);
+          return true;
+        });
+        cards.forEach(function (card) {
+          card.classList.add('ring-2', 'ring-rose-400');
+          var warning = document.createElement('div');
+          warning.className = 'duplicate-warning text-rose-500 text-xs font-semibold mt-2';
+          warning.textContent = 'Duplicate question detected';
+          var container = card.querySelector('.js-question-text');
+          if (container && container.parentElement) container.parentElement.appendChild(warning);
+        });
+      }
+
+      function clearDuplicateHighlights() {
+        document.querySelectorAll('.js-question-card').forEach(function (card) {
+          card.classList.remove('ring-2', 'ring-rose-400');
+        });
+        document.querySelectorAll('.duplicate-warning').forEach(function (el) {
+          el.remove();
+        });
+      }
+
+      function analyzeQuizHealth() {
+        var cards = Array.from(document.querySelectorAll('.js-question-card'));
+        if (cards.length === 0) return [];
+        var difficulties = { easy: 0, medium: 0, hard: 0 };
+        var topics = {};
+        var warnings = [];
+        cards.forEach(function (card) {
+          var difficulty = (card.dataset.difficultyLevel || 'medium').toLowerCase();
+          difficulties[difficulty] = (difficulties[difficulty] || 0) + 1;
+          var topic = card.dataset.topic || 'unknown';
+          topics[topic] = (topics[topic] || 0) + 1;
+        });
+        if (cards.length < 3) {
+          warnings.push('Very short quiz — students may progress too easily.');
+        }
+        if (difficulties.easy === cards.length) {
+          warnings.push('All questions are Easy. Consider mixing difficulty.');
+        }
+        if (difficulties.hard === cards.length) {
+          warnings.push('All questions are Hard. This may frustrate students.');
+        }
+        var topicValues = Object.values(topics);
+        var maxTopic = topicValues.length ? Math.max.apply(null, topicValues) : 0;
+        if (maxTopic >= cards.length * 0.8 && cards.length >= 5) {
+          warnings.push('Most questions are from the same topic.');
+        }
+        return warnings;
+      }
+
+      function updateQuizHealthPanel() {
+        var panel = document.getElementById('quiz-health-panel');
+        var list = document.getElementById('quiz-health-list');
+        if (!panel || !list) return;
+        var warnings = analyzeQuizHealth();
+        list.innerHTML = '';
+        if (warnings.length === 0) {
+          panel.classList.add('hidden');
+          return;
+        }
+        warnings.forEach(function (w) {
+          var li = document.createElement('li');
+          li.textContent = '\u26A0 ' + w;
+          list.appendChild(li);
+        });
+        panel.classList.remove('hidden');
+      }
+
+      function collectQuizDraftData() {
+        var titleEl = document.getElementById('quiz-title');
+        var title = (titleEl && titleEl.value != null) ? String(titleEl.value) : '';
+        var shuffleEl = document.getElementById('js-shuffle-questions');
+        var passGradeEl = document.getElementById('js-pass-grade');
+        var timeLimitEnabledEl = document.getElementById('js-time-limit-enabled');
+        var timeLimitMinutesEl = document.getElementById('js-time-limit-minutes');
+        var allowRetakesEl = document.getElementById('js-allow-retakes');
+        var settings = {
+          shuffle_questions: shuffleEl ? !!shuffleEl.checked : true,
+          pass_grade: passGradeEl ? (parseInt(passGradeEl.value, 10) || 0) : 70,
+          time_limit_enabled: timeLimitEnabledEl ? !!timeLimitEnabledEl.checked : true,
+          time_limit_minutes: timeLimitMinutesEl ? (parseInt(timeLimitMinutesEl.value, 10) || null) : 15,
+          allow_retakes: allowRetakesEl ? !!allowRetakesEl.checked : true
+        };
+        var questionCards = document.querySelectorAll('.js-question-card');
+        var questions = [];
+        for (var c = 0; c < questionCards.length; c++) {
+          var card = questionCards[c];
+          var textEl = card.querySelector('.js-question-text');
+          var questionText = (textEl && textEl.value != null) ? String(textEl.value).trim() : '';
+          var optionRows = card.querySelectorAll('.js-option-row');
+          var options = [];
+          for (var r = 0; r < optionRows.length; r++) {
+            var row = optionRows[r];
+            var textInput = row.querySelector('.js-option-text');
+            var radio = row.querySelector('.js-option-correct');
+            var optText = (textInput && textInput.value != null) ? String(textInput.value).trim() : '';
+            options.push({
+              option_text: optText,
+              is_correct: radio ? !!radio.checked : false
+            });
+          }
+          var explanationEl = card.querySelector('.js-question-explanation');
+          var explanation = explanationEl && explanationEl.value != null ? String(explanationEl.value).trim() : '';
+          var difficultyLevel = (card.dataset && card.dataset.difficultyLevel) || 'medium';
+          var questionBankId = (card.dataset && card.dataset.questionBankId) || null;
+          questions.push({
+            question_text: questionText,
+            difficulty_level: difficultyLevel,
+            topic_id: card.dataset.topicId || null,
+            topic: card.dataset.topic || null,
+            options: options,
+            explanation: explanation || null,
+            question_bank_id: questionBankId
+          });
+        }
+        return { title: title, settings: settings, questions: questions };
+      }
+
+      function saveDraft() {
+        var data = collectQuizDraftData();
+        try {
+          localStorage.setItem(DRAFT_KEY, JSON.stringify(data));
+        } catch (e) { /* ignore */ }
+      }
+
+      function fillCardFromDraftQuestion(card, q) {
+        var textEl = card.querySelector('.js-question-text');
+        if (textEl) textEl.value = q.question_text || '';
+        card.dataset.difficultyLevel = q.difficulty_level || 'medium';
+        var diffSelect = card.querySelector('.js-difficulty-select');
+        if (diffSelect) diffSelect.value = card.dataset.difficultyLevel;
+        if (q.question_bank_id != null && q.question_bank_id !== '') card.dataset.questionBankId = String(q.question_bank_id);
+        if (q.topic_id != null) card.dataset.topicId = String(q.topic_id);
+        if (q.topic != null) card.dataset.topic = q.topic;
+        var topicSelect = card.querySelector('.js-topic-select');
+        if (topicSelect) {
+          if (q.topic_id != null) topicSelect.value = String(q.topic_id);
+          else if (q.topic && classTopics.length) {
+            var match = classTopics.find(function (t) { return t.name === q.topic; });
+            if (match) topicSelect.value = String(match.id);
+          }
+        }
+        var explanationEl = card.querySelector('.js-question-explanation');
+        if (explanationEl) explanationEl.value = q.explanation || '';
+        var optionsList = card.querySelector('.js-options-list');
+        var optionRows = card.querySelectorAll('.js-option-row');
+        var opts = q.options || [];
+        if (!optionsList || !optionRows.length) return;
+        var firstRow = optionRows[0];
+        while (optionRows.length < opts.length) {
+          var newRow = firstRow.cloneNode(true);
+          newRow.querySelector('.js-option-text').value = '';
+          var n = optionsList.querySelectorAll('.js-option-row').length + 1;
+          newRow.querySelector('.js-option-text').placeholder = 'Enter multiple choice ' + n;
+          newRow.querySelector('.js-option-correct').checked = false;
+          var box = newRow.querySelector('.js-option-box');
+          var label = newRow.querySelector('.js-correct-label');
+          if (box) box.classList.remove('is-correct');
+          if (label) label.classList.add('hidden');
+          var name = card.querySelector('.js-option-correct').getAttribute('name');
+          newRow.querySelector('.js-option-correct').setAttribute('name', name);
+          optionsList.appendChild(newRow);
+          optionRows = card.querySelectorAll('.js-option-row');
+        }
+        var rows = card.querySelectorAll('.js-option-row');
+        if (rows.length > opts.length) {
+          for (var r = rows.length - 1; r >= opts.length; r--) {
+            if (rows[r] && rows[r].parentNode) rows[r].parentNode.removeChild(rows[r]);
+          }
+          rows = card.querySelectorAll('.js-option-row');
+        }
+        opts.forEach(function (opt, i) {
+          if (rows[i]) {
+            var textInp = rows[i].querySelector('.js-option-text');
+            var radio = rows[i].querySelector('.js-option-correct');
+            if (textInp) textInp.value = opt.option_text != null ? String(opt.option_text) : '';
+            if (radio) radio.checked = opt.is_correct === true;
+          }
+        });
+        updateCorrectAnswerUI(card);
+      }
+
+      function restoreDraft() {
+        var cards = document.querySelectorAll('.js-question-card');
+        if (cards.length !== 1) return;
+        var raw = null;
+        try {
+          raw = localStorage.getItem(DRAFT_KEY);
+        } catch (e) { return; }
+        if (!raw) return;
+        var draft;
+        try {
+          draft = JSON.parse(raw);
+        } catch (e) { return; }
+        if (!draft || !draft.questions || !Array.isArray(draft.questions) || draft.questions.length === 0) return;
+        var titleEl = document.getElementById('quiz-title');
+        if (titleEl && draft.title != null) titleEl.value = draft.title;
+        var shuffleEl = document.getElementById('js-shuffle-questions');
+        if (shuffleEl && draft.settings) shuffleEl.checked = !!draft.settings.shuffle_questions;
+        var passGradeEl = document.getElementById('js-pass-grade');
+        if (passGradeEl && draft.settings && draft.settings.pass_grade != null) passGradeEl.value = draft.settings.pass_grade;
+        var passLabel = document.getElementById('js-pass-grade-label');
+        if (passLabel && draft.settings && draft.settings.pass_grade != null) passLabel.textContent = draft.settings.pass_grade + '%';
+        var timeLimitEnabledEl = document.getElementById('js-time-limit-enabled');
+        if (timeLimitEnabledEl && draft.settings) timeLimitEnabledEl.checked = !!draft.settings.time_limit_enabled;
+        var timeLimitMinutesEl = document.getElementById('js-time-limit-minutes');
+        if (timeLimitMinutesEl && draft.settings && draft.settings.time_limit_minutes != null) timeLimitMinutesEl.value = draft.settings.time_limit_minutes;
+        var allowRetakesEl = document.getElementById('js-allow-retakes');
+        if (allowRetakesEl && draft.settings) allowRetakesEl.checked = !!draft.settings.allow_retakes;
+        var firstCard = cards[0];
+        fillCardFromDraftQuestion(firstCard, draft.questions[0]);
+        for (var i = 1; i < draft.questions.length; i++) {
+          var cloned = cloneQuestionCard();
+          if (!cloned) break;
+          fillCardFromDraftQuestion(cloned, draft.questions[i]);
+          var num = document.querySelectorAll('.js-question-card').length + 1;
+          cloned.querySelector('.js-card-number').textContent = num;
+          var name = 'q' + num + '_ans';
+          cloned.querySelectorAll('.js-option-correct').forEach(function (r) { r.setAttribute('name', name); });
+          cardsContainer.insertBefore(cloned, addQuestionBtn);
+        }
+        renumberCards();
+      }
+
+      document.addEventListener('input', debounce(saveDraft, 800));
+      document.addEventListener('change', debounce(saveDraft, 800));
+
+      document.addEventListener('input', debounce(function () {
+        clearDuplicateHighlights();
+        var duplicates = detectDuplicateQuestions();
+        if (duplicates.length > 0) {
+          highlightDuplicateCards(duplicates);
+        }
+      }, 500));
+
+      document.addEventListener('input', debounce(updateQuizHealthPanel, 500));
+      document.addEventListener('change', debounce(updateQuizHealthPanel, 500));
+
+      const addQuestionBtn = document.getElementById('add-new-question-btn');
+      const cardsContainer = addQuestionBtn ? addQuestionBtn.parentElement : document.body;
+
+      function getCardIndex(card) {
+        const cards = document.querySelectorAll('.js-question-card');
+        return Array.prototype.indexOf.call(cards, card);
+      }
+
+      function renumberCards() {
+        const cards = document.querySelectorAll('.js-question-card');
+        cards.forEach(function (card, i) {
+          const num = i + 1;
+          const badge = card.querySelector('.js-card-number');
+          if (badge) badge.textContent = num;
+          const name = 'q' + num + '_ans';
+          card.querySelectorAll('.js-option-correct').forEach(function (radio) { radio.setAttribute('name', name); });
+        });
+      }
+
+      function updateCorrectAnswerUI(card) {
+        const rows = card.querySelectorAll('.js-option-row');
+        rows.forEach(function (row) {
+          const box = row.querySelector('.js-option-box');
+          const label = row.querySelector('.js-correct-label');
+          const radio = row.querySelector('.js-option-correct');
+          if (box) box.classList.toggle('is-correct', radio && radio.checked);
+          if (label) label.classList.toggle('hidden', !radio || !radio.checked);
+        });
+      }
+
+      function cloneQuestionCard() {
+        const first = document.querySelector('.js-question-card');
+        if (!first) return null;
+        const clone = first.cloneNode(true);
+        clone.dataset.topicId = '';
+        clone.dataset.topic = '';
+        clone.dataset.difficultyLevel = 'medium';
+        var diffSelect = clone.querySelector('.js-difficulty-select');
+        if (diffSelect) diffSelect.value = 'medium';
+        var topicSelect = clone.querySelector('.js-topic-select');
+        if (topicSelect) {
+          fillTopicSelect(topicSelect);
+          topicSelect.addEventListener('change', function () {
+            clone.dataset.topicId = topicSelect.value || '';
+            clone.dataset.topic = topicSelect.options[topicSelect.selectedIndex] ? topicSelect.options[topicSelect.selectedIndex].textContent : '';
+          });
+        }
+        clone.querySelector('.js-question-text').value = '';
+        clone.querySelectorAll('.js-option-text').forEach(function (inp, i) {
+          inp.value = '';
+          inp.placeholder = 'Enter multiple choice ' + (i + 1);
+        });
+        clone.querySelector('.js-points').value = 5;
+        clone.querySelector('.js-question-explanation').value = '';
+        clone.querySelectorAll('.js-option-correct').forEach(function (r) { r.checked = false; });
+        clone.querySelectorAll('.js-option-row').forEach(function (row) {
+          const box = row.querySelector('.js-option-box');
+          const label = row.querySelector('.js-correct-label');
+          if (box) box.classList.remove('is-correct');
+          if (label) label.classList.add('hidden');
+        });
+        return clone;
+      }
+
+      cardsContainer.addEventListener('change', function (e) {
+        if (e.target && e.target.classList.contains('js-option-correct')) {
+          const card = e.target.closest('.js-question-card');
+          if (card) updateCorrectAnswerUI(card);
+        }
+        if (e.target && e.target.classList.contains('js-topic-select')) {
+          const card = e.target.closest('.js-question-card');
+          if (card) {
+            card.dataset.topicId = e.target.value || '';
+            card.dataset.topic = e.target.options[e.target.selectedIndex] ? e.target.options[e.target.selectedIndex].textContent : '';
+          }
+        }
+        if (e.target && e.target.classList.contains('js-difficulty-select')) {
+          const card = e.target.closest('.js-question-card');
+          if (card) card.dataset.difficultyLevel = e.target.value;
+        }
+      });
+
+      cardsContainer.addEventListener('click', function (e) {
+        const card = e.target.closest('.js-question-card');
+        if (!card) return;
+        if (e.target.closest('.js-duplicate-question')) {
+          const cloned = cloneQuestionCard();
+          if (!cloned) return;
+          cloned.querySelector('.js-card-number').textContent = (document.querySelectorAll('.js-question-card').length + 1);
+          card.parentNode.insertBefore(cloned, card.nextSibling);
+          renumberCards();
+          updateCorrectAnswerUI(cloned);
+        }
+        if (e.target.closest('.js-delete-question')) {
+          const cards = document.querySelectorAll('.js-question-card');
+          if (cards.length <= 1) return;
+          card.remove();
+          renumberCards();
+          updateQuizHealthPanel();
+        }
+        if (e.target.closest('.js-add-option')) {
+          const optionsWrap = card.querySelector('.js-options-list');
+          const firstRow = card.querySelector('.js-option-row');
+          if (!optionsWrap || !firstRow) return;
+          const newRow = firstRow.cloneNode(true);
+          newRow.querySelector('.js-option-text').value = '';
+          const n = optionsWrap.querySelectorAll('.js-option-row').length + 1;
+          newRow.querySelector('.js-option-text').placeholder = 'Enter multiple choice ' + n;
+          newRow.querySelector('.js-option-correct').checked = false;
+          newRow.querySelector('.js-option-box').classList.remove('is-correct');
+          newRow.querySelector('.js-correct-label').classList.add('hidden');
+          const name = card.querySelector('.js-option-correct').getAttribute('name');
+          newRow.querySelector('.js-option-correct').setAttribute('name', name);
+          optionsWrap.appendChild(newRow);
+        }
+        if (e.target.closest('.js-remove-option')) {
+          const row = e.target.closest('.js-option-row');
+          const optionsWrap = row && row.parentElement;
+          if (!row || !optionsWrap) return;
+          const count = optionsWrap.querySelectorAll('.js-option-row').length;
+          if (count <= 1) return;
+          row.remove();
+        }
+      });
+
+      function esc(s) {
+        if (s == null) return '';
+        var str = String(s);
+        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      }
+
+      function pickBalancedQuestions(questions, count) {
+        if (!Array.isArray(questions) || questions.length === 0) return [];
+        var easy = questions.filter(function (q) { return q.difficulty === 'easy'; });
+        var medium = questions.filter(function (q) { return q.difficulty === 'medium'; });
+        var hard = questions.filter(function (q) { return q.difficulty === 'hard'; });
+        function shuffle(arr) {
+          return arr.slice().sort(function () { return Math.random() - 0.5; });
+        }
+        var targetPerLevel = Math.floor(count / 3);
+        var result = [];
+        result = result
+          .concat(shuffle(easy).slice(0, targetPerLevel))
+          .concat(shuffle(medium).slice(0, targetPerLevel))
+          .concat(shuffle(hard).slice(0, targetPerLevel));
+        var remainingPool = shuffle(
+          questions.filter(function (q) { return result.indexOf(q) === -1; })
+        );
+        while (result.length < count && remainingPool.length > 0) {
+          result.push(remainingPool.shift());
+        }
+        return result.slice(0, count);
+      }
+
+      function renderGeneratedQuestion(q, index) {
+        var container = document.getElementById('generated-questions-container');
+        if (!container) return;
+        var card = document.createElement('div');
+        card.className = 'glass-card p-4 generate-card';
+        card.setAttribute('data-index', String(index));
+        var topicLabel = (q.topic || '').replace(/^./, function (c) { return c.toUpperCase(); });
+        var diffLabel = (q.difficulty || '').replace(/^./, function (c) { return c.toUpperCase(); });
+        var opts = q.options || [];
+        var optionsHtml = opts.map(function (o) {
+          var text = esc(o.option_text);
+          var cls = o.is_correct ? 'text-green-600 font-medium' : '';
+          return '<li class="' + cls + '">' + text + '</li>';
+        }).join('');
+        card.innerHTML =
+          '<div class="flex items-start gap-3">' +
+            '<input type="checkbox" class="generate-select-checkbox w-4 h-4 mt-0.5 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500 cursor-pointer" aria-label="Select question">' +
+            '<div class="flex-1 min-w-0">' +
+              '<div class="font-semibold mb-2 text-slate-800">' + esc(q.question_text) + '</div>' +
+              '<div class="flex flex-wrap gap-2 mb-3">' +
+                '<span class="px-2.5 py-1 rounded-md text-[10px] font-extrabold uppercase tracking-wide border bg-indigo-50 text-indigo-700 border-indigo-100">' + esc(topicLabel) + '</span>' +
+                '<span class="px-2.5 py-1 rounded-md text-[10px] font-extrabold uppercase tracking-wide border bg-slate-100 text-slate-600 border-slate-200">' + esc(diffLabel) + '</span>' +
+              '</div>' +
+              '<ul class="text-sm space-y-1">' + optionsHtml + '</ul>' +
+            '</div>' +
+          '</div>';
+        if (q.times_used !== undefined) {
+          var cardBody = card.querySelector('.flex-1');
+          if (cardBody) {
+            var usage = document.createElement('div');
+            usage.className = 'text-xs text-slate-400 mt-1';
+            usage.textContent = 'Used ' + q.times_used + (q.times_used === 1 ? ' time' : ' times');
+            cardBody.insertBefore(usage, cardBody.querySelector('ul'));
+          }
+        }
+        container.appendChild(card);
+      }
+
+      function addQuestionCardFromBank(q) {
+        const cloned = cloneQuestionCard();
+        if (!cloned) return;
+        const textEl = cloned.querySelector('.js-question-text');
+        if (textEl) textEl.value = q.question_text || '';
+        cloned.dataset.difficultyLevel = q.difficulty || 'medium';
+        var diffSelect = cloned.querySelector('.js-difficulty-select');
+        if (diffSelect) diffSelect.value = cloned.dataset.difficultyLevel;
+        if (q.id != null) cloned.dataset.questionBankId = String(q.id);
+        if (q.topic_id != null) cloned.dataset.topicId = String(q.topic_id);
+        if (q.topic_name || q.topic) cloned.dataset.topic = q.topic_name || q.topic;
+        var topicSelect = cloned.querySelector('.js-topic-select');
+        if (topicSelect && q.topic_id != null) topicSelect.value = String(q.topic_id);
+        const optionsList = cloned.querySelector('.js-options-list');
+        var optionRows = cloned.querySelectorAll('.js-option-row');
+        const opts = q.options || [];
+        if (!optionsList || !optionRows.length) return;
+        const firstRow = optionRows[0];
+        while (optionRows.length < opts.length) {
+          const newRow = firstRow.cloneNode(true);
+          newRow.querySelector('.js-option-text').value = '';
+          const n = optionsList.querySelectorAll('.js-option-row').length + 1;
+          newRow.querySelector('.js-option-text').placeholder = 'Enter multiple choice ' + n;
+          newRow.querySelector('.js-option-correct').checked = false;
+          const box = newRow.querySelector('.js-option-box');
+          const label = newRow.querySelector('.js-correct-label');
+          if (box) box.classList.remove('is-correct');
+          if (label) label.classList.add('hidden');
+          const name = cloned.querySelector('.js-option-correct').getAttribute('name');
+          newRow.querySelector('.js-option-correct').setAttribute('name', name);
+          optionsList.appendChild(newRow);
+          optionRows = cloned.querySelectorAll('.js-option-row');
+        }
+        var rows = cloned.querySelectorAll('.js-option-row');
+        if (rows.length > opts.length) {
+          for (var r = rows.length - 1; r >= opts.length; r--) {
+            if (rows[r] && rows[r].parentNode) rows[r].parentNode.removeChild(rows[r]);
+          }
+          rows = cloned.querySelectorAll('.js-option-row');
+        }
+        opts.forEach(function (opt, i) {
+          if (rows[i]) {
+            const textInp = rows[i].querySelector('.js-option-text');
+            const radio = rows[i].querySelector('.js-option-correct');
+            if (textInp) textInp.value = opt.option_text != null ? String(opt.option_text) : '';
+            if (radio) radio.checked = opt.is_correct === true;
+          }
+        });
+        updateCorrectAnswerUI(cloned);
+        const num = document.querySelectorAll('.js-question-card').length + 1;
+        cloned.querySelector('.js-card-number').textContent = num;
+        const name = 'q' + num + '_ans';
+        cloned.querySelectorAll('.js-option-correct').forEach(function (r) { r.setAttribute('name', name); });
+        cardsContainer.insertBefore(cloned, addQuestionBtn);
+        renumberCards();
+      }
+
+      if (addQuestionBtn) {
+        addQuestionBtn.addEventListener('click', function () {
+          const cloned = cloneQuestionCard();
+          if (!cloned) return;
+          const num = document.querySelectorAll('.js-question-card').length + 1;
+          cloned.querySelector('.js-card-number').textContent = num;
+          const name = 'q' + num + '_ans';
+          cloned.querySelectorAll('.js-option-correct').forEach(function (r) { r.setAttribute('name', name); });
+          cardsContainer.insertBefore(cloned, addQuestionBtn);
+          renumberCards();
+          updateQuizHealthPanel();
+        });
+      }
+
+      var panelGenerate = document.getElementById('js-panel-generate');
+      var panelCustom = document.getElementById('js-panel-custom');
+      var tabGenerate = document.getElementById('js-tab-generate');
+      var tabCustom = document.getElementById('js-tab-custom');
+      function switchTab(activePanelId) {
+        if (panelGenerate) panelGenerate.classList.toggle('hidden', activePanelId !== 'js-panel-generate');
+        if (panelCustom) panelCustom.classList.toggle('hidden', activePanelId !== 'js-panel-custom');
+        if (tabGenerate) {
+          tabGenerate.classList.toggle('text-indigo-600', activePanelId === 'js-panel-generate');
+          tabGenerate.classList.toggle('text-slate-400', activePanelId !== 'js-panel-generate');
+          var spanGen = tabGenerate.querySelector('span');
+          if (spanGen) spanGen.style.width = activePanelId === 'js-panel-generate' ? '100%' : '0';
+        }
+        if (tabCustom) {
+          tabCustom.classList.toggle('text-indigo-600', activePanelId === 'js-panel-custom');
+          tabCustom.classList.toggle('text-slate-400', activePanelId !== 'js-panel-custom');
+          var spanCust = tabCustom.querySelector('span');
+          if (spanCust) spanCust.style.width = activePanelId === 'js-panel-custom' ? '100%' : '0';
+        }
+      }
+      if (tabGenerate) tabGenerate.addEventListener('click', function () { switchTab('js-panel-generate'); });
+      if (tabCustom) tabCustom.addEventListener('click', function () { switchTab('js-panel-custom'); });
+
+      async function loadWeakTopics() {
+        if (CLASS_ID == null) return;
+        try {
+          var res = await fetch(API_BASE + '/attempts/performance/class/' + CLASS_ID, { headers: getAuthHeaders() });
+          if (!res.ok) return;
+          var data = await res.json();
+          if (!Array.isArray(data)) return;
+          weakTopics = data.filter(function (t) { return t.accuracy < 70; });
+          var panel = document.getElementById('weak-topics-panel');
+          var list = document.getElementById('weak-topics-list');
+          if (!panel || !list) return;
+          list.innerHTML = '';
+          weakTopics.forEach(function (t) {
+            var label = (t.topic_name != null ? t.topic_name : t.topic || '').replace(/^./, function (c) { return c.toUpperCase(); });
+            var topicVal = t.topic_name != null ? t.topic_name : (t.topic || '');
+            var topicId = t.topic_id != null ? String(t.topic_id) : '';
+            var li = document.createElement('li');
+            li.className = 'flex items-center justify-between gap-2 flex-wrap';
+            li.innerHTML = '<span>' + label + ' — ' + t.accuracy + '% accuracy</span>' +
+              '<button type="button" class="js-use-weak-topic text-xs font-bold text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 px-2 py-1 rounded transition-colors" data-topic="' + topicVal + '" data-topic-id="' + topicId + '">Use Weak Topic</button>';
+            list.appendChild(li);
+          });
+          if (weakTopics.length > 0) panel.classList.remove('hidden');
+        } catch (e) {
+          console.error(e);
+        }
+      }
+
+      document.getElementById('weak-topics-panel') && document.getElementById('weak-topics-list') && document.addEventListener('click', function (e) {
+        if (e.target && e.target.classList.contains('js-use-weak-topic')) {
+          var topic = e.target.getAttribute('data-topic');
+          var topicId = e.target.getAttribute('data-topic-id');
+          var topicEl = document.getElementById('generate-topic');
+          var difficultyEl = document.getElementById('generate-difficulty');
+          if (topicEl) { topicEl.value = topicId || ''; }
+          if (difficultyEl) difficultyEl.value = 'medium';
+        }
+      });
+
+      var generateBtn = document.getElementById('generate-btn');
+      if (generateBtn) {
+        generateBtn.addEventListener('click', async function () {
+          var genContainer = document.getElementById('generated-questions-container');
+          if (genContainer) genContainer.innerHTML = '';
+          generatedQuestions = [];
+          var topicEl = document.getElementById('generate-topic');
+          var difficultyEl = document.getElementById('generate-difficulty');
+          var countEl = document.getElementById('generate-count');
+          var topicVal = (topicEl && topicEl.value) !== undefined ? topicEl.value : '';
+          var topicIdFilter = topicVal === '' || topicVal === 'all' ? null : topicVal;
+          var difficulty = (difficultyEl && difficultyEl.value) || 'all';
+          var count = Number(countEl && countEl.value ? countEl.value : 0) || 0;
+          if (CLASS_ID == null) {
+            alert('Open Create Quiz from a class to generate questions from the question bank.');
+            return;
+          }
+          try {
+            var res = await fetch(API_BASE + '/questionbank/class/' + CLASS_ID, { headers: getAuthHeaders() });
+            if (!res.ok) throw new Error('Failed to load question bank');
+            var questions = await res.json();
+            if (!Array.isArray(questions)) questions = [];
+            var filtered = questions.filter(function (q) {
+              var topicMatch = topicIdFilter == null || String(q.topic_id) === String(topicIdFilter);
+              var diffMatch = difficulty === 'all' || q.difficulty === difficulty;
+              return topicMatch && diffMatch;
+            });
+            var weakTopicSet = {};
+            if (topicIdFilter == null && weakTopics.length > 0) {
+              weakTopics.forEach(function (t) {
+                if (t.topic_id != null) weakTopicSet[t.topic_id] = true;
+              });
+            }
+            filtered.sort(function (a, b) {
+              if (topicIdFilter == null && weakTopics.length > 0) {
+                var aWeak = a.topic_id != null && weakTopicSet[a.topic_id];
+                var bWeak = b.topic_id != null && weakTopicSet[b.topic_id];
+                if (aWeak && !bWeak) return -1;
+                if (!aWeak && bWeak) return 1;
+              }
+              var ua = a.times_used || 0;
+              var ub = b.times_used || 0;
+              return ua - ub;
+            });
+            var selected = pickBalancedQuestions(filtered, count);
+            if (topicIdFilter == null && weakTopics.length > 0) {
+              selected.sort(function (a, b) {
+                var aWeak = a.topic_id != null && weakTopicSet[a.topic_id];
+                var bWeak = b.topic_id != null && weakTopicSet[b.topic_id];
+                if (aWeak && !bWeak) return -1;
+                if (!aWeak && bWeak) return 1;
+                return 0;
+              });
+            }
+            selected.sort(function () { return Math.random() - 0.5; });
+            if (selected.length === 0) {
+              alert('No questions match the filters.');
+              return;
+            }
+            if (selected.length < count) {
+              alert('Only ' + selected.length + ' questions available.');
+            }
+            generatedQuestions = selected;
+            selected.forEach(function (q, i) { renderGeneratedQuestion(q, i); });
+          } catch (err) {
+            console.error(err);
+            alert(err.message || 'Failed to load question bank.');
+          }
+        });
+      }
+
+      var addSelectedBtn = document.getElementById('add-selected-btn');
+      if (addSelectedBtn) {
+        addSelectedBtn.addEventListener('click', function () {
+          var selected = [];
+          document.querySelectorAll('.generate-card').forEach(function (card) {
+            var checkbox = card.querySelector('.generate-select-checkbox');
+            if (!checkbox || !checkbox.checked) return;
+            var index = Number(card.dataset.index);
+            if (!isNaN(index) && generatedQuestions[index]) {
+              selected.push(generatedQuestions[index]);
+            }
+          });
+          selected.forEach(function (q) {
+            var exists = Array.from(document.querySelectorAll('.js-question-text'))
+              .some(function (el) { return (el.value || '').trim() === (q.question_text || '').trim(); });
+            if (!exists) {
+              addQuestionCardFromBank(q);
+            }
+          });
+          renumberCards();
+          updateQuizHealthPanel();
+        });
+      }
+
+      function getPreviewQuestionsFromDOM() {
+        var questionCards = document.querySelectorAll('.js-question-card');
+        var questions = [];
+        for (var c = 0; c < questionCards.length; c++) {
+          var card = questionCards[c];
+          var textEl = card.querySelector('.js-question-text');
+          var questionText = (textEl && textEl.value && textEl.value.trim()) || '';
+          var optionRows = card.querySelectorAll('.js-option-row');
+          var options = [];
+          for (var r = 0; r < optionRows.length; r++) {
+            var row = optionRows[r];
+            var textInput = row.querySelector('.js-option-text');
+            var radio = row.querySelector('.js-option-correct');
+            var optText = (textInput && textInput.value && textInput.value.trim()) || '';
+            options.push({
+              option_text: optText,
+              is_correct: radio ? radio.checked : false
+            });
+          }
+          var difficultyLevel = (card.dataset && card.dataset.difficultyLevel) || 'medium';
+          questions.push({
+            question_text: questionText,
+            difficulty_level: difficultyLevel,
+            options: options
+          });
+        }
+        return questions;
+      }
+
+      function openPreviewModal() {
+        var previewQuestions = getPreviewQuestionsFromDOM();
+        var content = document.getElementById('preview-content');
+        if (!content) return;
+        content.innerHTML = '';
+        if (previewQuestions.length === 0) {
+          content.innerHTML = '<p class="text-slate-500 text-center py-8">No questions to preview yet.</p>';
+        } else {
+          previewQuestions.forEach(function (q, i) {
+            var num = i + 1;
+            var diffLabel = (q.difficulty_level || 'medium').replace(/^./, function (c) { return c.toUpperCase(); });
+            var optionsHtml = (q.options || []).map(function (o) {
+              var text = esc(o.option_text);
+              if (o.is_correct) {
+                return '<li class="flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm font-medium"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></span>' + text + '</li>';
+              }
+              return '<li class="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-50 border border-slate-100 text-slate-700 text-sm">' + text + '</li>';
+            }).join('');
+            var card = document.createElement('div');
+            card.className = 'bg-white rounded-xl border border-slate-200 shadow-sm p-5';
+            card.innerHTML =
+              '<div class="flex items-center gap-2 mb-3">' +
+                '<span class="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white font-bold text-sm">' + num + '</span>' +
+                '<span class="px-2.5 py-1 rounded-md text-[10px] font-extrabold uppercase tracking-wide border bg-slate-100 text-slate-600 border-slate-200">' + esc(diffLabel) + '</span>' +
+              '</div>' +
+              '<p class="font-semibold text-slate-800 mb-3">' + esc(q.question_text) + '</p>' +
+              '<ul class="space-y-1.5">' + optionsHtml + '</ul>';
+            content.appendChild(card);
+          });
+        }
+        var modal = document.getElementById('preview-modal');
+        if (modal) {
+          modal.classList.remove('hidden');
+          document.body.style.overflow = 'hidden';
+        }
+      }
+
+      function closePreviewModal() {
+        var modal = document.getElementById('preview-modal');
+        if (modal) modal.classList.add('hidden');
+        document.body.style.overflow = '';
+      }
+
+      var previewBtn = document.getElementById('preview-quiz-btn');
+      if (previewBtn) previewBtn.addEventListener('click', openPreviewModal);
+      var previewBackdrop = document.getElementById('preview-modal-backdrop');
+      if (previewBackdrop) previewBackdrop.addEventListener('click', closePreviewModal);
+      var previewCloseX = document.getElementById('preview-modal-close-x');
+      if (previewCloseX) previewCloseX.addEventListener('click', closePreviewModal);
+      var previewCloseBtn = document.getElementById('preview-modal-close-btn');
+      if (previewCloseBtn) previewCloseBtn.addEventListener('click', closePreviewModal);
+
+      function validateQuizBeforeSave() {
+        const titleEl = document.getElementById('quiz-title');
+        const title = (titleEl && titleEl.value.trim()) || '';
+        if (!title) {
+          alert('Quiz title cannot be empty.');
+          return null;
+        }
+        const questionCards = document.querySelectorAll('.js-question-card');
+        const questions = [];
+        for (let c = 0; c < questionCards.length; c++) {
+          const card = questionCards[c];
+          const textEl = card.querySelector('.js-question-text');
+          const questionText = (textEl && textEl.value.trim()) || '';
+          if (!questionText) {
+            alert('Every question must have text. Please fill in question ' + (c + 1) + '.');
+            return null;
+          }
+          const optionRows = card.querySelectorAll('.js-option-row');
+          const options = [];
+          let correctCount = 0;
+          for (let r = 0; r < optionRows.length; r++) {
+            const row = optionRows[r];
+            const textInput = row.querySelector('.js-option-text');
+            const radio = row.querySelector('.js-option-correct');
+            const optText = (textInput && textInput.value.trim()) || '';
+            if (!optText) {
+              alert('Options cannot be empty. Check question ' + (c + 1) + ', option ' + (r + 1) + '.');
+              return null;
+            }
+            if (radio && radio.checked) correctCount++;
+            options.push({
+              option_text: optText,
+              is_correct: radio ? radio.checked : false
+            });
+          }
+          if (options.length < 2) {
+            alert('Each question must have at least 2 options. Question ' + (c + 1) + ' has only ' + options.length + '.');
+            return null;
+          }
+          if (correctCount !== 1) {
+            alert('Each question must have exactly one correct answer. Question ' + (c + 1) + ' has ' + correctCount + ' selected.');
+            return null;
+          }
+          const explanationEl = card.querySelector('.js-question-explanation');
+          const explanation = explanationEl ? explanationEl.value.trim() : '';
+          const difficultyLevel = (card.dataset && card.dataset.difficultyLevel) || 'medium';
+          const questionBankId = (card.dataset && card.dataset.questionBankId) || null;
+          const topicIdRaw = (card.dataset && card.dataset.topicId) ? parseInt(card.dataset.topicId, 10) : NaN;
+          const topicId = (topicIdRaw != null && !isNaN(topicIdRaw)) ? topicIdRaw : null;
+          questions.push({
+            question_text: questionText,
+            difficulty_level: difficultyLevel,
+            topic: card.dataset.topic || null,
+            topic_id: topicId,
+            explanation: explanation || null,
+            options: options,
+            question_bank_id: questionBankId
+          });
+        }
+        if (!questions.length) {
+          alert('Add at least one question with options.');
+          return null;
+        }
+        var duplicates = detectDuplicateQuestions();
+        if (duplicates.length > 0) {
+          alert('Duplicate questions detected. Please remove or edit them before saving.');
+          highlightDuplicateCards(duplicates);
+          return null;
+        }
+        return { title: title.trim(), questions };
+      }
+
+      document.getElementById('js-pass-grade').addEventListener('input', function () {
+        const label = document.getElementById('js-pass-grade-label');
+        if (label) label.textContent = this.value + '%';
+      });
+
+      document.getElementById('save-quiz-btn').addEventListener('click', async function () {
+        var payload = validateQuizBeforeSave();
+        if (!payload) return;
+        if (!CLASS_ID) {
+          alert('Quiz must belong to a class.');
+          return;
+        }
+        var title = payload.title;
+        var questions = payload.questions;
+        var subjectEl = document.getElementById('quiz-subject');
+        var subject = subjectEl ? subjectEl.value.trim() : '';
+        var shuffle_questions = document.getElementById('js-shuffle-questions').checked;
+        var pass_grade = parseInt(document.getElementById('js-pass-grade').value, 10) || 0;
+        var allow_retakes = document.getElementById('js-allow-retakes').checked;
+        var timeLimitEnabled = document.getElementById('js-time-limit-enabled').checked;
+        var time_limit_minutes = timeLimitEnabled
+          ? (parseInt(document.getElementById('js-time-limit-minutes').value, 10) || null)
+          : null;
+        var dueDateEl = document.getElementById('js-due-date');
+        var due_date = dueDateEl && dueDateEl.value ? new Date(dueDateEl.value).toISOString() : null;
+        this.disabled = true;
+        this.textContent = 'Saving...';
+        try {
+          var res = await fetch(API_BASE + '/quizzes', {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({
+              title: title,
+              class_id: CLASS_ID,
+              questions: questions,
+              subject: subject || null,
+              shuffle_questions: shuffle_questions,
+              pass_grade: pass_grade,
+              allow_retakes: allow_retakes,
+              time_limit_minutes: time_limit_minutes,
+              due_date: due_date
+            })
+          });
+          if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.error || 'Failed to save quiz');
+          }
+          try { localStorage.removeItem(DRAFT_KEY); } catch (e) { /* ignore */ }
+          window.location.href = 'educator-quiz.html' + (CLASS_ID != null ? '?classId=' + CLASS_ID : '');
+        } catch (e) {
+          console.error(e);
+          alert(e.message || 'Something went wrong. Please try again.');
+          this.disabled = false;
+          this.innerHTML = 'Save Quiz <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>';
+        }
+      });
+
+      function applyClassIdState() {
+        var warning = document.getElementById('no-class-warning');
+        var saveBtn = document.getElementById('save-quiz-btn');
+        if (CLASS_ID == null) {
+          if (warning) warning.classList.remove('hidden');
+          if (saveBtn) { saveBtn.disabled = true; saveBtn.setAttribute('aria-disabled', 'true'); }
+        } else {
+          if (warning) warning.classList.add('hidden');
+          if (saveBtn) { saveBtn.disabled = false; saveBtn.removeAttribute('aria-disabled'); }
+        }
+      }
+
+        applyClassIdState();
+        loadClassLabel();
+        loadTopics();
+        loadClassesForAssignment();
+        restoreDraft();
+        updateQuizHealthPanel();
+        loadWeakTopics();
+      });
+    </script>
+</body></html>

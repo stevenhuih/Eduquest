@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduQuest - Platform Admin Control Center</title>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="js/api.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+:root { --font-family: 'Nunito', sans-serif; }
+body { font-family: var(--font-family); -webkit-font-smoothing: antialiased; background-color: #fafaf9; }
+/* Subtle Pastel Background */
+.bg-pastel-mesh {
+position: fixed; inset: 0; z-index: -50;
+background:
+radial-gradient(at 0% 0%, rgba(224, 231, 255, 0.5) 0px, transparent 50%),
+radial-gradient(at 100% 0%, rgba(255, 237, 213, 0.4) 0px, transparent 50%),
+radial-gradient(at 100% 100%, rgba(220, 252, 231, 0.4) 0px, transparent 50%),
+radial-gradient(at 0% 100%, rgba(255, 228, 230, 0.4) 0px, transparent 50%);
+filter: blur(60px);
+}
+/* Micro pattern for texture */
+.bg-texture {
+position: fixed; inset: 0; z-index: -49;
+opacity: 0.3;
+background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2394a3b8' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.glass-card {
+background: rgba(255, 255, 255, 0.8);
+backdrop-filter: blur(12px);
+-webkit-backdrop-filter: blur(12px);
+border: 1px solid rgba(255, 255, 255, 0.6);
+}
+@keyframes slide-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.animate-enter { animation: slide-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+/* Custom Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.toggle-checkbox:checked {
+right: 0;
+border-color: #4f46e5;
+}
+.toggle-checkbox:checked + .toggle-label {
+background-color: #4f46e5;
+}
+/* Hover lift utilities */
+.hover-lift { transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s; }
+.hover-lift:hover { transform: translateY(-2px); }
+</style>
+<link id="all-fonts-link-font-geist" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-geist">.font-geist { font-family: 'Geist', sans-serif !important; }</style><link id="all-fonts-link-font-roboto" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-roboto">.font-roboto { font-family: 'Roboto', sans-serif !important; }</style><link id="all-fonts-link-font-montserrat" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-montserrat">.font-montserrat { font-family: 'Montserrat', sans-serif !important; }</style><link id="all-fonts-link-font-poppins" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-poppins">.font-poppins { font-family: 'Poppins', sans-serif !important; }</style><link id="all-fonts-link-font-playfair" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;900&amp;display=swap"><style id="all-fonts-style-font-playfair">.font-playfair { font-family: 'Playfair Display', serif !important; }</style><link id="all-fonts-link-font-instrument-serif" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:wght@400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-instrument-serif">.font-instrument-serif { font-family: 'Instrument Serif', serif !important; }</style><link id="all-fonts-link-font-merriweather" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&amp;display=swap"><style id="all-fonts-style-font-merriweather">.font-merriweather { font-family: 'Merriweather', serif !important; }</style><link id="all-fonts-link-font-bricolage" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-bricolage">.font-bricolage { font-family: 'Bricolage Grotesque', sans-serif !important; }</style><link id="all-fonts-link-font-jakarta" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap"><style id="all-fonts-style-font-jakarta">.font-jakarta { font-family: 'Plus Jakarta Sans', sans-serif !important; }</style><link id="all-fonts-link-font-manrope" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap"><style id="all-fonts-style-font-manrope">.font-manrope { font-family: 'Manrope', sans-serif !important; }</style><link id="all-fonts-link-font-space-grotesk" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-space-grotesk">.font-space-grotesk { font-family: 'Space Grotesk', sans-serif !important; }</style><link id="all-fonts-link-font-work-sans" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700;800&amp;display=swap"><style id="all-fonts-style-font-work-sans">.font-work-sans { font-family: 'Work Sans', sans-serif !important; }</style><link id="all-fonts-link-font-pt-serif" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=PT+Serif:wght@400;700&amp;display=swap"><style id="all-fonts-style-font-pt-serif">.font-pt-serif { font-family: 'PT Serif', serif !important; }</style><link id="all-fonts-link-font-geist-mono" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-geist-mono">.font-geist-mono { font-family: 'Geist Mono', monospace !important; }</style><link id="all-fonts-link-font-space-mono" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&amp;display=swap"><style id="all-fonts-style-font-space-mono">.font-space-mono { font-family: 'Space Mono', monospace !important; }</style><link id="all-fonts-link-font-quicksand" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-quicksand">.font-quicksand { font-family: 'Quicksand', sans-serif !important; }</style></head>
+  <body class="text-slate-600 selection:bg-indigo-100 selection:text-indigo-800 pb-12 overflow-x-hidden">
+    <div class="bg-pastel-mesh"></div>
+    <div class="bg-texture"></div>
+
+    <!-- NAVIGATION (Maintained Structure) -->
+    <nav class="fixed top-0 w-full z-40 pt-4 pb-2 px-4">
+      <div class="max-w-7xl mx-auto glass-card rounded-full px-4 py-3 flex items-center justify-between shadow-sm shadow-indigo-100/50">
+        <!-- Brand -->
+        <div class="flex items-center gap-3 pl-2">
+          <img src="assets/logo.png" alt="EduQuest" class="h-9 w-auto object-contain" />
+        </div>
+
+        <!-- Links (Admin Context) -->
+        <div class="hidden md:flex gap-1 bg-slate-100/50 border-slate-200/50 border rounded-full pt-1 pr-1 pb-1 pl-1 gap-x-1 gap-y-1 items-center">
+          <a href="admin-dashboard.html" class="transition-all text-sm font-semibold text-indigo-600 bg-white border-slate-200/60 border rounded-full pt-2 pr-5 pb-2 pl-5 shadow-sm">Overview</a>
+          
+          <a href="admin-shop.html" class="hover:text-indigo-600 hover:bg-white/60 transition-all text-sm font-semibold text-slate-500 rounded-full pt-2 pr-5 pb-2 pl-5">Manage Shop</a>
+        </div>
+
+        <!-- Profile -->
+        <div class="flex items-center gap-4 pr-2">
+            <button class="relative p-2 text-slate-400 hover:text-indigo-500 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bell"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" class=""></path></svg>
+                <span class="absolute top-2 right-2.5 w-2 h-2 bg-rose-500 rounded-full border border-white"></span>
+            </button>
+            <div class="hidden sm:flex flex-col items-end">
+                <span class="text-xs font-bold text-slate-700">System Admin</span>
+                <span class="text-[10px] font-bold text-violet-600 bg-violet-100 px-2 py-0.5 rounded-full">Platform Admin</span>
+            </div>
+            <div class="w-10 h-10 rounded-full p-0.5 border-2 border-indigo-100 bg-white relative cursor-pointer ring-2 ring-transparent hover:ring-indigo-100 transition-all">
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=System&amp;backgroundColor=e0e7ff" alt="Profile" class="w-full h-full object-cover rounded-full">
+            </div>
+            <a href="admin-login.html" onclick="event.preventDefault(); logout('admin-login.html');" class="text-xs font-bold text-slate-500 hover:text-rose-600 transition-colors py-2 px-3 rounded-lg hover:bg-rose-50">Log out</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- PLATFORM ADMIN DASHBOARD -->
+    <main class="z-10 max-w-7xl mr-auto ml-auto pt-28 pr-6 pb-12 pl-6 relative space-y-12">
+        
+        <!-- SECTION 2: PLATFORM HERO / SYSTEM CONTROL CENTER -->
+        <header class="animate-enter relative bg-white rounded-[2rem] border border-slate-100 shadow-xl shadow-indigo-100/20 overflow-hidden group">
+            <!-- Background Magic -->
+            <div class="absolute inset-0 bg-gradient-to-r from-fuchsia-50/60 via-white to-cyan-50/60"></div>
+            <div class="absolute -top-24 -right-24 w-96 h-96 bg-indigo-100/20 rounded-full blur-3xl"></div>
+            <div class="absolute top-1/2 left-10 w-24 h-24 bg-rose-100/30 rounded-full blur-2xl"></div>
+
+            <div class="relative z-10 p-8 md:p-10 flex flex-col items-center justify-center text-center">
+                
+                <!-- Title & Context -->
+                <div class="max-w-2xl">
+                    <div class="flex items-center justify-center gap-2 mb-3">
+                         <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-violet-100/50 border border-violet-100 text-violet-700 text-[11px] font-extrabold uppercase tracking-wide">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-server"><rect width="20" height="8" x="2" y="2" rx="2" ry="2"></rect><rect width="20" height="8" x="2" y="14" rx="2" ry="2"></rect><line x1="6" x2="6.01" y1="6" y2="6"></line><line x1="6" x2="6.01" y1="18" y2="18"></line></svg>
+                            Platform Admin
+                        </div>
+                    </div>
+                    <h1 class="text-3xl md:text-4xl font-extrabold text-slate-800 tracking-tight mb-2">System Control Center</h1>
+                    <p class="text-base text-slate-500 font-medium">Manage accounts, reward shops, and platform-wide content.</p>
+                </div>
+
+            </div>
+        </header>
+
+        <!-- SECTION A: MANAGE EDUCATOR ADMIN ACCOUNTS -->
+        <section class="animate-enter delay-100">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                        Educator Admin Accounts
+                    </h2>
+                    <p class="text-sm text-slate-500 font-medium mt-1">Suspend, view, or search educator-admin profiles.</p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden flex flex-col">
+                <div class="p-5 border-b border-slate-50 bg-slate-50/30 flex justify-between items-center gap-4">
+                    <div class="relative w-full max-w-md">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+                        <input type="text" id="admin-search-input" placeholder="Search educator admins..." class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-300 transition-all">
+                    </div>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="">
+                            <tr class="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider bg-slate-50/50 border-b border-slate-100">
+                                <th class="px-6 py-4">Educator Admin</th>
+                                <th class="px-6 py-4">Institution</th>
+                                <th class="px-6 py-4">Joined</th>
+                                <th class="px-6 py-4">Plan</th>
+                                <th class="px-6 py-4">Status</th>
+                                <th class="px-6 py-4 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="educator-admins-tbody" class="divide-y divide-slate-100">
+                        </tbody>
+                    </table>
+                </div>
+                <div id="admin-table-footer" class="p-3 bg-slate-50/50 border-t border-slate-100 flex justify-center">
+                    <span id="admin-table-count" class="text-xs font-bold text-slate-400"></span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Edit Plan Modal -->
+        <div id="edit-plan-modal" class="fixed inset-0 z-50 hidden" aria-hidden="true">
+          <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" id="edit-plan-modal-backdrop"></div>
+          <div class="relative flex min-h-full items-center justify-center p-4">
+            <div class="w-full max-w-md rounded-2xl bg-white border border-slate-200 shadow-xl p-6">
+              <h3 class="text-lg font-bold text-slate-800 mb-4">Edit subscription plan</h3>
+              <input type="hidden" id="edit-plan-admin-id" value="">
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Plan</label>
+                  <select id="edit-plan-select" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-700 focus:ring-2 focus:ring-indigo-100 focus:border-indigo-300">
+                    <option value="free">Free</option>
+                    <option value="pro">Pro</option>
+                    <option value="enterprise">Enterprise</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Expires at (optional)</label>
+                  <input type="date" id="edit-plan-expires" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-700 focus:ring-2 focus:ring-indigo-100 focus:border-indigo-300">
+                </div>
+              </div>
+              <div class="flex gap-3 mt-6">
+                <button type="button" id="edit-plan-cancel" class="flex-1 py-2.5 px-4 rounded-xl border border-slate-200 text-slate-600 font-bold text-sm hover:bg-slate-50">Cancel</button>
+                <button type="button" id="edit-plan-submit" class="flex-1 py-2.5 px-4 rounded-xl bg-indigo-600 text-white font-bold text-sm hover:bg-indigo-700">Save</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION C: MANAGE REWARD SHOP ITEMS -->
+        
+
+        <!-- SECTION D: LANDING PAGE MANAGEMENT -->
+        <section class="animate-enter delay-300 pb-12">
+            <div class="mb-6">
+                 <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                    Landing Page Management
+                </h2>
+                <p class="text-sm text-slate-500 font-medium mt-1">Control the public content students and educators see first.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Action Card 1: Edit Landing Page -->
+                <div class="bg-gradient-to-br from-indigo-50 to-white rounded-3xl border border-slate-200 shadow-sm p-8 flex flex-col items-start hover-lift group relative overflow-hidden">
+                    <div class="absolute right-0 top-0 w-32 h-32 bg-indigo-100 rounded-bl-full opacity-50 transition-transform group-hover:scale-110 origin-top-right"></div>
+                    
+                    <div class="w-12 h-12 rounded-2xl bg-white border border-indigo-100 text-indigo-600 flex items-center justify-center shadow-sm mb-6 relative z-10">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layout-template"><rect width="18" height="7" x="3" y="3" rx="1"></rect><rect width="9" height="7" x="3" y="14" rx="1"></rect><rect width="5" height="7" x="16" y="14" rx="1"></rect></svg>
+                    </div>
+                    
+                    <h3 class="text-xl font-black text-slate-800 mb-2 relative z-10">Edit Landing Page</h3>
+                    <p class="text-sm text-slate-500 font-medium mb-6 relative z-10 max-w-xs">Modify the hero section, background transitions, feature highlights, and main CTAs.</p>
+                    
+                    <a href="admin-landing-editor.html" class="relative z-10 w-full sm:w-auto px-6 py-3 rounded-xl bg-indigo-600 text-white font-bold text-sm shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition-all flex items-center gap-2 text-center justify-center no-underline">
+                        Open Editor
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                    </a>
+                </div>
+
+                <!-- Action Card 2: Moderate Platform Reviews -->
+                <div class="bg-gradient-to-br from-violet-50 to-white rounded-3xl border border-slate-200 shadow-sm p-8 flex flex-col items-start hover-lift group relative overflow-hidden">
+                    <div class="absolute right-0 top-0 w-32 h-32 bg-violet-100 rounded-bl-full opacity-50 transition-transform group-hover:scale-110 origin-top-right"></div>
+                    
+                    <div class="w-12 h-12 rounded-2xl bg-white border border-violet-100 text-violet-600 flex items-center justify-center shadow-sm mb-6 relative z-10">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-star"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    </div>
+                    
+                    <h3 class="text-xl font-black text-slate-800 mb-2 relative z-10">Moderate Platform Reviews</h3>
+                    <p class="text-sm text-slate-500 font-medium mb-6 relative z-10 max-w-xs">Approve or feature platform-wide reviews for the landing page.</p>
+                    
+                    <a href="admin-reviews.html" class="relative z-10 w-full sm:w-auto px-6 py-3 rounded-xl bg-violet-600 text-white font-bold text-sm shadow-lg hover:bg-violet-700 transition-all flex items-center gap-2 text-center justify-center no-underline">
+                        Open Moderation
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                    </a>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER (Maintained) -->
+    <footer class="bg-slate-900 text-slate-300 py-12 border-t border-slate-800 mt-12">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+          <div class="space-y-4">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-compass w-5 h-5">
+                  <path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z"></path>
+                  <circle cx="12" cy="12" r="10"></circle>
+                </svg>
+              </div>
+              <span class="text-lg font-bold text-white tracking-tight">EduQuest</span>
+            </div>
+            <p class="text-xs leading-relaxed text-slate-400 font-medium max-w-xs">Making learning an addictive adventure for students around the world.</p>
+          </div>
+          <div class="">
+            <h4 class="font-bold text-white mb-4 text-sm">Product</h4>
+            <ul class="space-y-2 text-xs font-medium text-slate-400">
+              <li class=""><a href="#" class="hover:text-indigo-400 transition-colors">Features</a></li>
+              <li class=""><a href="#" class="hover:text-indigo-400 transition-colors">Pricing</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="font-bold text-white mb-4 text-sm">Resources</h4>
+            <ul class="space-y-2 text-xs font-medium text-slate-400">
+              <li><a href="#" class="hover:text-indigo-400 transition-colors">Help Center</a></li>
+              <li><a href="#" class="hover:text-indigo-400 transition-colors">Community</a></li>
+            </ul>
+          </div>
+          <div class="">
+            <h4 class="font-bold text-white mb-4 text-sm">Legal</h4>
+            <ul class="space-y-2 text-xs font-medium text-slate-400">
+              <li><a href="#" class="hover:text-indigo-400 transition-colors">Privacy</a></li>
+              <li><a href="#" class="hover:text-indigo-400 transition-colors">Terms</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="border-t border-slate-800 pt-6 flex justify-center">
+          <p class="text-xs font-medium text-slate-500">© 2024 EduQuest. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      if (localStorage.getItem('role') !== 'platformadmin') {
+        window.location.href = 'admin-login.html';
+      }
+      lucide.createIcons();
+
+      var API_BASE = '/api';
+      var allAdmins = [];
+
+      function formatDate(createdAt) {
+        if (!createdAt) return '—';
+        var d = new Date(createdAt);
+        return isNaN(d.getTime()) ? '—' : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      }
+
+      function planLabel(plan) {
+        var p = (plan || 'free').toLowerCase();
+        if (p === 'pro') return 'Pro';
+        if (p === 'enterprise') return 'Enterprise';
+        return 'Free';
+      }
+      function formatExpires(expiresAt) {
+        if (!expiresAt) return '—';
+        var d = new Date(expiresAt);
+        return isNaN(d.getTime()) ? '—' : d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+      }
+
+      function renderTableRows(admins) {
+        var tbody = document.getElementById('educator-admins-tbody');
+        var countEl = document.getElementById('admin-table-count');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+        if (countEl) countEl.textContent = admins.length === 0 ? '' : 'Showing ' + admins.length + ' educator admin' + (admins.length !== 1 ? 's' : '');
+
+        if (admins.length === 0) {
+          var tr = document.createElement('tr');
+          tr.innerHTML = '<td colspan="6" class="px-6 py-8 text-center text-slate-500 text-sm">No educator admins found</td>';
+          tbody.appendChild(tr);
+          return;
+        }
+
+        admins.forEach(function (a) {
+          var name = (a.admin_name || '').trim() || '—';
+          var email = (a.email || '').trim() || '—';
+          var center = (a.center_name || '').trim() || '—';
+          var joined = formatDate(a.created_at);
+          var seed = (a.id != null ? String(a.id) : '') || 'admin';
+          var status = (a.status || 'active').toLowerCase();
+          var plan = (a.subscription_plan || 'free').toLowerCase();
+          var planText = planLabel(a.subscription_plan) + (a.subscription_expires_at ? ' (exp ' + formatExpires(a.subscription_expires_at) + ')' : '');
+          var statusBadge = status === 'suspended'
+            ? '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-50 border border-rose-100 text-rose-600 text-[10px] font-bold uppercase">Suspended</span>'
+            : '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-600 text-[10px] font-bold uppercase">Active</span>';
+          var statusBtn = status === 'suspended'
+            ? '<button type="button" class="btn-unsuspend px-3 py-1.5 rounded-lg text-xs font-bold text-emerald-600 hover:bg-emerald-50" data-id="' + a.id + '">Unsuspend</button>'
+            : '<button type="button" class="btn-suspend px-3 py-1.5 rounded-lg text-xs font-bold text-rose-500 hover:bg-rose-50" data-id="' + a.id + '">Suspend</button>';
+          var tr = document.createElement('tr');
+          tr.className = 'group hover:bg-indigo-50/30 transition-colors';
+          tr.innerHTML =
+            '<td class="px-6 py-4">' +
+              '<div class="flex items-center gap-3">' +
+                '<img src="https://api.dicebear.com/7.x/avataaars/svg?seed=' + encodeURIComponent(seed) + '" class="w-9 h-9 rounded-full bg-indigo-50 border border-indigo-100" alt="Avatar">' +
+                '<div>' +
+                  '<div class="text-sm font-bold text-slate-700 group-hover:text-indigo-700 transition-colors">' + escapeHtml(name) + '</div>' +
+                  '<div class="text-xs font-medium text-slate-400">' + escapeHtml(email) + '</div>' +
+                '</div>' +
+              '</div>' +
+            '</td>' +
+            '<td class="px-6 py-4"><span class="text-xs font-bold text-slate-600">' + escapeHtml(center) + '</span></td>' +
+            '<td class="px-6 py-4"><span class="text-xs font-medium text-slate-500">' + escapeHtml(joined) + '</span></td>' +
+            '<td class="px-6 py-4"><span class="text-xs font-semibold text-slate-600">' + escapeHtml(planText) + '</span></td>' +
+            '<td class="px-6 py-4">' + statusBadge + '</td>' +
+            '<td class="px-6 py-4 text-right">' +
+              '<div class="flex items-center justify-end gap-1 opacity-60 group-hover:opacity-100 transition-opacity">' +
+                '<button type="button" class="btn-edit-plan px-3 py-1.5 rounded-lg text-xs font-bold text-indigo-600 hover:bg-indigo-50" data-id="' + a.id + '" data-plan="' + escapeHtml(plan) + '" data-expires="' + (a.subscription_expires_at ? a.subscription_expires_at.slice(0, 10) : '') + '">Edit Plan</button>' +
+                statusBtn +
+              '</div>' +
+            '</td>';
+          tbody.appendChild(tr);
+        });
+        bindTableActions();
+      }
+
+      function bindTableActions() {
+        document.querySelectorAll('.btn-suspend').forEach(function (btn) {
+          btn.addEventListener('click', function () { setStatus(Number(btn.getAttribute('data-id')), 'suspended'); });
+        });
+        document.querySelectorAll('.btn-unsuspend').forEach(function (btn) {
+          btn.addEventListener('click', function () { setStatus(Number(btn.getAttribute('data-id')), 'active'); });
+        });
+        document.querySelectorAll('.btn-edit-plan').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            openEditPlanModal({
+              id: Number(btn.getAttribute('data-id')),
+              subscription_plan: btn.getAttribute('data-plan') || 'free',
+              subscription_expires_at: btn.getAttribute('data-expires') || ''
+            });
+          });
+        });
+      }
+
+      function setStatus(adminId, status) {
+        apiFetch(API_BASE + '/platform-admin/educator-admins/' + adminId + '/status', {
+          method: 'PATCH',
+          body: JSON.stringify({ status: status })
+        })
+          .then(function (res) {
+            if (!res.ok) return res.json().then(function (d) { throw new Error(d.error || 'Failed'); });
+            return res.json();
+          })
+          .then(function (updated) {
+            var idx = allAdmins.findIndex(function (a) { return a.id === updated.id; });
+            if (idx !== -1) allAdmins[idx] = updated;
+            filterAndRender();
+          })
+          .catch(function (err) {
+            console.error('Set status error:', err);
+            alert(err.message || 'Failed to update status');
+          });
+      }
+
+      function openEditPlanModal(admin) {
+        var modal = document.getElementById('edit-plan-modal');
+        document.getElementById('edit-plan-admin-id').value = admin.id;
+        document.getElementById('edit-plan-select').value = (admin.subscription_plan || 'free').toLowerCase();
+        var expires = admin.subscription_expires_at;
+        document.getElementById('edit-plan-expires').value = expires ? String(expires).slice(0, 10) : '';
+        if (modal) modal.classList.remove('hidden');
+      }
+
+      function closeEditPlanModal() {
+        var modal = document.getElementById('edit-plan-modal');
+        if (modal) modal.classList.add('hidden');
+      }
+
+      function saveEditPlan() {
+        var id = Number(document.getElementById('edit-plan-admin-id').value);
+        var plan = document.getElementById('edit-plan-select').value;
+        var expiresVal = document.getElementById('edit-plan-expires').value;
+        if (!id) return;
+        apiFetch(API_BASE + '/platform-admin/educator-admins/' + id + '/subscription', {
+          method: 'PATCH',
+          body: JSON.stringify({
+            subscription_plan: plan,
+            subscription_expires_at: expiresVal || null
+          })
+        })
+          .then(function (res) {
+            if (!res.ok) return res.json().then(function (d) { throw new Error(d.error || 'Failed'); });
+            return res.json();
+          })
+          .then(function (updated) {
+            var idx = allAdmins.findIndex(function (a) { return a.id === updated.id; });
+            if (idx !== -1) allAdmins[idx] = updated;
+            filterAndRender();
+            closeEditPlanModal();
+          })
+          .catch(function (err) {
+            console.error('Update subscription error:', err);
+            alert(err.message || 'Failed to update subscription');
+          });
+      }
+
+      function escapeHtml(s) {
+        if (s == null) return '';
+        var div = document.createElement('div');
+        div.textContent = s;
+        return div.innerHTML;
+      }
+
+      function loadEducatorAdmins() {
+        var tbody = document.getElementById('educator-admins-tbody');
+        if (tbody) tbody.innerHTML = '<tr><td colspan="6" class="px-6 py-8 text-center text-slate-500 text-sm">Loading…</td></tr>';
+
+        apiFetch(API_BASE + '/platform-admin/educator-admins')
+          .then(function (res) {
+            if (!res.ok) throw new Error(res.status === 401 ? 'Unauthorized' : 'Request failed');
+            return res.json();
+          })
+          .then(function (data) {
+            if (!Array.isArray(data)) {
+              allAdmins = [];
+              if (tbody) {
+                tbody.innerHTML = '<tr><td colspan="6" class="px-6 py-8 text-center text-slate-500 text-sm">Failed to load data</td></tr>';
+              }
+              return;
+            }
+            allAdmins = data;
+            filterAndRender();
+          })
+          .catch(function (err) {
+            console.error('Load educator admins error:', err);
+            allAdmins = [];
+            if (tbody) {
+              tbody.innerHTML = '<tr><td colspan="6" class="px-6 py-8 text-center text-slate-500 text-sm">' + (err.message === 'Unauthorized' ? 'Please log in as platform admin.' : 'Failed to load data') + '</td></tr>';
+            }
+            var countEl = document.getElementById('admin-table-count');
+            if (countEl) countEl.textContent = '';
+          });
+      }
+
+      function filterAndRender() {
+        var q = (document.getElementById('admin-search-input') && document.getElementById('admin-search-input').value) ? document.getElementById('admin-search-input').value.trim().toLowerCase() : '';
+        var filtered = q === '' ? allAdmins : allAdmins.filter(function (a) {
+          var name = (a.admin_name || '').toLowerCase();
+          var email = (a.email || '').toLowerCase();
+          var center = (a.center_name || '').toLowerCase();
+          return name.indexOf(q) !== -1 || email.indexOf(q) !== -1 || center.indexOf(q) !== -1;
+        });
+        renderTableRows(filtered);
+      }
+
+      document.addEventListener('DOMContentLoaded', function () {
+        loadEducatorAdmins();
+        var searchInput = document.getElementById('admin-search-input');
+        if (searchInput) searchInput.addEventListener('input', filterAndRender);
+        var modal = document.getElementById('edit-plan-modal');
+        var backdrop = document.getElementById('edit-plan-modal-backdrop');
+        var cancelBtn = document.getElementById('edit-plan-cancel');
+        var submitBtn = document.getElementById('edit-plan-submit');
+        if (backdrop) backdrop.addEventListener('click', closeEditPlanModal);
+        if (cancelBtn) cancelBtn.addEventListener('click', closeEditPlanModal);
+        if (submitBtn) submitBtn.addEventListener('click', saveEditPlan);
+      });
+    </script>
+  
+</body></html>
