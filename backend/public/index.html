@@ -1,523 +1,819 @@
-<!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8">
+<html lang="en" class="scroll-smooth"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EduQuest - Educator Quiz Manager</title>
-<script src="https://unpkg.com/lucide@latest"></script>
+<title>EduQuest - Gamified Learning Platform</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<script>
+tailwind.config = {
+theme: {
+extend: {
+colors: {
+sky: '#4A9DFF',
+gold: '#FFC545',
+softpurple: '#8B6EFF',
+freshwhite: '#F7FAFF',
+navy: '#1D2433',
+coral: '#FF8F8F',
+mint: '#4ECDC4',
+},
+fontFamily: {
+sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+display: ['"Outfit"', 'sans-serif'],
+},
+animation: {
+'float': 'float 6s ease-in-out infinite',
+'float-fast': 'float 4s ease-in-out infinite',
+'float-delayed': 'float 7s ease-in-out infinite 2s',
+'tumble': 'tumble 15s linear infinite',
+'sway': 'sway 5s ease-in-out infinite',
+'wiggle': 'wiggle 1s ease-in-out infinite',
+'blob': 'blob 10s infinite',
+'spin-slow': 'spin 12s linear infinite',
+'bounce-subtle': 'bounce-subtle 3s infinite',
+'pulse-glow': 'pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+'shimmer': 'shimmer 2s linear infinite',
+},
+keyframes: {
+float: {
+'0%, 100%': { transform: 'translateY(0)' },
+'50%': { transform: 'translateY(-20px)' },
+},
+tumble: {
+'0%': { transform: 'rotate(0deg) translateY(0px)' },
+'25%': { transform: 'rotate(90deg) translateY(-10px)' },
+'50%': { transform: 'rotate(180deg) translateY(0px)' },
+'75%': { transform: 'rotate(270deg) translateY(10px)' },
+'100%': { transform: 'rotate(360deg) translateY(0px)' },
+},
+sway: {
+'0%, 100%': { transform: 'rotate(-5deg)' },
+'50%': { transform: 'rotate(5deg)' },
+},
+blob: {
+'0%': { transform: 'translate(0px, 0px) scale(1)' },
+'33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+'66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+'100%': { transform: 'translate(0px, 0px) scale(1)' },
+},
+'bounce-subtle': {
+'0%, 100%': { transform: 'translateY(0)' },
+'50%': { transform: 'translateY(-10px)' },
+},
+'pulse-glow': {
+'0%, 100%': { opacity: 1, transform: 'scale(1)' },
+'50%': { opacity: .5, transform: 'scale(1.1)' },
+},
+shimmer: {
+'0%': { transform: 'translateX(-100%)' },
+'100%': { transform: 'translateX(100%)' }
+}
+}
+}
+}
+}
+</script>
 <style>
-:root { --font-family: 'Nunito', sans-serif; }
-body { font-family: var(--font-family); -webkit-font-smoothing: antialiased; background-color: #fafaf9; }
-/* Subtle Pastel Background */
-.bg-pastel-mesh {
-position: fixed; inset: 0; z-index: -50;
-background:
-radial-gradient(at 0% 0%, rgba(224, 231, 255, 0.5) 0px, transparent 50%),
-radial-gradient(at 100% 0%, rgba(255, 237, 213, 0.4) 0px, transparent 50%),
-radial-gradient(at 100% 100%, rgba(220, 252, 231, 0.4) 0px, transparent 50%),
-radial-gradient(at 0% 100%, rgba(255, 228, 230, 0.4) 0px, transparent 50%);
-filter: blur(60px);
-}
-/* Micro pattern for texture */
-.bg-texture {
-position: fixed; inset: 0; z-index: -49;
-opacity: 0.3;
-background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2394a3b8' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-}
-.glass-card {
-background: rgba(255, 255, 255, 0.8);
-backdrop-filter: blur(12px);
--webkit-backdrop-filter: blur(12px);
-border: 1px solid rgba(255, 255, 255, 0.6);
-}
-@keyframes slide-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-.animate-enter { animation: slide-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
-@keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-5px); } 100% { transform: translateY(0px); } }
-.animate-float { animation: float 5s ease-in-out infinite; }
 /* Custom Scrollbar */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-/* Drawer Slide Animation */
-.drawer { transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-.drawer-open { transform: translateX(0); }
-.drawer-closed { transform: translateX(100%); }
-/* Focus Ring Custom */
-.focus-ring:focus-within { box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15); border-color: #a5b4fc; }
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: #F7FAFF; }
+::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 5px; }
+::-webkit-scrollbar-thumb:hover { background: #4A9DFF; }
+/* Reveal Animation Classes */
+.reveal-on-scroll {
+opacity: 0;
+transform: translateY(30px);
+transition: all 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.reveal-on-scroll.is-visible {
+opacity: 1;
+transform: translateY(0);
+}
+/* Staggered Delays */
+.delay-100 { transition-delay: 100ms; }
+.delay-200 { transition-delay: 200ms; }
+.delay-300 { transition-delay: 300ms; }
+/* Parallax Container */
+.parallax-wrapper {
+position: relative;
+overflow: hidden;
+min-height: 800px;
+perspective: 1000px;
+}
+.floating-icon {
+filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
+transition: transform 0.1s linear;
+}
+/* Graph Paper Background Pattern */
+.bg-graph-paper {
+background-color: #F7FAFF;
+background-image:
+linear-gradient(rgba(74, 157, 255, 0.05) 1px, transparent 1px),
+linear-gradient(90deg, rgba(74, 157, 255, 0.05) 1px, transparent 1px);
+background-size: 40px 40px;
+}
+/* Dot Pattern for Reviews */
+.bg-dots {
+background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+background-size: 20px 20px;
+}
+.bg-dots-dark {
+background-image: radial-gradient(rgba(29, 36, 51, 0.1) 1px, transparent 1px);
+background-size: 20px 20px;
+}
+body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 </style>
-<link id="all-fonts-link-font-geist" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-geist">.font-geist { font-family: 'Geist', sans-serif !important; }</style><link id="all-fonts-link-font-roboto" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-roboto">.font-roboto { font-family: 'Roboto', sans-serif !important; }</style><link id="all-fonts-link-font-montserrat" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-montserrat">.font-montserrat { font-family: 'Montserrat', sans-serif !important; }</style><link id="all-fonts-link-font-poppins" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-poppins">.font-poppins { font-family: 'Poppins', sans-serif !important; }</style><link id="all-fonts-link-font-playfair" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;900&amp;display=swap"><style id="all-fonts-style-font-playfair">.font-playfair { font-family: 'Playfair Display', serif !important; }</style><link id="all-fonts-link-font-instrument-serif" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:wght@400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-instrument-serif">.font-instrument-serif { font-family: 'Instrument Serif', serif !important; }</style><link id="all-fonts-link-font-merriweather" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&amp;display=swap"><style id="all-fonts-style-font-merriweather">.font-merriweather { font-family: 'Merriweather', serif !important; }</style><link id="all-fonts-link-font-bricolage" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-bricolage">.font-bricolage { font-family: 'Bricolage Grotesque', sans-serif !important; }</style><link id="all-fonts-link-font-jakarta" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap"><style id="all-fonts-style-font-jakarta">.font-jakarta { font-family: 'Plus Jakarta Sans', sans-serif !important; }</style><link id="all-fonts-link-font-manrope" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap"><style id="all-fonts-style-font-manrope">.font-manrope { font-family: 'Manrope', sans-serif !important; }</style><link id="all-fonts-link-font-space-grotesk" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-space-grotesk">.font-space-grotesk { font-family: 'Space Grotesk', sans-serif !important; }</style><link id="all-fonts-link-font-work-sans" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700;800&amp;display=swap"><style id="all-fonts-style-font-work-sans">.font-work-sans { font-family: 'Work Sans', sans-serif !important; }</style><link id="all-fonts-link-font-pt-serif" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=PT+Serif:wght@400;700&amp;display=swap"><style id="all-fonts-style-font-pt-serif">.font-pt-serif { font-family: 'PT Serif', serif !important; }</style><link id="all-fonts-link-font-geist-mono" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-geist-mono">.font-geist-mono { font-family: 'Geist Mono', monospace !important; }</style><link id="all-fonts-link-font-space-mono" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&amp;display=swap"><style id="all-fonts-style-font-space-mono">.font-space-mono { font-family: 'Space Mono', monospace !important; }</style><link id="all-fonts-link-font-quicksand" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-quicksand">.font-quicksand { font-family: 'Quicksand', sans-serif !important; }</style></head>
-  <body class="text-slate-600 selection:bg-indigo-100 selection:text-indigo-800 pb-12 overflow-x-hidden">
-    <script src="js/auth.js"></script>
-    <script src="js/api.js"></script>
-    <script src="js/educator-navbar.js"></script>
-    <script>requireEducatorAuth();</script>
-    <div class="bg-pastel-mesh"></div>
-    <div class="bg-texture"></div>
 
-    <!-- NAVIGATION (Maintained Structure) -->
-    <nav class="fixed top-0 w-full z-40 pt-4 pb-2 px-4">
-      <div class="max-w-7xl mx-auto glass-card rounded-full px-4 py-3 flex items-center justify-between shadow-sm shadow-indigo-100/50">
-        <!-- Brand -->
-        <div class="flex items-center gap-3 pl-2">
+<link id="all-fonts-link-font-jakarta" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap"><style id="all-fonts-style-font-jakarta">.font-jakarta { font-family: 'Plus Jakarta Sans', sans-serif !important; }</style><link id="all-fonts-link-font-outfit" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&amp;display=swap"><style id="all-fonts-style-font-outfit">.font-outfit { font-family: 'Outfit', sans-serif !important; }</style><link id="all-fonts-link-font-geist" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-geist">.font-geist { font-family: 'Geist', sans-serif !important; }</style><link id="all-fonts-link-font-roboto" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-roboto">.font-roboto { font-family: 'Roboto', sans-serif !important; }</style><link id="all-fonts-link-font-montserrat" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-montserrat">.font-montserrat { font-family: 'Montserrat', sans-serif !important; }</style><link id="all-fonts-link-font-poppins" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-poppins">.font-poppins { font-family: 'Poppins', sans-serif !important; }</style><link id="all-fonts-link-font-playfair" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;900&amp;display=swap"><style id="all-fonts-style-font-playfair">.font-playfair { font-family: 'Playfair Display', serif !important; }</style><link id="all-fonts-link-font-instrument-serif" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:wght@400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-instrument-serif">.font-instrument-serif { font-family: 'Instrument Serif', serif !important; }</style><link id="all-fonts-link-font-merriweather" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&amp;display=swap"><style id="all-fonts-style-font-merriweather">.font-merriweather { font-family: 'Merriweather', serif !important; }</style><link id="all-fonts-link-font-bricolage" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-bricolage">.font-bricolage { font-family: 'Bricolage Grotesque', sans-serif !important; }</style><link id="all-fonts-link-font-manrope" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap"><style id="all-fonts-style-font-manrope">.font-manrope { font-family: 'Manrope', sans-serif !important; }</style><link id="all-fonts-link-font-space-grotesk" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-space-grotesk">.font-space-grotesk { font-family: 'Space Grotesk', sans-serif !important; }</style><link id="all-fonts-link-font-work-sans" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700;800&amp;display=swap"><style id="all-fonts-style-font-work-sans">.font-work-sans { font-family: 'Work Sans', sans-serif !important; }</style><link id="all-fonts-link-font-pt-serif" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=PT+Serif:wght@400;700&amp;display=swap"><style id="all-fonts-style-font-pt-serif">.font-pt-serif { font-family: 'PT Serif', serif !important; }</style><link id="all-fonts-link-font-geist-mono" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-geist-mono">.font-geist-mono { font-family: 'Geist Mono', monospace !important; }</style><link id="all-fonts-link-font-space-mono" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&amp;display=swap"><style id="all-fonts-style-font-space-mono">.font-space-mono { font-family: 'Space Mono', monospace !important; }</style><link id="all-fonts-link-font-quicksand" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-quicksand">.font-quicksand { font-family: 'Quicksand', sans-serif !important; }</style><link id="all-fonts-link-font-nunito" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800&amp;display=swap"><style id="all-fonts-style-font-nunito">.font-nunito { font-family: 'Nunito', sans-serif !important; }</style></head>
+  <body class="bg-freshwhite text-navy font-sans overflow-x-hidden selection:bg-coral selection:text-white">
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 transition-all duration-300 px-6" id="navbar">
+      <div class="max-w-7xl mx-auto bg-white/80 backdrop-blur-lg border border-white/40 rounded-full shadow-lg shadow-sky-900/5 px-6 py-3 flex items-center justify-between">
+        <a href="#" class="flex items-center gap-2 group">
           <img src="assets/logo.png" alt="EduQuest" class="h-9 w-auto object-contain" />
+        </a>
+
+        <div class="hidden md:flex items-center gap-8 font-medium text-slate-500">
+          <a href="#features" class="hover:text-sky transition-colors">Features</a>
+          <a href="#how-it-works" class="hover:text-sky transition-colors">How it Works</a>
+          <a href="#reviews" class="hover:text-sky transition-colors">Reviews</a>
+          <a href="#pricing" class="hover:text-sky transition-colors">Pricing</a>
         </div>
 
-        <!-- Links (Educator Context) -->
-        <div class="hidden md:flex items-center gap-1 p-1 bg-slate-100/50 rounded-full border border-slate-200/50">
-          <a href="educator-dashboard.html" class="hover:text-indigo-600 hover:bg-white/60 transition-all text-sm font-semibold text-slate-500 rounded-full pt-2 pr-5 pb-2 pl-5">Dashboard</a>
-          <a href="educator-class.html" class="transition-all text-sm font-bold text-indigo-600 bg-white border-slate-200/60 border rounded-full pt-2 pr-5 pb-2 pl-5 shadow-sm">Manage Class</a>
-          
-          <a href="educator-reports.html" class="hover:text-indigo-600 hover:bg-white/60 transition-all text-sm font-semibold text-slate-500 rounded-full pt-2 pr-5 pb-2 pl-5">Reports</a>
-        </div>
-
-        <!-- Profile -->
-        <div class="flex items-center gap-4 pr-2">
-            <button class="relative p-2 text-slate-400 hover:text-indigo-500 transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bell"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
-                <span class="absolute top-2 right-2.5 w-2 h-2 bg-rose-500 rounded-full border border-white"></span>
-            </button>
-            <div class="hidden sm:flex flex-col items-end">
-                <span id="navbar-educator-name" class="text-xs font-bold text-slate-700"></span>
-                <span id="navbar-role-badge" class="text-[10px] font-bold text-indigo-500 bg-indigo-50 rounded-full pt-0.5 pr-2 pb-0.5 pl-2">Educator</span>
-            </div>
-            <div class="cursor-pointer hover:ring-indigo-100 transition-all bg-white w-10 h-10 border-indigo-100 border-2 rounded-full ring-transparent ring-2 pt-0.5 pr-0.5 pb-0.5 pl-0.5 relative" onclick="window.location.href='educator-profile.html'" role="button">
-                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Frizzle&amp;backgroundColor=e0e7ff" alt="Profile" class="w-full h-full object-cover rounded-full">
-            </div>
+        <div class="flex items-center gap-4">
+          <a href="educator-login.html" class="hidden md:block font-bold text-navy hover:text-sky transition-colors">Log In</a>
+          <a href="pricing.html" class="bg-navy hover:bg-sky text-white px-6 py-2.5 rounded-full font-bold transition-all duration-300 shadow-lg shadow-navy/20 hover:shadow-sky/40 hover:-translate-y-0.5">Get Started</a>
         </div>
       </div>
     </nav>
 
-    <!-- MAIN CONTENT - EDUCATOR QUIZ PAGE -->
-    <main class="max-w-7xl mx-auto pt-28 pb-12 px-6 relative z-10">
+    <!-- Parallax Hero Section (Kept as is) -->
+    <header class="parallax-wrapper relative flex items-center pt-24 pb-12 overflow-hidden" id="hero">
+      
+      <!-- Layer 0: Background Patterns -->
+      <div class="absolute inset-0 bg-graph-paper -z-20"></div>
+      <div class="-z-10 bg-gradient-to-b from-transparent via-white/40 to-freshwhite absolute top-0 right-0 bottom-0 left-0 overflow-hidden pointer-events-none select-none">
+  
+  <!-- Background Decorative Blobs -->
+  <div class="absolute top-0 left-1/4 w-[500px] h-[500px] bg-sky/10 rounded-full mix-blend-multiply filter blur-3xl opacity-60 animate-blob"></div>
+  <div class="absolute top-0 right-1/4 w-[500px] h-[500px] bg-gold/10 rounded-full mix-blend-multiply filter blur-3xl opacity-60 animate-blob animation-delay-2000"></div>
+  <div class="absolute -bottom-32 left-1/3 w-[600px] h-[600px] bg-softpurple/10 rounded-full mix-blend-multiply filter blur-3xl opacity-60 animate-blob animation-delay-4000"></div>
+
+  <!-- Subtly Animated Pattern Overlay -->
+  <div class="absolute inset-0 opacity-[0.03]" style="background-image: radial-gradient(#4A9DFF 1px, transparent 1px); background-size: 40px 40px;"></div>
+
+  <!-- Playful Floating Educational Icons -->
+  
+  <!-- 1. Rocket (Science/Ambition) - Top Right -->
+  <div class="absolute top-[12%] right-[10%] text-coral/20 animate-float-delayed transform rotate-12 transition-all duration-500 hover:scale-110 hover:text-coral/40 hover:rotate-6 cursor-default">
+    <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"></path><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"></path><path d="M9 12H4s.55-3.03 2-4c1.62-1.1 5-1 5-1z"></path><path d="M12 15v5s3.03-.55 4-2c1.1-1.62 1-5 1-5z"></path></svg>
+  </div>
+
+  <!-- 2. Lightbulb (Ideas) - Top Left -->
+  <div class="absolute top-[18%] left-[8%] text-gold/25 animate-bounce-subtle transform -rotate-12 hover:text-gold/50 transition-colors duration-300">
+    <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-1 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"></path><path d="M9 18h6"></path><path d="M10 22h4"></path></svg>
+  </div>
+
+  <!-- 3. Atom (Physics) - Bottom Left -->
+  <div class="absolute bottom-[20%] left-[4%] text-sky/20 animate-spin-slow hover:text-sky/40 transition-colors duration-300">
+    <svg xmlns="http://www.w3.org/2000/svg" width="90" height="90" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"></circle><path d="M20.2 20.2c2.04-2.03.02-7.36-4.5-11.9-4.54-4.52-9.87-6.54-11.9-4.5-2.04 2.03-.02 7.36 4.5 11.9 4.54 4.52 9.87 6.54 11.9 4.5Z"></path><path d="M15.7 15.7c4.52-4.54 6.54-9.87 4.5-11.9-2.03-2.04-7.36-.02-11.9 4.5-4.52 4.54-6.54 9.87-4.5 11.9 2.03 2.04 7.36.02 11.9-4.5Z"></path></svg>
+  </div>
+
+  <!-- 4. Graduation Cap (Success) - Bottom Right -->
+  <div class="absolute bottom-[25%] right-[5%] text-softpurple/20 animate-float-fast transform rotate-6 hover:text-softpurple/40 transition-colors duration-300">
+    <svg xmlns="http://www.w3.org/2000/svg" width="70" height="70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>
+  </div>
+
+  <!-- Scattered Math Symbols -->
+  <div class="absolute top-1/3 left-[20%] text-navy/10 font-display font-black text-5xl animate-wiggle cursor-default select-none" style="animation-delay: 0.5s">+</div>
+  <div class="absolute top-1/2 right-[15%] text-mint/20 font-display font-black text-4xl animate-float cursor-default select-none" style="animation-delay: 1s">×</div>
+  <div class="absolute bottom-[15%] left-[30%] text-coral/20 font-display font-black text-6xl animate-bounce-subtle cursor-default select-none" style="animation-delay: 1.5s">÷</div>
+
+  <!-- Confetti Elements -->
+  <div class="absolute top-20 left-1/3 w-3 h-3 bg-gold/30 rotate-45 animate-float-fast"></div>
+  <div class="absolute top-40 right-1/4 w-2 h-2 bg-coral/30 rounded-full animate-float"></div>
+  <div class="absolute bottom-32 left-10 w-4 h-4 border-2 border-mint/20 rounded-full animate-spin-slow"></div>
+  <div class="absolute top-1/4 right-10 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-b-[14px] border-b-softpurple/20 rotate-12 animate-wiggle"></div>
+
+  <!-- Decorative Dashed Lines (Trajectory) -->
+  <svg class="absolute top-[15%] left-[40%] w-40 h-20 opacity-10 pointer-events-none" viewBox="0 0 100 50">
+      <path d="M0,50 Q50,0 100,20" fill="none" stroke="#4A9DFF" stroke-width="2" stroke-dasharray="4 4"></path>
+  </svg>
+</div>
+
+      <!-- Layer 1: Animated Blobs -->
+      <div class="parallax-element absolute inset-0 w-full h-full -z-10 pointer-events-none" data-speed="0.02" style="transform: translate(-8.06px, -2.52px);">
+        <div class="absolute top-[5%] left-[10%] w-[25rem] h-[25rem] bg-softpurple/10 rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
+        <div class="absolute top-[10%] right-[0%] w-[30rem] h-[30rem] bg-gold/10 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
+        <div class="absolute bottom-[0%] left-[30%] w-[35rem] h-[35rem] bg-sky/10 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000"></div>
+      </div>
+
+      <!-- Layer 2: Main Layout -->
+      <div class="relative z-10 max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center w-full">
         
-        <!-- HEADER -->
-        <header class="mb-8 animate-enter">
-            <div class="relative bg-white rounded-[2rem] border border-white p-8 shadow-xl shadow-indigo-100/20 overflow-hidden group">
-                <!-- Background Decor -->
-                <div class="absolute inset-0 bg-gradient-to-r from-violet-50/80 via-white to-sky-50/80 opacity-60"></div>
-                <div class="absolute top-0 right-0 w-64 h-64 bg-fuchsia-100/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-                <div class="absolute bottom-0 left-10 w-32 h-32 bg-indigo-100/30 rounded-full blur-2xl translate-y-1/2"></div>
+        <!-- Left Column: Text -->
+        <div class="text-center lg:text-left pt-10 lg:pt-0">
+           <div class="inline-flex items-center gap-2 bg-white border border-sky/20 rounded-full px-4 py-1.5 shadow-sm mb-6 animate-float-fast hover:scale-105 transition-transform cursor-default mx-auto lg:mx-0">
+            <span class="flex h-2.5 w-2.5 relative">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-mint opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-mint"></span>
+            </span>
+            <span class="text-xs font-bold text-navy/70 uppercase tracking-wider">Teacher's #1 Choice</span>
+          </div>
 
-                <div class="relative z-10 flex flex-col items-center justify-center text-center">
-                    <div class="flex items-center justify-center gap-3 mb-2">
-                        <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-indigo-50 border border-indigo-100 text-indigo-700 text-[11px] font-extrabold uppercase tracking-wide">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-rocket"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"></path><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"></path><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"></path><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"></path></svg>
-                            <span id="quiz-class-pill-label">Loading...</span>
-                        </div>
-                    </div>
-                    <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight mb-1">Quizzes</h1>
-                    <p class="text-sm font-medium text-slate-500 max-w-lg">Create and edit quizzes to fuel your students' learning adventure.</p>
-                </div>
-            </div>
-        </header>
+          <h1 class="font-display font-extrabold text-4xl md:text-6xl lg:text-7xl text-navy tracking-tight leading-[1.1] mb-6" id="landing-hero-title-wrap">
+            <span id="landing-hero-title-start">Make Learning An </span>
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky via-softpurple to-coral relative inline-block" id="landing-hero-title-end">Adventure
+              <svg class="absolute w-full h-3 -bottom-1 left-0 text-gold/30" viewBox="0 0 100 10" preserveAspectRatio="none">
+                <path d="M0 5 Q 50 10 100 5" stroke="currentColor" stroke-width="4" fill="none"></path>
+              </svg>
+            </span>
+          </h1>
 
-        <!-- Search bar -->
-        <div class="mb-8 animate-enter" style="animation-delay: 100ms;">
-            <div class="relative group w-full max-w-xl">
-                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search text-slate-400 group-focus-within:text-indigo-500 transition-colors"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
-                </div>
-                <input type="text" id="quiz-search-input" placeholder="Search quizzes..." class="w-full pl-12 pr-5 py-3 rounded-xl bg-white border border-slate-200 text-sm font-semibold text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-400 transition-all shadow-sm">
-            </div>
-        </div>
+          <p class="text-lg md:text-xl text-slate-500 mb-8 max-w-xl mx-auto lg:mx-0 leading-relaxed" id="landing-hero-subtitle">
+            Engage students with gamified quests, track progress in real-time, and build a classroom culture that celebrates every achievement.
+          </p>
 
-        <!-- QUIZ GRID -->
-        <div id="quiz-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-enter gap-x-6 gap-y-6" style="animation-delay: 200ms">
-            
-            <!-- CARD: CREATE NEW (Empty State Action) -->
-            <button class="group flex flex-col min-h-[280px] border-dashed hover:border-indigo-400 hover:bg-indigo-50/30 transition-all duration-300 cursor-pointer bg-slate-50/50 border-slate-300 border-2 rounded-3xl items-center justify-center" id="grid-create-quiz-btn" role="button">
-                <div class="flex group-hover:text-indigo-500 group-hover:scale-110 group-hover:shadow-indigo-100 transition-all duration-300 text-slate-300 bg-white w-16 h-16 border-slate-200 border rounded-full mb-4 shadow-sm items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
-                </div>
-                <h3 class="text-lg font-bold text-slate-600 group-hover:text-indigo-700 transition-colors">Start a new quiz</h3>
-                <p class="text-xs font-medium text-slate-400 mt-1">Create from scratch or template</p>
+          <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+            <button type="button" onclick="window.location.href='pricing.html';" class="w-full sm:w-auto group relative px-8 py-4 bg-navy rounded-full text-white text-lg font-bold shadow-xl shadow-navy/20 overflow-hidden hover:scale-105 transition-transform duration-300">
+              <div class="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
+              <span class="flex items-center justify-center gap-2">
+                Get Started Free
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" class="lucide lucide-arrow-right w-5 h-5 group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+              </span>
             </button>
-
-            <!-- QUIZ CARDS INJECTED HERE BY JS -->
-            <!-- CARD TEMPLATE (hidden, used by JS) -->
-            <div class="group relative bg-white rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-indigo-100/40 hover:-translate-y-1 transition-all duration-300 flex flex-col hidden" id="quiz-card-template">
-                <!-- Top Decor -->
-                <div class="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-t-3xl"></div>
-                
-                <div class="p-6 pb-4 flex-1">
-                    <!-- Header -->
-                    <div class="flex items-start justify-between mb-3">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-apple"><path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 14 5 22 8 22c1.25 0 2.5-1.06 4-1.06Z"></path><path d="M10 2c1 .5 2 2 2 5"></path></svg>
-                            </div>
-                            <div class="">
-                                <h3 class="js-quiz-title text-lg font-extrabold text-slate-800 leading-tight">Gravity Basics</h3>
-                                <span class="js-quiz-subtitle text-xs font-bold text-slate-400"></span>
-                            </div>
-                        </div>
-                        <span class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-extrabold uppercase tracking-wide border border-emerald-200">Published</span>
-                    </div>
-
-                    <!-- Description -->
-                    <p class="text-xs font-medium text-slate-500 mb-5 line-clamp-2 js-quiz-desc">Quiz for your class.</p>
-
-                    <!-- Stats Grid -->
-                    <div class="grid grid-cols-3 gap-2 py-3 border-y border-slate-50">
-                        <div class="text-center">
-                            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Questions</div>
-                            <div class="text-sm font-black text-slate-700 js-quiz-qcount">0</div>
-                        </div>
-                        <div class="text-center border-l border-slate-50">
-                            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Class</div>
-                            <div class="text-sm font-black text-emerald-500 js-quiz-subtitle"></div>
-                        </div>
-                        <div class="text-center border-l border-slate-50">
-                            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">ID</div>
-                            <div class="text-sm font-black text-slate-700 js-quiz-id">—</div>
-                        </div>
-                    </div>
-
-                    <!-- Meta -->
-                    <div class="flex items-center gap-3 mt-4">
-                        <span class="flex items-center gap-1 text-[11px] font-bold text-slate-400 bg-slate-50 px-2 py-1 rounded-md js-quiz-meta-questions">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-help-circle"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><path d="M12 17h.01"></path></svg>
-                            <span class="js-quiz-qcount2">0</span> Questions
-                        </span>
-                    </div>
-                </div>
-
-                <!-- Actions Footer -->
-                <div class="p-4 border-t border-slate-100 flex items-center justify-between bg-slate-50/50 rounded-b-3xl">
-                    <a href="#" class="js-quiz-edit flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-indigo-600 transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"></path><path d="m15 5 4 4"></path></svg>
-                        Edit
-                    </a>
-                    <div class="flex items-center gap-2">
-                        <button type="button" class="js-quiz-delete p-2 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-white hover:shadow-sm border border-transparent hover:border-rose-100 transition-all" title="Delete">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash-2"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" x2="10" y1="11" y2="17"></line><line x1="14" x2="14" y1="11" y2="17"></line></svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-    </main>
-
-    <!-- PREVIEW SIDE PANEL (DRAWER) -->
-    <!-- Hidden by default, slides in on click -->
-    <aside id="previewDrawer" class="fixed inset-y-0 right-0 w-full md:w-[480px] bg-white/95 backdrop-blur-xl border-l border-slate-200 z-50 shadow-2xl drawer drawer-closed flex flex-col">
-        <!-- Close Button -->
-        <div class="absolute top-4 left-[-60px] md:left-[-60px]">
-            <button onclick="toggleDrawer()" class="bg-white/80 p-3 rounded-full shadow-lg text-slate-500 hover:text-indigo-600 hover:scale-105 transition-all">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+            <button class="w-full sm:w-auto px-8 py-4 bg-white text-navy border border-slate-200 rounded-full text-lg font-bold shadow-lg shadow-slate-200/50 hover:border-sky hover:text-sky transition-all duration-300 hover:-translate-y-1 flex items-center justify-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="play-circle" class="lucide lucide-play-circle w-5 h-5"><path d="M9 9.003a1 1 0 0 1 1.517-.859l4.997 2.997a1 1 0 0 1 0 1.718l-4.997 2.997A1 1 0 0 1 9 14.996z"></path><circle cx="12" cy="12" r="10"></circle></svg>
+              Watch Demo
             </button>
+          </div>
         </div>
 
-        <!-- Drawer Content -->
-        <div class="flex-1 overflow-y-auto p-8 relative">
-             <!-- Top gradient -->
-             <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-emerald-400 to-teal-400"></div>
-
-             <div class="mb-6">
-                 <div class="flex items-center gap-2 mb-2">
-                    <span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-extrabold uppercase tracking-wide border border-emerald-200">Published</span>
-                    <span class="px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 text-[10px] font-extrabold uppercase tracking-wide border border-slate-200">10 Questions</span>
-                 </div>
-                 <h2 class="text-2xl font-extrabold text-slate-800 leading-tight mb-2">Gravity Basics</h2>
-                 <p class="text-sm text-slate-500 font-medium">Previewing quiz content as it appears to students.</p>
+        <!-- Right Column: Student Portrait -->
+        <div class="relative flex items-center justify-center lg:justify-end mt-12 lg:mt-0 reveal-on-scroll is-visible">
+           <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[110%] h-[110%] bg-gradient-to-tr from-sky/20 to-gold/20 rounded-full blur-2xl animate-pulse"></div>
+           
+           <div class="relative w-72 h-80 md:w-96 md:h-[28rem] rounded-[3rem] overflow-hidden border-8 border-white shadow-2xl shadow-sky/20 rotate-3 hover:rotate-0 transition-transform duration-500 ease-out">
+             <img src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/545d4f6f-e3e7-4b0f-ba1e-fa1a9e1cef04_1600w.png" alt="Happy Student" class="bg-center w-full h-full object-cover scale-110">
+             
+             <!-- Overlay Badge -->
+             <div class="absolute bottom-6 left-6 right-6 bg-white/90 backdrop-blur-sm p-3 rounded-2xl shadow-lg border border-white/50 flex items-center gap-3">
+               <div class="w-10 h-10 bg-gold rounded-full flex items-center justify-center text-white font-bold">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-star fill-current"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+               </div>
+               <div class="">
+                 <p class="uppercase text-xs font-bold text-slate-500">Current Streak</p>
+                 <p class="text-navy leading-none text-lg font-bold">14 Days!</p>
+               </div>
              </div>
-
-             <!-- Preview Stats -->
-             <div class="bg-slate-50 rounded-xl p-4 border border-slate-100 mb-8 flex items-center justify-between">
-                 <div class="text-center">
-                     <div class="text-xs font-bold text-slate-400 uppercase">Avg Score</div>
-                     <div class="text-lg font-black text-emerald-500">88%</div>
-                 </div>
-                 <div class="w-px h-8 bg-slate-200"></div>
-                 <div class="text-center">
-                     <div class="text-xs font-bold text-slate-400 uppercase">High Score</div>
-                     <div class="text-lg font-black text-indigo-500">100%</div>
-                 </div>
-                 <div class="w-px h-8 bg-slate-200"></div>
-                 <div class="text-center">
-                     <div class="text-xs font-bold text-slate-400 uppercase">Est. Time</div>
-                     <div class="text-lg font-black text-slate-700">12m</div>
-                 </div>
-             </div>
-
-             <!-- Questions List -->
-             <h3 class="text-xs font-extrabold text-slate-400 uppercase tracking-widest mb-4 pl-1">Questions Preview</h3>
-             <div class="space-y-4">
-                 <!-- Q1 -->
-                 <div class="p-4 rounded-xl bg-white border border-slate-100 shadow-sm hover:border-indigo-100 transition-colors">
-                     <div class="flex justify-between items-start mb-2">
-                         <span class="text-xs font-bold text-indigo-500 bg-indigo-50 px-2 py-1 rounded-md">Q1 • Multiple Choice</span>
-                         <span class="text-xs font-bold text-slate-400">10 pts</span>
-                     </div>
-                     <p class="text-sm font-bold text-slate-700 leading-relaxed">Which of the following best describes the force of gravity?</p>
-                     <div class="mt-3 space-y-2">
-                         <div class="flex items-center gap-3 p-2 rounded-lg bg-emerald-50/50 border border-emerald-100">
-                             <div class="w-4 h-4 rounded-full border-2 border-emerald-400 flex items-center justify-center"><div class="w-2 h-2 bg-emerald-400 rounded-full"></div></div>
-                             <span class="text-xs font-bold text-slate-600">A force of attraction between objects with mass</span>
-                         </div>
-                         <div class="flex items-center gap-3 p-2 rounded-lg bg-white border border-slate-100 opacity-60">
-                             <div class="w-4 h-4 rounded-full border-2 border-slate-300"></div>
-                             <span class="text-xs font-bold text-slate-500">A repulsive force generated by magnets</span>
-                         </div>
-                     </div>
-                 </div>
-
-                 <!-- Q2 -->
-                 <div class="p-4 rounded-xl bg-white border border-slate-100 shadow-sm hover:border-indigo-100 transition-colors">
-                     <div class="flex justify-between items-start mb-2">
-                         <span class="text-xs font-bold text-indigo-500 bg-indigo-50 px-2 py-1 rounded-md">Q2 • True / False</span>
-                         <span class="text-xs font-bold text-slate-400">10 pts</span>
-                     </div>
-                     <p class="text-sm font-bold text-slate-700 leading-relaxed">Gravity exists only on Earth, not in space.</p>
-                     <div class="mt-3 space-y-2">
-                         <div class="flex items-center gap-3 p-2 rounded-lg bg-white border border-slate-100 opacity-60">
-                             <div class="w-4 h-4 rounded-full border-2 border-slate-300"></div>
-                             <span class="text-xs font-bold text-slate-500">True</span>
-                         </div>
-                         <div class="flex items-center gap-3 p-2 rounded-lg bg-emerald-50/50 border border-emerald-100">
-                             <div class="w-4 h-4 rounded-full border-2 border-emerald-400 flex items-center justify-center"><div class="w-2 h-2 bg-emerald-400 rounded-full"></div></div>
-                             <span class="text-xs font-bold text-slate-600">False</span>
-                         </div>
-                     </div>
-                 </div>
-
-                 <!-- Q3 -->
-                 <div class="p-4 rounded-xl bg-white border border-slate-100 shadow-sm hover:border-indigo-100 transition-colors">
-                     <div class="flex justify-between items-start mb-2">
-                         <span class="text-xs font-bold text-indigo-500 bg-indigo-50 px-2 py-1 rounded-md">Q3 • Short Answer</span>
-                         <span class="text-xs font-bold text-slate-400">20 pts</span>
-                     </div>
-                     <p class="text-sm font-bold text-slate-700 leading-relaxed">Who formulated the law of universal gravitation?</p>
-                     <div class="mt-3 p-3 bg-slate-50 rounded-lg border border-slate-100 border-dashed text-xs text-slate-400 font-medium">
-                         Student will type answer here...
-                     </div>
-                 </div>
-             </div>
-        </div>
-
-        <!-- Drawer Footer -->
-        <div class="p-6 border-t border-slate-100 bg-slate-50/50">
-            <button class="w-full py-3 rounded-xl bg-indigo-600 text-white font-bold text-sm shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition-all flex items-center justify-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"></path><path d="m15 5 4 4"></path></svg>
-                Edit Quiz Content
-            </button>
-        </div>
-    </aside>
-
-    <!-- Overlay for Drawer -->
-    <div id="drawerOverlay" onclick="toggleDrawer()" class="fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-40 hidden transition-opacity opacity-0"></div>
-
-    <!-- FOOTER (Maintained) -->
-    <footer class="bg-slate-900 text-slate-300 py-12 border-t border-slate-800 mt-12">
-      <div class="max-w-7xl mx-auto px-6">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-          <div class="space-y-4">
-            <div class="flex items-center gap-2">
-              <div class="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-compass w-5 h-5">
-                  <path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z"></path>
-                  <circle cx="12" cy="12" r="10"></circle>
-                </svg>
-              </div>
-              <span class="text-lg font-bold text-white tracking-tight">EduQuest</span>
-            </div>
-            <p class="text-xs leading-relaxed text-slate-400 font-medium max-w-xs">Making learning an addictive adventure for students around the world.</p>
-          </div>
-          <div>
-            <h4 class="font-bold text-white mb-4 text-sm">Product</h4>
-            <ul class="space-y-2 text-xs font-medium text-slate-400">
-              <li><a href="#" class="hover:text-indigo-400 transition-colors">Features</a></li>
-              <li><a href="#" class="hover:text-indigo-400 transition-colors">Pricing</a></li>
-            </ul>
-          </div>
-          <div>
-            <h4 class="font-bold text-white mb-4 text-sm">Resources</h4>
-            <ul class="space-y-2 text-xs font-medium text-slate-400">
-              <li><a href="#" class="hover:text-indigo-400 transition-colors">Help Center</a></li>
-              <li><a href="#" class="hover:text-indigo-400 transition-colors">Community</a></li>
-            </ul>
-          </div>
-          <div>
-            <h4 class="font-bold text-white mb-4 text-sm">Legal</h4>
-            <ul class="space-y-2 text-xs font-medium text-slate-400">
-              <li><a href="#" class="hover:text-indigo-400 transition-colors">Privacy</a></li>
-              <li><a href="#" class="hover:text-indigo-400 transition-colors">Terms</a></li>
-            </ul>
-          </div>
-        </div>
-        <div class="border-t border-slate-800 pt-6 flex justify-center">
-          <p class="text-xs font-medium text-slate-500">© 2024 EduQuest. All rights reserved.</p>
+           </div>
         </div>
       </div>
+    </header>
+
+    <!-- Gamify Section (Kept as is) -->
+    <section id="features" class="py-24 relative overflow-hidden">
+      <div class="max-w-7xl mx-auto px-6 relative z-10">
+    <!-- Playful Background Decorations -->
+    <div class="absolute -top-20 right-0 w-72 h-72 bg-gold/10 rounded-full blur-3xl -z-10 animate-blob mix-blend-multiply pointer-events-none"></div>
+    <div class="absolute bottom-0 -left-10 w-72 h-72 bg-softpurple/10 rounded-full blur-3xl -z-10 animate-blob animation-delay-2000 mix-blend-multiply pointer-events-none"></div>
+
+    <!-- Header Section -->
+    <div class="text-center max-w-3xl mx-auto mb-16 reveal-on-scroll is-visible">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-slate-200 shadow-sm mb-6 animate-bounce-subtle hover:scale-105 transition-transform cursor-pointer">
+            <span class="text-xl">👾</span>
+            <span class="font-bold text-navy text-xs uppercase tracking-widest">Level Up Learning</span>
+        </div>
+        <h2 class="font-display font-bold text-4xl md:text-5xl text-navy mb-6 tracking-tight">
+            Gamify Your 
+            <span class="relative inline-block whitespace-nowrap">
+                <span class="relative z-10 text-transparent bg-clip-text bg-gradient-to-r from-sky via-softpurple to-coral">Classroom</span>
+                <svg class="absolute -bottom-2 left-0 w-full h-3 text-gold/40 -z-0" viewBox="0 0 100 10" preserveAspectRatio="none">
+                    <path d="M0 5 Q 50 10 100 5" stroke="currentColor" stroke-width="6" fill="none" stroke-linecap="round"></path>
+                </svg>
+            </span>
+        </h2>
+        <p class="text-xl text-slate-500 leading-relaxed">Engage students with mechanics they love. Track growth, spark friendly competition, and celebrate every win.</p>
+    </div>
+
+    <!-- Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Main Visual: Gamified Dashboard (Left - Wider) -->
+        <div class="lg:col-span-7 reveal-on-scroll">
+            <div class="group relative">
+                <!-- Tilted Background Card -->
+                <div class="absolute inset-0 bg-gradient-to-br from-sky to-softpurple rounded-[2.5rem] rotate-2 scale-[1.02] opacity-20 blur-sm group-hover:rotate-1 transition-all duration-500"></div>
+                
+                <!-- Main Card -->
+                <div class="relative bg-white rounded-[2.5rem] border-4 border-white shadow-2xl shadow-slate-200/50 overflow-hidden">
+                    <!-- Browser Chrome -->
+                    <div class="bg-slate-50 border-b border-slate-100 px-6 py-4 flex items-center gap-4">
+                        <div class="flex gap-2">
+                            <div class="w-3 h-3 rounded-full bg-coral/80"></div>
+                            <div class="w-3 h-3 rounded-full bg-gold/80"></div>
+                            <div class="w-3 h-3 rounded-full bg-mint/80"></div>
+                        </div>
+                        <div class="flex-1 bg-white h-8 rounded-full border border-slate-200 shadow-sm flex items-center px-4 text-xs text-slate-400 font-medium">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="lock" class="lucide lucide-lock w-3 h-3 mr-2 text-slate-300"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                            eduquest.app/dashboard
+                        </div>
+                    </div>
+
+                    <!-- Image Content -->
+                    <div class="relative aspect-[4/3] bg-slate-100 transition-colors duration-500">
+                        <img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?ixlib=rb-4.0.3&amp;auto=format&amp;fit=crop&amp;w=2600&amp;q=80" alt="Dashboard" class="transition-all duration-700 opacity-90 w-full h-full object-cover">
+                        
+                        <!-- Floating Widget 1: Class Leader -->
+                        <div class="absolute top-6 left-6 bg-white/80 backdrop-blur-md p-3 pr-5 rounded-2xl shadow-xl shadow-sky/10 border border-white/60 animate-float flex items-center gap-4 cursor-default ring-1 ring-white/50">
+                           <div class="relative">
+                             <div class="absolute inset-0 rounded-full bg-gradient-to-tr from-gold to-orange-400 animate-spin-slow blur-[2px]"></div>
+                             <div class="relative w-12 h-12 rounded-full border-2 border-white overflow-hidden bg-slate-100">
+                               <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="Avatar">
+                             </div>
+                             <div class="absolute -bottom-1 -right-1 bg-gold text-white text-[10px] font-bold px-1.5 rounded-full border border-white shadow-sm flex items-center">
+                               <span>#1</span>
+                             </div>
+                           </div>
+                           <div class="flex flex-col">
+                             <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Leaderboard</span>
+                             <span class="text-navy font-bold text-sm leading-tight">Felix M.</span>
+                             <span class="text-xs font-bold text-gold flex items-center gap-1 mt-0.5">
+                               <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="text-gold"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
+                               2,450 XP
+                             </span>
+                           </div>
+                        </div>
+
+                        <!-- Floating Widget 2: Quest Progress -->
+                        <div class="absolute bottom-6 right-6 bg-navy/90 backdrop-blur-lg p-4 rounded-2xl shadow-2xl shadow-navy/20 border border-white/10 animate-float-delayed min-w-[200px] hover:scale-105 transition-transform duration-300">
+                            <div class="flex justify-between items-center mb-3">
+                                <div class="flex items-center gap-2">
+                                  <div class="p-1.5 bg-gradient-to-br from-sky to-blue-600 rounded-lg shadow-lg shadow-sky/30">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="text-white"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path></svg>
+                                  </div>
+                                  <span class="text-xs font-bold text-white tracking-wide">Daily Quest</span>
+                                </div>
+                                <span class="text-[10px] font-bold bg-white/10 text-sky-200 px-2 py-0.5 rounded-full border border-white/5">85%</span>
+                            </div>
+                            <div class="mb-1 flex justify-between items-end">
+                                <span class="text-xs text-slate-300 font-medium">Math Master</span>
+                                <span class="text-[10px] text-slate-400">12/15</span>
+                            </div>
+                            <!-- Progress Bar -->
+                            <div class="w-full h-2 bg-navy/50 rounded-full overflow-hidden border border-white/5 relative">
+                                <div class="absolute inset-0 w-[85%] bg-gradient-to-r from-sky via-mint to-sky rounded-full animate-[shimmer_3s_infinite]"></div>
+                                <div class="absolute inset-0 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNCIgaGVpZ2h0PSI0IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxjaXJjbGUgY3g9IjIiIGN5PSIyIiByPSIxIiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMikiLz48L3N2Zz4=')] opacity-30"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Stack (Right - Narrower) -->
+        <div class="lg:col-span-5 flex flex-col gap-4">
+            
+            <!-- Feature 1 -->
+            <div class="group bg-white rounded-[2rem] p-5 border-2 border-slate-50 shadow-lg shadow-sky/5 hover:border-sky hover:shadow-sky/10 transition-all duration-300 hover:-translate-y-1 cursor-default relative overflow-hidden reveal-on-scroll delay-100">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-sky/5 rounded-full -mr-8 -mt-8 group-hover:scale-150 transition-transform duration-500"></div>
+                <div class="flex gap-4 relative z-10">
+                    <div class="w-12 h-12 bg-sky/10 rounded-2xl flex items-center justify-center shrink-0 group-hover:rotate-6 transition-transform duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" data-lucide="bar-chart-3" class="lucide lucide-bar-chart-3 w-6 h-6 text-sky"><path d="M3 3v16a2 2 0 0 0 2 2h16"></path><path d="M18 17V9"></path><path d="M13 17V5"></path><path d="M8 17v-3"></path></svg>
+                    </div>
+                    <div>
+                        <h3 class="font-display font-bold text-lg text-navy mb-1" id="landing-feature-0-title">Track Progress</h3>
+                        <p class="text-slate-500 text-sm leading-relaxed" id="landing-feature-0-desc">Visualize student mastery in real-time. Identify gaps and celebrate growth streaks.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feature 2 -->
+            <div class="group bg-white rounded-[2rem] p-5 border-2 border-slate-50 shadow-lg shadow-gold/5 hover:border-gold hover:shadow-gold/10 transition-all duration-300 hover:-translate-y-1 cursor-default relative overflow-hidden reveal-on-scroll delay-200">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-gold/5 rounded-full -mr-8 -mt-8 group-hover:scale-150 transition-transform duration-500"></div>
+                <div class="flex gap-4 relative z-10">
+                    <div class="w-12 h-12 bg-gold/10 rounded-2xl flex items-center justify-center shrink-0 group-hover:-rotate-6 transition-transform duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" data-lucide="swords" class="lucide lucide-swords w-6 h-6 text-gold"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"></polyline><line x1="13" x2="19" y1="19" y2="13"></line><line x1="16" x2="20" y1="16" y2="20"></line><line x1="19" x2="21" y1="21" y2="19"></line><polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5"></polyline><line x1="5" x2="9" y1="14" y2="18"></line><line x1="7" x2="4" y1="17" y2="20"></line><line x1="3" x2="5" y1="19" y2="21"></line></svg>
+                    </div>
+                    <div>
+                        <h3 class="font-display font-bold text-lg text-navy mb-1" id="landing-feature-1-title">Run Challenges</h3>
+                        <p class="text-slate-500 text-sm leading-relaxed" id="landing-feature-1-desc">Create epic boss battles (exams) and daily quests. Turn "have to do" into "want to conquer".</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feature 3 -->
+            <div class="group bg-white rounded-[2rem] p-5 border-2 border-slate-50 shadow-lg shadow-softpurple/5 hover:border-softpurple hover:shadow-softpurple/10 transition-all duration-300 hover:-translate-y-1 cursor-default relative overflow-hidden reveal-on-scroll delay-300">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-softpurple/5 rounded-full -mr-8 -mt-8 group-hover:scale-150 transition-transform duration-500"></div>
+                <div class="flex gap-4 relative z-10">
+                    <div class="w-12 h-12 bg-softpurple/10 rounded-2xl flex items-center justify-center shrink-0 group-hover:rotate-6 transition-transform duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" data-lucide="sparkles" class="lucide lucide-sparkles w-6 h-6 text-softpurple"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"></path><path d="M20 2v4"></path><path d="M22 4h-4"></path><circle cx="4" cy="20" r="2"></circle></svg>
+                    </div>
+                    <div>
+                        <h3 class="font-display font-bold text-lg text-navy mb-1" id="landing-feature-2-title">Boost Motivation</h3>
+                        <p class="text-slate-500 text-sm leading-relaxed" id="landing-feature-2-desc">Unlock avatars, earn badges, and build a positive classroom culture where effort is the currency.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feature 4 -->
+            <div class="group bg-white rounded-[2rem] p-5 border-2 border-slate-50 shadow-lg shadow-coral/5 hover:border-coral hover:shadow-coral/10 transition-all duration-300 hover:-translate-y-1 cursor-default relative overflow-hidden reveal-on-scroll delay-300">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-coral/5 rounded-full -mr-8 -mt-8 group-hover:scale-150 transition-transform duration-500"></div>
+                <div class="flex gap-4 relative z-10">
+                    <div class="w-12 h-12 bg-coral/10 rounded-2xl flex items-center justify-center shrink-0 group-hover:rotate-6 transition-transform duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" data-lucide="users-2" class="lucide lucide-users-2 w-6 h-6 text-coral"><path d="M14 19a6 6 0 0 0-12 0"></path><circle cx="8" cy="9" r="4"></circle><path d="M22 19a6 6 0 0 0-6-6 4 4 0 1 0 0-8"></path></svg>
+                    </div>
+                    <div>
+                        <h3 class="font-display font-bold text-lg text-navy mb-1" id="landing-feature-3-title">Team Battles</h3>
+                        <p class="text-slate-500 text-sm leading-relaxed" id="landing-feature-3-desc">Form guilds and collaborative groups. Students learn faster when they are winning together.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+    </section>
+
+    <!-- How It Works (Kept as is) -->
+    <section id="how-it-works" class="py-32 bg-white relative overflow-hidden">
+      <!-- Detailed Background -->
+      <div class="absolute inset-0 bg-graph-paper opacity-60"></div>
+      <div class="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-sky/10 via-white to-white -z-10"></div>
+      
+      <div class="max-w-7xl mx-auto px-6 relative z-10">
+        <div class="text-center mb-24 reveal-on-scroll">
+           <div class="inline-block mb-4">
+               <span class="bg-navy text-white px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest shadow-lg shadow-navy/20 border-2 border-white/20">The Adventure Map</span>
+           </div>
+           <h2 class="font-display font-bold text-4xl md:text-5xl text-navy mb-6">Your Journey Begins Here</h2>
+           <p class="text-xl text-slate-500 max-w-2xl mx-auto">Getting started is as easy as 1-2-3. No complex setup, just pure engagement.</p>
+        </div>
+        
+        <div class="relative max-w-6xl mx-auto mt-20">
+          
+          <!-- Animated Winding Path -->
+          <svg class="hidden lg:block absolute top-[60px] left-0 w-full h-40 z-0 pointer-events-none overflow-visible" viewBox="0 0 1000 120" preserveAspectRatio="none">
+            <!-- Glow under path -->
+            <path d="M50,60 C250,60 250,100 500,60 C750,20 750,60 950,60" fill="none" stroke="#4A9DFF" stroke-width="12" stroke-opacity="0.1" stroke-linecap="round"></path>
+            <!-- Main Path -->
+            <path d="M50,60 C250,60 250,100 500,60 C750,20 750,60 950,60" fill="none" stroke="#CBD5E1" stroke-width="4" stroke-dasharray="12 12" class="opacity-60"></path>
+            
+            <!-- Animated Path Travel Object -->
+            <circle r="4" fill="#4A9DFF">
+               <animateMotion dur="6s" repeatCount="indefinite" path="M50,60 C250,60 250,100 500,60 C750,20 750,60 950,60"></animateMotion>
+            </circle>
+          </svg>
+
+          <!-- Floating Elements decorating the path -->
+          <div class="hidden lg:block absolute top-4 left-[28%] animate-bounce-subtle text-2xl" style="animation-delay: 0.2s">🌟</div>
+          <div class="hidden lg:block absolute top-12 left-[60%] animate-bounce-subtle text-xl" style="animation-delay: 1.5s">🪙</div>
+          
+           <!-- Start/End Flags -->
+          <div class="hidden lg:block absolute top-[50px] -left-8 -translate-y-1/2 text-center group">
+             <div class="text-3xl animate-wiggle cursor-help" title="Start Here">🚩</div>
+          </div>
+           <div class="hidden lg:block absolute top-[50px] -right-8 -translate-y-1/2 text-center group">
+             <div class="text-3xl animate-wiggle cursor-help" title="Finish Line">🏁</div>
+          </div>
+
+          <!-- The 3 Steps Cards -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-12 relative z-10">
+            
+            <!-- Step 1 -->
+            <div class="group relative flex flex-col items-center text-center reveal-on-scroll">
+              <div class="relative w-40 h-40 mb-8 perspective-1000">
+                  <div class="absolute inset-0 bg-sky/30 rounded-full blur-xl group-hover:blur-2xl transition-all duration-500"></div>
+                  <div class="relative w-full h-full bg-gradient-to-b from-white to-slate-50 rounded-full border-[6px] border-sky shadow-[0_15px_0_rgb(74,157,255)] group-hover:translate-y-1 group-hover:shadow-[0_8px_0_rgb(74,157,255)] transition-all duration-200 ease-out flex items-center justify-center z-10">
+                      <div class="w-28 h-28 border-2 border-dashed border-sky/30 rounded-full flex items-center justify-center">
+                         <div class="w-20 h-20 bg-sky/10 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="users" class="lucide lucide-users w-10 h-10 text-sky"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><path d="M16 3.128a4 4 0 0 1 0 7.744"></path><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><circle cx="9" cy="7" r="4"></circle></svg>
+                         </div>
+                      </div>
+                  </div>
+                  <div class="absolute -top-2 -right-2 bg-navy text-white w-10 h-10 flex items-center justify-center rounded-full font-bold border-4 border-white shadow-lg transform rotate-12 z-20">1</div>
+              </div>
+              <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/50 relative mt-4 w-full group-hover:-translate-y-2 transition-transform duration-300">
+                <div class="absolute -top-3 left-1/2 -translate-x-1/2 w-6 h-6 bg-white rotate-45 border-t border-l border-slate-100"></div>
+                <h3 class="font-display font-bold text-2xl text-navy mb-3">Create Class</h3>
+                <p class="text-slate-500 text-sm leading-relaxed">Import your roster in seconds from Google Classroom or Clever. Your students are automatically onboarded.</p>
+              </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="group relative flex flex-col items-center text-center reveal-on-scroll delay-100">
+              <div class="relative w-40 h-40 mb-8 perspective-1000 mt-0 lg:mt-12">
+                  <div class="absolute inset-0 bg-coral/30 rounded-full blur-xl group-hover:blur-2xl transition-all duration-500"></div>
+                  <div class="relative w-full h-full bg-gradient-to-b from-white to-slate-50 rounded-full border-[6px] border-coral shadow-[0_15px_0_rgb(255,143,143)] group-hover:translate-y-1 group-hover:shadow-[0_8px_0_rgb(255,143,143)] transition-all duration-200 ease-out flex items-center justify-center z-10">
+                      <div class="w-28 h-28 border-2 border-dashed border-coral/30 rounded-full flex items-center justify-center">
+                         <div class="w-20 h-20 bg-coral/10 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="map" class="lucide lucide-map w-10 h-10 text-coral"><path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"></path><path d="M15 5.764v15"></path><path d="M9 3.236v15"></path></svg>
+                         </div>
+                      </div>
+                  </div>
+                  <div class="absolute -top-2 -right-2 bg-navy text-white w-10 h-10 flex items-center justify-center rounded-full font-bold border-4 border-white shadow-lg transform rotate-12 z-20">2</div>
+              </div>
+              <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/50 relative mt-4 w-full group-hover:-translate-y-2 transition-transform duration-300">
+                <div class="absolute -top-3 left-1/2 -translate-x-1/2 w-6 h-6 bg-white rotate-45 border-t border-l border-slate-100"></div>
+                <h3 class="font-display font-bold text-2xl text-navy mb-3">Set The Quest</h3>
+                <p class="text-slate-500 text-sm leading-relaxed">Map your curriculum to challenges. Set the rewards (XP, Gold) and watch them prepare for battle.</p>
+              </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="group relative flex flex-col items-center text-center reveal-on-scroll delay-200">
+              <div class="relative w-40 h-40 mb-8 perspective-1000">
+                  <div class="absolute inset-0 bg-gold/30 rounded-full blur-xl group-hover:blur-2xl transition-all duration-500"></div>
+                  <div class="relative w-full h-full bg-gradient-to-b from-white to-slate-50 rounded-full border-[6px] border-gold shadow-[0_15px_0_rgb(255,197,69)] group-hover:translate-y-1 group-hover:shadow-[0_8px_0_rgb(255,197,69)] transition-all duration-200 ease-out flex items-center justify-center z-10">
+                      <div class="w-28 h-28 border-2 border-dashed border-gold/30 rounded-full flex items-center justify-center">
+                         <div class="w-20 h-20 bg-gold/10 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="trophy" class="lucide lucide-trophy w-10 h-10 text-gold"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path></svg>
+                         </div>
+                      </div>
+                  </div>
+                  <div class="absolute -top-2 -right-2 bg-navy text-white w-10 h-10 flex items-center justify-center rounded-full font-bold border-4 border-white shadow-lg transform rotate-12 z-20">3</div>
+              </div>
+              <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/50 relative mt-4 w-full group-hover:-translate-y-2 transition-transform duration-300">
+                <div class="absolute -top-3 left-1/2 -translate-x-1/2 w-6 h-6 bg-white rotate-45 border-t border-l border-slate-100"></div>
+                <h3 class="font-display font-bold text-2xl text-navy mb-3">Watch Them Soar</h3>
+                <p class="text-slate-500 text-sm leading-relaxed">Engagement skyrockets. Students unlock badges, climb the leaderboard, and ask for "just one more level."</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Reviews Section: dynamic from GET /api/platform-reviews/featured -->
+    <section class="overflow-hidden pt-24 pb-24 relative" id="reviews">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center max-w-3xl mx-auto mb-16 reveal-on-scroll">
+                <span class="text-sky font-bold uppercase text-xs tracking-widest mb-2 block">Community Love</span>
+                <h2 class="font-display font-bold text-4xl text-navy mb-6">What Teachers Are Saying</h2>
+                <p class="text-lg text-slate-500">Join thousands of educators who have transformed their classrooms into engaging learning adventures.</p>
+            </div>
+
+            <div id="featured-reviews-grid" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <p class="text-slate-400 text-center col-span-full py-8">Loading reviews…</p>
+            </div>
+        </div>
+    </section>
+    <script>
+(function () {
+      var grid = document.getElementById('featured-reviews-grid');
+      if (!grid) return;
+      var starFull = '<svg class="w-5 h-5 text-gold fill-current" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
+      var starEmpty = '<svg class="w-5 h-5 text-slate-200 fill-current" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
+      function stars(n) {
+        n = Math.max(0, Math.min(5, Number(n) || 0));
+        var out = '';
+        for (var i = 0; i < 5; i++) out += i < n ? starFull : starEmpty;
+        return out;
+      }
+      function roleLabel(role) {
+        if (role === 'student') return 'Student';
+        if (role === 'educator') return 'Educator';
+        if (role === 'educatoradmin') return 'Educator Admin';
+        return role || '';
+      }
+      function esc(s) {
+        if (s == null) return '';
+        var d = document.createElement('div');
+        d.textContent = s;
+        return d.innerHTML;
+      }
+      fetch('/api/platform-reviews/featured')
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+          var arr = Array.isArray(data) ? data : (data && (data.data || data.reviews)) || [];
+          if (arr.length === 0) {
+            grid.innerHTML = '<p class="text-slate-500 text-center col-span-full py-8">Featured reviews will appear here once platform admins approve and feature them.</p>';
+            return;
+          }
+          var delays = ['', ' delay-100', ' delay-200'];
+          grid.innerHTML = arr.map(function (r, i) {
+            var name = (r.author_name || '').trim() || 'Anonymous';
+            var role = roleLabel(r.author_role);
+            var comment = (r.comment || '').trim() || 'No comment.';
+            var rating = Number(r.rating) || 5;
+            var seed = (r.id != null ? String(r.id) : '') || 'r' + i;
+            return '<div class="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100 hover:shadow-lg transition-all duration-300 reveal-on-scroll' + (delays[i] || '') + '">' +
+              '<div class="flex items-center gap-1 mb-6">' + stars(rating) + '</div>' +
+              '<p class="text-navy font-medium leading-relaxed mb-6">"' + esc(comment) + '"</p>' +
+              '<div class="flex items-center gap-4">' +
+                '<img src="https://api.dicebear.com/7.x/avataaars/svg?seed=' + encodeURIComponent(seed) + '" alt="" class="w-12 h-12 rounded-full bg-slate-100">' +
+                '<div><h4 class="font-bold text-navy text-sm">' + esc(name) + '</h4><p class="text-slate-400 text-xs">' + esc(role) + '</p></div>' +
+              '</div></div>';
+          }).join('');
+          if (typeof initScrollReveal === 'function') initScrollReveal();
+        })
+        .catch(function () {
+          grid.innerHTML = '<p class="text-slate-500 text-center col-span-full py-8">Featured reviews will appear here once platform admins approve and feature them.</p>';
+        });
+    })();
+    </script>
+
+    <!-- Pricing Section (NEW) -->
+    <section class="py-24 relative overflow-hidden bg-freshwhite" id="pricing">
+         <!-- Background Decorations -->
+         <div class="absolute inset-0 bg-graph-paper opacity-50 -z-10"></div>
+         <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-sky/5 rounded-full blur-[100px] -z-10 animate-pulse"></div>
+         <div class="absolute bottom-0 left-0 w-[600px] h-[600px] bg-softpurple/5 rounded-full blur-[100px] -z-10 animate-blob"></div>
+
+         <div class="max-w-7xl mx-auto px-6 relative z-10">
+            <!-- Header -->
+            <div class="text-center max-w-3xl mx-auto mb-16 reveal-on-scroll">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-navy/5 border border-navy/10 text-navy text-[10px] font-bold uppercase tracking-widest mb-6 backdrop-blur-sm">
+                   <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                   Simple Pricing
+               </div>
+                <h2 class="font-display font-bold text-4xl md:text-5xl text-navy mb-6 tracking-tight">Unlock Your Classroom's <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky to-softpurple">Potential</span></h2>
+                <p class="text-xl text-slate-500 max-w-2xl mx-auto leading-relaxed">Everything you need to turn your curriculum into an adventure. Choose the plan that fits your institution.</p>
+            </div>
+
+            <!-- Two Pricing Cards: Basic & Pro -->
+            <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto reveal-on-scroll delay-100">
+                <!-- Basic Plan Card -->
+                <div class="relative group">
+                    <div class="absolute -inset-[2px] bg-gradient-to-r from-slate-300 to-slate-400 rounded-[2.5rem] opacity-20 blur-sm group-hover:opacity-40 transition-opacity duration-500"></div>
+                    <div class="relative bg-white rounded-[2.4rem] shadow-2xl shadow-sky/10 overflow-hidden border border-slate-100/50 p-8 md:p-10 flex flex-col">
+                        <div class="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:20px_20px] opacity-20"></div>
+                        <div class="relative z-10">
+                            <div class="inline-flex items-center gap-2 mb-6">
+                                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-slate-500 to-slate-600 flex items-center justify-center text-white shadow-lg">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-school"><path d="m4 6 8-4 8 4"></path><path d="m18 10 4 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-8l4-2"></path><path d="M14 22v-4a2 2 0 0 0-2-2 2 2 0 0 0-2 2v4"></path><path d="M18 5v17"></path><path d="M6 5v17"></path></svg>
+                                </div>
+                                <span class="font-display font-bold text-navy text-xl tracking-tight">Basic</span>
+                            </div>
+                            <div class="flex items-baseline gap-1 mb-2">
+                                <span class="text-5xl font-display font-bold text-navy tracking-tight">$5</span>
+                                <span class="text-slate-400 font-medium">/mo</span>
+                            </div>
+                            <p class="text-slate-500 text-sm font-medium mb-6">Up to 5 classes. Perfect for getting started.</p>
+                            <ul class="space-y-3 mb-8">
+                                <li class="flex items-center gap-2 text-sm text-slate-600"><svg class="w-4 h-4 text-mint shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Up to 5 classes</li>
+                                <li class="flex items-center gap-2 text-sm text-slate-600"><svg class="w-4 h-4 text-mint shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Quizzes &amp; question bank</li>
+                                <li class="flex items-center gap-2 text-sm text-slate-600"><svg class="w-4 h-4 text-mint shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Student progress tracking</li>
+                                <li class="flex items-center gap-2 text-sm text-slate-600"><svg class="w-4 h-4 text-mint shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Email support</li>
+                            </ul>
+                            <a href="pricing.html" class="group/btn block w-full py-4 px-6 rounded-xl bg-navy text-white text-center font-bold text-lg shadow-xl shadow-navy/20 hover:bg-sky hover:shadow-sky/30 hover:scale-[1.02] transition-all duration-300 relative overflow-hidden">
+                                <div class="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:animate-[shimmer_1.5s_infinite]"></div>
+                                Subscribe Now
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pro Plan Card -->
+                <div class="relative group">
+                    <div class="absolute -inset-[2px] bg-gradient-to-r from-sky via-softpurple to-coral rounded-[2.5rem] opacity-30 blur-sm group-hover:opacity-60 transition-opacity duration-500"></div>
+                    <div class="relative bg-white rounded-[2.4rem] shadow-2xl shadow-sky/10 overflow-hidden border border-slate-100/50 p-8 md:p-10 flex flex-col">
+                        <div class="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:20px_20px] opacity-30"></div>
+                        <div class="relative z-10">
+                            <div class="inline-flex items-center gap-2 mb-6">
+                                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-sky to-blue-600 flex items-center justify-center text-white shadow-lg shadow-sky/30">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-crown"><path d="m2 4 3 12h14l3-12-6 7-4-3-4 3-6-7zm0 0"></path></svg>
+                                </div>
+                                <span class="font-display font-bold text-navy text-xl tracking-tight">Pro</span>
+                            </div>
+                            <div class="flex items-baseline gap-1 mb-2">
+                                <span class="text-5xl font-display font-bold text-navy tracking-tight">$12</span>
+                                <span class="text-slate-400 font-medium">/mo</span>
+                            </div>
+                            <p class="text-slate-500 text-sm font-medium mb-6">Unlimited classes and premium features.</p>
+                            <ul class="space-y-3 mb-8">
+                                <li class="flex items-center gap-2 text-sm text-slate-600"><svg class="w-4 h-4 text-mint shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Unlimited classes</li>
+                                <li class="flex items-center gap-2 text-sm text-slate-600"><svg class="w-4 h-4 text-mint shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> AI Quest Generator</li>
+                                <li class="flex items-center gap-2 text-sm text-slate-600"><svg class="w-4 h-4 text-mint shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Deep analytics &amp; reports</li>
+                                <li class="flex items-center gap-2 text-sm text-slate-600"><svg class="w-4 h-4 text-mint shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Priority support</li>
+                            </ul>
+                            <a href="pricing.html" class="group/btn block w-full py-4 px-6 rounded-xl bg-navy text-white text-center font-bold text-lg shadow-xl shadow-navy/20 hover:bg-sky hover:shadow-sky/30 hover:scale-[1.02] transition-all duration-300 relative overflow-hidden">
+                                <div class="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:animate-[shimmer_1.5s_infinite]"></div>
+                                Subscribe Now
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-12 reveal-on-scroll delay-200">
+                <p class="text-slate-400 text-sm">Need a plan for your entire School or District? <a href="#" class="text-navy font-bold hover:text-sky transition-colors border-b-2 border-navy/10 hover:border-sky">Contact Sales</a></p>
+            </div>
+         </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-navy pt-20 pb-10 text-slate-400 relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12 mb-16 relative z-10">
+            <div class="col-span-1 md:col-span-1">
+                <a href="#" class="flex items-center gap-2 group mb-6">
+                    <div class="bg-gradient-to-br from-sky to-softpurple p-1.5 rounded-lg text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sparkles"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"></path><path d="M20 2v4"></path><path d="M22 4h-4"></path><circle cx="4" cy="20" r="2"></circle></svg>
+                    </div>
+                    <span class="font-display font-bold text-xl text-white tracking-tight">EduQuest</span>
+                </a>
+                <p class="text-sm leading-relaxed mb-6">Making learning an addictive adventure for students around the world.</p>
+                <div class="flex gap-4">
+                    <a href="#" class="hover:text-white transition-colors"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"></path></svg></a>
+                    <a href="#" class="hover:text-white transition-colors"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"></path></svg></a>
+                </div>
+            </div>
+            
+            <div>
+                <h4 class="text-white font-bold mb-6">Product</h4>
+                <ul class="space-y-3 text-sm">
+                    <li><a href="#" class="hover:text-white transition-colors">Features</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Pricing</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Integrations</a></li>
+                    
+                </ul>
+            </div>
+            
+            <div>
+                <h4 class="text-white font-bold mb-6">Resources</h4>
+                <ul class="space-y-3 text-sm">
+                    <li><a href="#" class="hover:text-white transition-colors">Teacher Guide</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Help Center</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Community</a></li>
+                    
+                </ul>
+            </div>
+
+            <div>
+                 <h4 class="text-white font-bold mb-6">Legal</h4>
+                <ul class="space-y-3 text-sm">
+                    <li><a href="#" class="hover:text-white transition-colors">Privacy</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Terms</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Security</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto px-6 border-t border-white/10 pt-8 text-center text-sm">
+            <p>© 2024 EduQuest. All rights reserved.</p>
+        </div>
     </footer>
 
     <script>
-      lucide.createIcons();
-
-      const params = new URLSearchParams(window.location.search);
-      const _rawClassId = params.get('classId');
-      const CLASS_ID = (_rawClassId != null && _rawClassId !== '' && !isNaN(Number(_rawClassId))) ? Number(_rawClassId) : null;
-      const API_BASE = '/api';
-
-      (function loadQuizzes() {
-        const grid = document.getElementById('quiz-grid');
-        const template = document.getElementById('quiz-card-template');
-        if (!grid || !template) return;
-        if (CLASS_ID == null) {
-          grid.innerHTML = '<p class="col-span-full text-slate-500 text-center py-8">This page must be opened from a class.</p>';
-          return;
-        }
-        fetch(API_BASE + '/quizzes/class/' + CLASS_ID, { headers: getAuthHeaders() })
-          .then(function (r) { return r.ok ? r.json() : []; })
-          .then(function (quizzes) {
-            if (!quizzes || quizzes.length === 0) {
-              var emptyMsg = document.createElement('p');
-              emptyMsg.className = 'col-span-full text-slate-500 text-center py-8';
-              emptyMsg.textContent = 'No quizzes yet for this class.';
-              grid.insertBefore(emptyMsg, template);
-              return;
-            }
-            quizzes.forEach(function (q) {
-              if (q.question_count === undefined) {
-                console.warn('Quiz missing question_count:', q);
-              }
-              var questionCount = (q.question_count != null) ? q.question_count : 0;
-              const card = template.cloneNode(true);
-              card.id = '';
-              card.classList.remove('hidden');
-              var titleEl = card.querySelector('.js-quiz-title');
-              var subtitleEl = card.querySelector('.js-quiz-subtitle');
-              var qcountEl = card.querySelector('.js-quiz-qcount');
-              var qcount2El = card.querySelector('.js-quiz-qcount2');
-              var idEl = card.querySelector('.js-quiz-id');
-              var editLink = card.querySelector('.js-quiz-edit');
-              var deleteBtn = card.querySelector('.js-quiz-delete');
-              if (titleEl) titleEl.textContent = q.title || 'Untitled Quiz';
-              if (subtitleEl) subtitleEl.textContent = document.getElementById('quiz-class-label') ? document.getElementById('quiz-class-label').textContent : '';
-              if (qcountEl) qcountEl.textContent = questionCount;
-              if (qcount2El) qcount2El.textContent = questionCount;
-              if (idEl) idEl.textContent = '#' + q.id;
-              if (editLink) { editLink.href = 'educator-editquiz.html?id=' + q.id; }
-              if (deleteBtn) {
-                deleteBtn.addEventListener('click', function (e) {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  if (!confirm('Are you sure you want to delete this quiz? This cannot be undone.')) return;
-                  var btn = this;
-                  btn.disabled = true;
-                  btn.setAttribute('aria-busy', 'true');
-                  var originalHtml = btn.innerHTML;
-                  btn.innerHTML = '<span class="text-xs font-bold text-slate-500">Deleting...</span>';
-                  fetch(API_BASE + '/quizzes/' + q.id, { method: 'DELETE', headers: getAuthHeaders() })
-                    .then(function (r) {
-                      if (r.ok) {
-                        card.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
-                        card.style.opacity = '0';
-                        card.style.transform = 'scale(0.98)';
-                        setTimeout(function () { card.remove(); }, 280);
-                      } else {
-                        btn.disabled = false;
-                        btn.removeAttribute('aria-busy');
-                        btn.innerHTML = originalHtml;
-                        alert('Failed to delete quiz. Please try again.');
-                      }
-                    })
-                    .catch(function () {
-                      btn.disabled = false;
-                      btn.removeAttribute('aria-busy');
-                      btn.innerHTML = originalHtml;
-                      alert('Failed to delete quiz. Please try again.');
-                    });
+        function initScrollReveal() {
+            const observerOptions = { threshold: 0.1, rootMargin: '0px' };
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) entry.target.classList.add('is-visible');
                 });
-              }
-              grid.insertBefore(card, template);
+            }, observerOptions);
+            document.querySelectorAll('.reveal-on-scroll').forEach(el => observer.observe(el));
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            initScrollReveal();
+            // Simple Parallax Effect
+            document.addEventListener('mousemove', (e) => {
+                const elements = document.querySelectorAll('.parallax-element');
+                const x = e.clientX / window.innerWidth;
+                const y = e.clientY / window.innerHeight;
+                
+                elements.forEach(el => {
+                    const speed = el.getAttribute('data-speed') || 0.05;
+                    const xOffset = (window.innerWidth / 2 - e.clientX) * speed;
+                    const yOffset = (window.innerHeight / 2 - e.clientY) * speed;
+                    el.style.transform = `translate(${xOffset}px, ${yOffset}px)`;
+                });
             });
-          })
-          .catch(function () {});
-      })();
-
-      (function initQuizSearch() {
-        var searchInput = document.getElementById('quiz-search-input');
-        var grid = document.getElementById('quiz-grid');
-        if (!searchInput || !grid) return;
-        searchInput.addEventListener('input', function () {
-          var term = (searchInput.value || '').trim().toLowerCase();
-          Array.from(grid.children).forEach(function (child) {
-            if (child.id === 'quiz-card-template' || child.id === 'grid-create-quiz-btn') return;
-            var titleEl = child.querySelector('.js-quiz-title');
-            if (!titleEl) return;
-            var title = (titleEl.textContent || '').trim().toLowerCase();
-            child.style.display = term === '' || title.indexOf(term) !== -1 ? '' : 'none';
-          });
         });
-      })();
-
-      (function loadQuizClassLabel() {
-        var labelEl = document.getElementById('quiz-class-label');
-        var pillEl = document.getElementById('quiz-class-pill-label');
-        var setClassDisplay = function (name) {
-          if (labelEl) labelEl.textContent = name;
-          if (pillEl) pillEl.textContent = name ? 'Class: ' + name : '—';
-          document.querySelectorAll('.js-quiz-subtitle').forEach(function (el) { el.textContent = name || ''; });
-        };
-        if (CLASS_ID == null) {
-          setClassDisplay('—');
-          return;
-        }
-        fetch(API_BASE + '/classes/' + CLASS_ID, { headers: getAuthHeaders() })
-          .then(function (r) {
-            if (r.status === 403) console.warn('Class Fetch 403 for classId:', CLASS_ID);
-            if (!r.ok) throw new Error('Failed to load class');
-            return r.json();
-          })
-          .then(function (cls) {
-            if (!cls || !cls.name) console.warn('Class Fetch empty or missing name for classId:', CLASS_ID, cls);
-            var name = cls && cls.name ? cls.name : 'Unknown class';
-            setClassDisplay(name);
-          })
-          .catch(function () {
-            setClassDisplay('Unknown class');
-          });
-      })();
-
-      function goToCreateQuiz() {
-        if (CLASS_ID == null) {
-          alert('Please open quizzes from a class.');
-          return;
-        }
-        window.location.href = 'educator-createquiz.html?classId=' + CLASS_ID;
-      }
-      var headerCreateBtn = document.getElementById('header-create-quiz-btn');
-      var gridCreateBtn = document.getElementById('grid-create-quiz-btn');
-      if (CLASS_ID == null) {
-        if (headerCreateBtn) { headerCreateBtn.disabled = true; headerCreateBtn.setAttribute('aria-disabled', 'true'); }
-        if (gridCreateBtn) { gridCreateBtn.disabled = true; gridCreateBtn.setAttribute('aria-disabled', 'true'); }
-      }
-      if (headerCreateBtn) headerCreateBtn.addEventListener('click', goToCreateQuiz);
-      if (gridCreateBtn) gridCreateBtn.addEventListener('click', goToCreateQuiz);
-
-      // Simple Drawer Toggle Logic
-      function toggleDrawer() {
-        const drawer = document.getElementById('previewDrawer');
-        const overlay = document.getElementById('drawerOverlay');
-        
-        if (drawer.classList.contains('drawer-closed')) {
-            drawer.classList.remove('drawer-closed');
-            drawer.classList.add('drawer-open');
-            overlay.classList.remove('hidden');
-            setTimeout(() => overlay.classList.remove('opacity-0'), 10);
-            document.body.style.overflow = 'hidden'; // Prevent background scrolling
-        } else {
-            drawer.classList.remove('drawer-open');
-            drawer.classList.add('drawer-closed');
-            overlay.classList.add('opacity-0');
-            setTimeout(() => overlay.classList.add('hidden'), 300);
-            document.body.style.overflow = '';
-        }
-      }
+    </script>
+    <script>
+        (function () {
+            fetch('/api/content/landing')
+                .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
+                .then(function (data) {
+                    if (data.hero) {
+                        var title = (data.hero.title || '').trim();
+                        if (title) {
+                            var parts = title.split(/\s+/);
+                            var last = parts.pop();
+                            var start = parts.length ? parts.join(' ') + ' ' : '';
+                            var startEl = document.getElementById('landing-hero-title-start');
+                            var endEl = document.getElementById('landing-hero-title-end');
+                            if (startEl) startEl.textContent = start;
+                            if (endEl) endEl.textContent = last || title;
+                        }
+                        if (data.hero.subtitle) {
+                            var sub = document.getElementById('landing-hero-subtitle');
+                            if (sub) sub.textContent = data.hero.subtitle;
+                        }
+                    }
+                    if (Array.isArray(data.features)) {
+                        data.features.forEach(function (f, i) {
+                            var t = document.getElementById('landing-feature-' + i + '-title');
+                            var d = document.getElementById('landing-feature-' + i + '-desc');
+                            if (t && f.title) t.textContent = f.title;
+                            if (d && f.description) d.textContent = f.description;
+                        });
+                    }
+                })
+                .catch(function () {});
+        })();
     </script>
   
 </body></html>
