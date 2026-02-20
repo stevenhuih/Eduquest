@@ -122,33 +122,41 @@
             div.appendChild(desc);
             flist.appendChild(div);
           });
+          return fetch('/api/pricing').then(function (r) {
+            if (!r.ok) throw new Error('Pricing load failed');
+            return r.json();
+          });
+        })
+        .then(function (plans) {
           var plist = document.getElementById('pricing-list');
           plist.innerHTML = '';
-          (data.pricing || []).forEach(function (p, i) {
+          (plans || []).forEach(function (p, i) {
             var div = document.createElement('div');
             div.className = 'p-4 rounded-xl border border-slate-100 bg-slate-50/50';
+            div.dataset.planId = p.id;
             var lab = document.createElement('label');
             lab.className = 'block text-sm font-semibold text-slate-600 mb-2';
-            lab.textContent = 'Plan ' + (i + 1);
+            lab.textContent = 'Plan ' + (i + 1) + (p.is_pro ? ' (Pro)' : '');
             var nameIn = document.createElement('input');
             nameIn.type = 'text';
             nameIn.className = 'pricing-name w-full px-4 py-2 rounded-lg border border-slate-200 mb-2';
             nameIn.placeholder = 'Plan name';
             nameIn.value = p.name || '';
-            var descIn = document.createElement('input');
-            descIn.type = 'text';
-            descIn.className = 'pricing-desc w-full px-4 py-2 rounded-lg border border-slate-200 mb-2';
-            descIn.placeholder = 'Description';
-            descIn.value = p.description || '';
-            var limitIn = document.createElement('input');
-            limitIn.type = 'text';
-            limitIn.className = 'pricing-limit w-full px-4 py-2 rounded-lg border border-slate-200';
-            limitIn.placeholder = 'Limit label (e.g. Up to 5 classes)';
-            limitIn.value = p.limitLabel || '';
+            var priceIn = document.createElement('input');
+            priceIn.type = 'number';
+            priceIn.min = '0';
+            priceIn.className = 'pricing-price w-full px-4 py-2 rounded-lg border border-slate-200 mb-2';
+            priceIn.placeholder = 'Price (e.g. 5)';
+            priceIn.value = p.price != null ? p.price : '';
+            var featuresIn = document.createElement('input');
+            featuresIn.type = 'text';
+            featuresIn.className = 'pricing-features w-full px-4 py-2 rounded-lg border border-slate-200';
+            featuresIn.placeholder = 'Features (comma-separated)';
+            featuresIn.value = Array.isArray(p.features) ? p.features.join(', ') : '';
             div.appendChild(lab);
             div.appendChild(nameIn);
-            div.appendChild(descIn);
-            div.appendChild(limitIn);
+            div.appendChild(priceIn);
+            div.appendChild(featuresIn);
             plist.appendChild(div);
           });
           hideMessages();
@@ -169,14 +177,7 @@
         var desc = (row.querySelector('.feature-desc') || {}).value || '';
         features.push({ title: title.trim(), description: desc.trim() });
       });
-      var pricing = [];
-      document.querySelectorAll('#pricing-list > div').forEach(function (row) {
-        var name = (row.querySelector('.pricing-name') || {}).value || '';
-        var desc = (row.querySelector('.pricing-desc') || {}).value || '';
-        var limit = (row.querySelector('.pricing-limit') || {}).value || '';
-        pricing.push({ name: name.trim(), description: desc.trim(), limitLabel: limit.trim() });
-      });
-      var payload = { hero: hero, features: features, pricing: pricing };
+      var payload = { hero: hero, features: features };
 
       var btn = document.getElementById('save-btn');
       btn.disabled = true;
@@ -188,6 +189,31 @@
         .then(function (r) {
           if (!r.ok) throw new Error('Save failed');
           return r.json();
+        })
+        .then(function () {
+          var pricingRows = document.querySelectorAll('#pricing-list > div[data-plan-id]');
+          if (pricingRows.length === 0) {
+            showSuccess();
+            btn.disabled = false;
+            return;
+          }
+          var putPromises = [];
+          pricingRows.forEach(function (row) {
+            var id = row.dataset.planId;
+            var name = (row.querySelector('.pricing-name') || {}).value || '';
+            var priceVal = (row.querySelector('.pricing-price') || {}).value;
+            var price = priceVal !== '' ? parseInt(priceVal, 10) : undefined;
+            var featuresStr = (row.querySelector('.pricing-features') || {}).value || '';
+            var features = featuresStr.split(',').map(function (s) { return s.trim(); }).filter(Boolean);
+            putPromises.push(
+              fetch('/api/pricing/' + id, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: name.trim(), price: price, features: features })
+              }).then(function (r) { if (!r.ok) throw new Error('Pricing save failed'); return r.json(); })
+            );
+          });
+          return Promise.all(putPromises);
         })
         .then(function () {
           showSuccess();

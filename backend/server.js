@@ -32,6 +32,8 @@ const platformAdminAuthRoutes = require('./routes/platformAdminAuthRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const shopRoutes = require('./routes/shopRoutes');
 const questionUploadRoutes = require('./routes/questionUploadRoutes');
+const pricingRoutes = require('./routes/pricingRoutes');
+const pricingRoutes = require('./routes/pricingRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -61,6 +63,8 @@ app.use('/api/platform-admin', platformAdminAuthRoutes);
 app.use('/api', dashboardRoutes);
 app.use('/api/shop', shopRoutes);
 app.use('/api/questions', questionUploadRoutes);
+app.use('/api/pricing', pricingRoutes);
+app.use('/api/pricing', pricingRoutes);
 
 // Block direct access to uploads; files served only via authenticated/validated API routes
 app.use('/backend/uploads', (req, res, next) => {
