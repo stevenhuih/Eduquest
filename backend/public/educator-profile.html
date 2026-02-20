@@ -256,14 +256,6 @@ border: 1px solid rgba(255, 255, 255, 0.6);
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
                     <!-- Review Form (full width) -->
                     <div class="lg:col-span-12 space-y-8">
-                        <!-- Center to review (educator can review a linked admin) -->
-                        <div id="educator-review-center-wrap">
-                            <label class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 block">Center to review</label>
-                            <select id="educator-review-target" class="w-full px-4 py-3 rounded-xl bg-[#F8FAFC] border border-slate-200 text-slate-700 font-semibold text-sm focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500">
-                                <option value="">Loading...</option>
-                            </select>
-                            <p id="educator-review-no-centers" class="hidden mt-2 text-sm text-slate-500">You are not assigned to any center yet.</p>
-                        </div>
                         <!-- Star Rating Input -->
                         <div>
                             <label class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 block">Rate your experience</label>
@@ -533,41 +525,40 @@ border: 1px solid rgba(255, 255, 255, 0.6);
             .catch(function() { updatePwBtn.disabled = false; showPasswordMsg('Network error.', true); });
         });
 
-        var targetSelect = document.getElementById('educator-review-target');
-        var noCenters = document.getElementById('educator-review-no-centers');
         var headers = typeof getAuthHeaders === 'function' ? getAuthHeaders() : { 'Content-Type': 'application/json' };
-        fetch('/api/reviews/educator-targets', { headers: headers }).then(function(r){ return r.json(); }).then(function(list){
-          if (!Array.isArray(list)) return;
-          targetSelect.innerHTML = '';
-          if (list.length === 0) {
-            targetSelect.classList.add('hidden');
-            if (noCenters) noCenters.classList.remove('hidden');
-            return;
-          }
-          targetSelect.classList.remove('hidden');
-          if (noCenters) noCenters.classList.add('hidden');
-          targetSelect.appendChild(new Option('Select a center', ''));
-          list.forEach(function(a){ targetSelect.appendChild(new Option(a.center_name || 'Center #' + a.id, a.id)); });
-        }).catch(function(){ targetSelect.innerHTML = '<option value="">Unable to load</option>'; });
-
         var btn = document.getElementById('educator-review-submit');
         if (btn) btn.addEventListener('click', function(){
-          var targetId = targetSelect && targetSelect.value ? parseInt(targetSelect.value, 10) : 0;
-          if (!targetId) { alert('Please select a center to review.'); return; }
           if (!educatorReviewRating || educatorReviewRating < 1 || educatorReviewRating > 5) { alert('Please select a rating (1–5).'); return; }
           var commentEl = document.getElementById('educator-review-comment');
           var comment = commentEl ? commentEl.value.trim() : '';
           btn.disabled = true;
           btn.textContent = 'Sending...';
-          fetch('/api/reviews', {
-            method: 'POST',
-            headers: headers,
-            body: JSON.stringify({ target_role: 'educatoradmin', target_id: targetId, rating: educatorReviewRating, comment: comment })
-          }).then(function(r){ return r.json().then(function(data){ return { ok: r.ok, data: data }; }); }).then(function(result){
-            btn.disabled = false;
-            btn.innerHTML = 'Submit Review <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-send"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg>';
-            if (result.ok && result.data.success) alert('Thank you! Your review was submitted.'); else alert((result.data && result.data.error) || 'Failed to submit review.');
-          }).catch(function(){ btn.disabled = false; btn.innerHTML = 'Submit Review <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-send"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg>'; alert('Network error.'); });
+          fetch('/api/reviews/educator-targets', { headers: headers })
+            .then(function(r){ return r.json(); })
+            .then(function(list){
+              if (!Array.isArray(list) || list.length === 0) {
+                btn.disabled = false;
+                btn.innerHTML = 'Submit Review <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-send"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg>';
+                alert('You are not assigned to any center yet.');
+                return;
+              }
+              var targetId = list[0].id;
+              return fetch('/api/reviews', {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify({ target_role: 'educatoradmin', target_id: targetId, rating: educatorReviewRating, comment: comment })
+              }).then(function(r){ return r.json().then(function(data){ return { ok: r.ok, data: data }; }); });
+            })
+            .then(function(result){
+              btn.disabled = false;
+              btn.innerHTML = 'Submit Review <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-send"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg>';
+              if (result && result.ok && result.data.success) alert('Thank you! Your review was submitted.'); else if (result) alert((result.data && result.data.error) || 'Failed to submit review.');
+            })
+            .catch(function(){
+              btn.disabled = false;
+              btn.innerHTML = 'Submit Review <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-send"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg>';
+              alert('Network error.');
+            });
         });
       });
     </script>
