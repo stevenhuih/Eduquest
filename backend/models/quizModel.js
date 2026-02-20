@@ -349,7 +349,7 @@ async function getChallengeByStudentId(studentId) {
   const id = parseInt(studentId, 10);
   if (isNaN(id)) return null;
   const wrongResult = await pool.query(
-    `SELECT question_id FROM student_wrong_questions
+    `SELECT question_id FROM public.student_wrong_questions
      WHERE student_id = $1
      ORDER BY RANDOM()
      LIMIT 5`,

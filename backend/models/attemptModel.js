@@ -52,11 +52,13 @@ async function createAttempt(student_id, quiz_id, answers) {
       );
 
       if (!isCorrect) {
+        const values = [student_id, a.question_id, attemptId];
+        console.log('Inserting wrong questions:', values);
         await client.query(
-          `INSERT INTO student_wrong_questions (student_id, question_id, attempt_id)
+          `INSERT INTO public.student_wrong_questions (student_id, question_id, attempt_id)
            VALUES ($1, $2, $3)
            ON CONFLICT (student_id, question_id) DO UPDATE SET attempt_id = $3, recorded_at = NOW()`,
-          [student_id, a.question_id, attemptId]
+          values
         );
       }
     }
