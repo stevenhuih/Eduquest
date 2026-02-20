@@ -339,6 +339,70 @@ function incrementTimesUsed(questionIds) {
   );
 }
 
+/**
+ * Batch insert question bank rows (single transaction).
+ * Each row: { class_id, topic_id, question_text, options (string[] length 4), correct_index (0-3), difficulty }.
+ * topic_id can be null; topic text stored as empty when using topic_id.
+ */
+async function insertQuestionsBatch(rows) {
+  if (!rows || rows.length === 0) return { inserted: 0 };
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const ids = [];
+    const params = [];
+    let paramIdx = 1;
+    for (const r of rows) {
+      params.push(
+        r.class_id,
+        r.topic_id != null ? '' : (r.topic || ''),
+        r.difficulty || 'medium',
+        r.question_text || '',
+        null,
+        r.topic_id != null ? r.topic_id : null
+      );
+      paramIdx += 6;
+    }
+    const placeholders = rows.map((_, i) => {
+      const base = 1 + i * 6;
+      return `($${base}, $${base + 1}, $${base + 2}, $${base + 3}, $${base + 4}, $${base + 5})`;
+    }).join(', ');
+    const qResult = await client.query(
+      `INSERT INTO question_bank (class_id, topic, difficulty, question_text, created_by, topic_id)
+       VALUES ${placeholders}
+       RETURNING id`,
+      params
+    );
+    qResult.rows.forEach((row) => ids.push(row.id));
+
+    const optParams = [];
+    const optPlaces = [];
+    let oi = 1;
+    for (let q = 0; q < rows.length; q++) {
+      const opts = rows[q].options || [];
+      const correctIndex = Math.max(0, Math.min(3, rows[q].correct_index != null ? Number(rows[q].correct_index) : 0));
+      for (let i = 0; i < 4; i++) {
+        optParams.push(ids[q], opts[i] != null ? String(opts[i]) : '', i === correctIndex);
+        optPlaces.push(`($${oi}, $${oi + 1}, $${oi + 2})`);
+        oi += 3;
+      }
+    }
+    if (optParams.length > 0) {
+      await client.query(
+        `INSERT INTO question_bank_options (question_id, option_text, is_correct) VALUES ${optPlaces.join(', ')}`,
+        optParams
+      );
+    }
+    await client.query('COMMIT');
+    return { inserted: ids.length };
+  } catch (e) {
+    await client.query('ROLLBACK');
+    throw e;
+  } finally {
+    client.release();
+  }
+}
+
 module.exports = {
   createQuestion,
   getQuestionsByClassId,
@@ -351,4 +415,5 @@ module.exports = {
   updateQuestion: exports.updateQuestion,
   deleteQuestion: exports.deleteQuestion,
   incrementTimesUsed,
+  insertQuestionsBatch,
 };
