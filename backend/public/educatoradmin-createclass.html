@@ -340,19 +340,17 @@ border-color: #a5b4fc;
       const API_BASE = '/api';
       const role = localStorage.getItem('role');
       const ADMIN_ID = localStorage.getItem("userId");
+      console.log("ROLE:", role);
+      console.log("ADMIN_ID:", ADMIN_ID);
       if (role !== 'educatoradmin') {
         window.location.href = "educatoradmin-login.html";
         throw new Error('educatoradmin required');
-      }
-      if (!ADMIN_ID) {
-        console.warn("No admin session found");
-        return;
       }
 
       function loadStudents() {
         const container = document.getElementById("js-students-checklist");
         if (!container) return;
-        apiFetch(API_BASE + "/students?adminId=" + encodeURIComponent(ADMIN_ID))
+        apiFetch(API_BASE + "/students?adminId=" + encodeURIComponent(ADMIN_ID != null ? ADMIN_ID : ""))
           .then(function (res) { return res.json(); })
           .then(function (list) {
             container.innerHTML = "";
@@ -381,7 +379,7 @@ border-color: #a5b4fc;
       function loadEducators() {
         const select = document.getElementById("js-educator-select");
         if (!select) return;
-        apiFetch(API_BASE + "/educators/admin/" + ADMIN_ID)
+        apiFetch(API_BASE + "/educators/admin/" + (ADMIN_ID != null ? ADMIN_ID : ""))
           .then(function (res) { return res.json(); })
           .then(function (list) {
             var opts = select.querySelectorAll("option");
@@ -421,6 +419,10 @@ border-color: #a5b4fc;
       }
 
       function createClass() {
+        if (!ADMIN_ID) {
+          alert("Session missing. Please login again.");
+          return;
+        }
         var nameEl = document.getElementById("js-class-name");
         var descEl = document.getElementById("js-class-description");
         var educatorEl = document.getElementById("js-educator-select");
@@ -487,7 +489,6 @@ border-color: #a5b4fc;
       document.addEventListener("DOMContentLoaded", function () {
         var cancelBtn = document.getElementById("js-cancel-btn");
         if (cancelBtn) cancelBtn.addEventListener("click", function () { window.location.href = "educatoradmin-dashboard.html"; });
-        if (!ADMIN_ID) return;
         loadStudents();
         loadEducators();
         var btn = document.getElementById("js-create-class-btn");
