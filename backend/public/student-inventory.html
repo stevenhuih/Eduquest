@@ -367,10 +367,12 @@ border: 1px solid rgba(255, 255, 255, 0.6);
       var inventoryRarities = [];
 
       function getCardImageUrl(card) {
-        if (!card || !card.image_path) return '';
-        var filename = card.image_path.replace(/^.*[/\\]/, '');
-        var base = (typeof API_BASE !== 'undefined' && API_BASE) ? API_BASE.replace(/\/api\/?$/, '') : window.location.origin;
-        return base + '/api/shop/card-image/' + encodeURIComponent(filename);
+        var path = (card && (card.image_url || card.image_path)) ? (card.image_url || card.image_path) : '';
+        if (!path) return '/assets/cards/default.png';
+        path = String(path);
+        if (path.startsWith('/assets/')) return path;
+        var filename = path.split('/').pop();
+        return '/assets/cards/' + filename;
       }
 
       function openZoomModal(card) {
