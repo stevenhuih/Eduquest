@@ -373,15 +373,18 @@ background-color: #4f46e5;
         return el.innerHTML;
       }
 
-      function cardImageUrl(card) {
-        if (!card || !card.image_path) return 'https://api.dicebear.com/7.x/bottts/svg?seed=' + encodeURIComponent(card ? (card.name || 'card') : 'card') + '&backgroundColor=transparent';
-        const filename = card.image_path.replace(/^.*[/\\]/, '');
-        return API_BASE + '/api/shop/card-image/' + encodeURIComponent(filename);
+      function getCardImageUrl(card) {
+        const raw = (card && (card.image_url || card.image_path)) ? (card.image_url || card.image_path) : '';
+        if (!raw) return 'https://api.dicebear.com/7.x/bottts/svg?seed=' + encodeURIComponent(card ? (card.name || 'card') : 'card') + '&backgroundColor=transparent';
+        const str = String(raw);
+        if (str.startsWith('/assets/')) return str;
+        const filename = str.split('/').pop();
+        return '/assets/cards/' + filename;
       }
 
       function renderCard(card, grid) {
         const price = Number(card.price) || 0;
-        const imgSrc = cardImageUrl(card);
+        const imgSrc = getCardImageUrl(card);
         const rarityLabel = (card.rarity_name || 'Common').replace(/-/g, ' ');
         const div = document.createElement('div');
         div.className = 'bg-white rounded-[1.5rem] border border-slate-100 p-4 shadow-sm hover:shadow-lg hover:shadow-indigo-100/50 transition-all duration-300 hover-lift group relative overflow-hidden';

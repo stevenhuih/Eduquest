@@ -40,7 +40,7 @@ async function updateStatus(req, res) {
 
 /**
  * PATCH /api/platform-admin/educator-admins/:id/subscription
- * Body: { subscription_plan: "free"|"pro"|"enterprise", subscription_expires_at?: "2026-12-31" }
+ * Body: { subscription_plan: "basic"|"pro", subscription_expires_at?: "2026-12-31" }
  * Requires requirePlatformAdmin. Returns updated educator admin row.
  */
 async function updateSubscription(req, res) {

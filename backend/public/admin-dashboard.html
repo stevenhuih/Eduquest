@@ -171,9 +171,8 @@ background-color: #4f46e5;
                 <div>
                   <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Plan</label>
                   <select id="edit-plan-select" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-700 focus:ring-2 focus:ring-indigo-100 focus:border-indigo-300">
-                    <option value="free">Free</option>
+                    <option value="basic">Basic</option>
                     <option value="pro">Pro</option>
-                    <option value="enterprise">Enterprise</option>
                   </select>
                 </div>
                 <div>
@@ -301,10 +300,11 @@ background-color: #4f46e5;
       }
 
       function planLabel(plan) {
-        var p = (plan || 'free').toLowerCase();
+        var p = (plan || 'basic').toLowerCase();
+        if (p === 'free') return 'Basic';
         if (p === 'pro') return 'Pro';
-        if (p === 'enterprise') return 'Enterprise';
-        return 'Free';
+        if (p === 'basic') return 'Basic';
+        return 'Basic';
       }
       function formatExpires(expiresAt) {
         if (!expiresAt) return '—';
@@ -333,7 +333,8 @@ background-color: #4f46e5;
           var joined = formatDate(a.created_at);
           var seed = (a.id != null ? String(a.id) : '') || 'admin';
           var status = (a.status || 'active').toLowerCase();
-          var plan = (a.subscription_plan || 'free').toLowerCase();
+          var plan = (a.subscription_plan || 'basic').toLowerCase();
+          if (plan === 'free') plan = 'basic';
           var planText = planLabel(a.subscription_plan) + (a.subscription_expires_at ? ' (exp ' + formatExpires(a.subscription_expires_at) + ')' : '');
           var statusBadge = status === 'suspended'
             ? '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-50 border border-rose-100 text-rose-600 text-[10px] font-bold uppercase">Suspended</span>'
@@ -379,7 +380,7 @@ background-color: #4f46e5;
           btn.addEventListener('click', function () {
             openEditPlanModal({
               id: Number(btn.getAttribute('data-id')),
-              subscription_plan: btn.getAttribute('data-plan') || 'free',
+              subscription_plan: btn.getAttribute('data-plan') || 'basic',
               subscription_expires_at: btn.getAttribute('data-expires') || ''
             });
           });
@@ -409,7 +410,9 @@ background-color: #4f46e5;
       function openEditPlanModal(admin) {
         var modal = document.getElementById('edit-plan-modal');
         document.getElementById('edit-plan-admin-id').value = admin.id;
-        document.getElementById('edit-plan-select').value = (admin.subscription_plan || 'free').toLowerCase();
+        var planVal = (admin.subscription_plan || 'basic').toLowerCase();
+        if (planVal === 'free') planVal = 'basic';
+        document.getElementById('edit-plan-select').value = planVal;
         var expires = admin.subscription_expires_at;
         document.getElementById('edit-plan-expires').value = expires ? String(expires).slice(0, 10) : '';
         if (modal) modal.classList.remove('hidden');

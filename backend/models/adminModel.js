@@ -88,7 +88,7 @@ async function getClassCountForAdmin(adminId) {
 }
 
 const ALLOWED_STATUSES = ['active', 'suspended'];
-const ALLOWED_PLANS = ['free', 'pro', 'enterprise'];
+const ALLOWED_PLANS = ['basic', 'pro'];
 
 /**
  * Update educator admin status. Valid values: active, suspended.
@@ -109,9 +109,10 @@ async function updateStatus(educatorAdminId, status) {
  * Update educator admin subscription (plan and optional expiration).
  */
 async function updateSubscription(educatorAdminId, plan, expiresAt) {
-  const p = String(plan).toLowerCase().trim();
+  let p = String(plan).toLowerCase().trim();
+  if (p === 'free') p = 'basic';
   if (!ALLOWED_PLANS.includes(p)) {
-    throw new Error('Invalid subscription_plan; allowed: free, pro, enterprise');
+    throw new Error('Invalid subscription_plan; allowed: basic, pro');
   }
   const result = await pool.query(
     `UPDATE educator_admins SET subscription_plan = $1, subscription_expires_at = $2
