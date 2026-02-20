@@ -303,10 +303,6 @@ border: 1px solid rgba(255, 255, 255, 0.6);
                             </button>
                             
                             <div class="flex items-center gap-4">
-                                <div class="flex items-center gap-2">
-                                    <span class="text-xs font-bold text-slate-400">Points:</span>
-                                    <input type="number" value="5" min="1" class="js-points w-12 text-center text-xs font-bold text-slate-700 bg-slate-50 border border-slate-200 rounded-md py-1 focus:ring-2 focus:ring-indigo-100 focus:border-indigo-300 outline-none">
-                                </div>
                                 <label class="flex items-center gap-2 cursor-pointer">
                                     <span class="text-xs font-bold text-slate-400">Feedback</span>
                                     <div class="relative w-8 h-4">
@@ -979,7 +975,6 @@ border: 1px solid rgba(255, 255, 255, 0.6);
           inp.value = '';
           inp.placeholder = 'Enter multiple choice ' + (i + 1);
         });
-        clone.querySelector('.js-points').value = 5;
         clone.querySelector('.js-question-explanation').value = '';
         clone.querySelectorAll('.js-option-correct').forEach(function (r) { r.checked = false; });
         clone.querySelectorAll('.js-option-row').forEach(function (row) {
