@@ -450,37 +450,44 @@ border-color: #a5b4fc;
           created_by: ADMIN_ID,
           educator_id: educatorId ? Number(educatorId) : null,
         };
-        apiFetch(API_BASE + "/classes", {
+        fetch(API_BASE + "/classes", {
           method: "POST",
+          headers: getAuthHeaders(),
           body: JSON.stringify(payload),
         })
           .then(function (res) {
-            if (res.status === 401 || res.status === 403) {
-              btn.disabled = false;
-              btnText.textContent = "Create & Activate Class";
-              alert("Session expired. Please log in again.");
-              return Promise.reject(new Error("Auth failed"));
-            }
-            return res.json().then(function (data) {
-              if (!res.ok) {
-                var msg = (data && data.error) ? data.error : "Create failed";
-                throw new Error(msg);
+            return res.text().then(function (text) {
+              console.log("Create class response:", res.status, text);
+              if (res.status === 401 || res.status === 403) {
+                btn.disabled = false;
+                btnText.textContent = "Create & Activate Class";
+                alert("Session expired. Please login again.");
+                return Promise.reject(new Error("Unauthorized"));
               }
-              return data;
+              if (!res.ok) {
+                try {
+                  var err = JSON.parse(text);
+                  throw new Error(err.error || "Failed to create class");
+                } catch (e) {
+                  var msg = (e instanceof Error && e.message && e.message !== "Failed to create class") ? e.message : (text || "Failed to create class");
+                  throw new Error(msg);
+                }
+              }
+              return JSON.parse(text);
             });
           })
-          .then(function (row) {
-            var classId = row && row.id;
-            if (!row || !classId) return Promise.reject(new Error("No class id returned"));
-            return assignStudents(classId).then(function () { return classId; });
+          .then(function (data) {
+            var classId = data && data.id;
+            if (!classId) return Promise.reject(new Error("No class id returned"));
+            return assignStudents(classId).then(function () { return data; });
           })
-          .then(function () {
-            alert("Class created successfully");
-            window.location.href = "educator-class.html";
+          .then(function (data) {
+            console.log("Class created:", data);
+            window.location.href = "educatoradmin-dashboard.html";
           })
           .catch(function (err) {
-            console.error(err);
-            alert(err.message || "Something went wrong. Please try again.");
+            console.error("Create class error:", err);
+            alert(err.message || "Failed to create class");
             btn.disabled = false;
             btnText.textContent = "Create & Activate Class";
           });
