@@ -567,10 +567,30 @@ box-shadow: 0 20px 40px -12px rgba(99, 102, 241, 0.1);
         if (nextBtn) nextBtn.disabled = true;
         if (submitBtn) submitBtn.disabled = true;
 
+        function formatDifficulty(difficulty) {
+          if (!difficulty) return 'Unknown';
+          var d = String(difficulty).toLowerCase();
+          if (d === 'easy') return 'Easy';
+          if (d === 'medium') return 'Medium';
+          if (d === 'hard') return 'Hard';
+          return difficulty;
+        }
+        function difficultyClass(difficulty) {
+          if (!difficulty) return 'bg-gray-100 text-gray-600';
+          var d = String(difficulty).toLowerCase();
+          if (d === 'easy') return 'bg-green-100 text-green-600';
+          if (d === 'medium') return 'bg-yellow-100 text-yellow-600';
+          if (d === 'hard') return 'bg-red-100 text-red-600';
+          return 'bg-gray-100 text-gray-600';
+        }
         function renderQuiz(quiz) {
           studentQuiz.quiz = quiz;
           titleEl.textContent = quiz.title || 'Quiz';
-          document.getElementById('student-quiz-difficulty').textContent = (quiz.questions && quiz.questions[0] && quiz.questions[0].difficulty_level) || '—';
+          var diffEl = document.getElementById('student-quiz-difficulty');
+          if (diffEl) {
+            diffEl.textContent = formatDifficulty(quiz.difficulty);
+            diffEl.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-bold border border-current ' + difficultyClass(quiz.difficulty);
+          }
           document.getElementById('student-quiz-meta').textContent = 'Maths';
           var xpEl = document.getElementById('reward-xp');
           var coinsEl = document.getElementById('reward-coins');

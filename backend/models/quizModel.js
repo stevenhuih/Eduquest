@@ -179,6 +179,9 @@ async function getQuizById(id) {
     q.options = optsResult.rows;
   }
   quiz.questions = questions;
+  const hasHard = questions.some((q) => q.difficulty_level && String(q.difficulty_level).toLowerCase().trim() === 'hard');
+  const hasMedium = questions.some((q) => q.difficulty_level && String(q.difficulty_level).toLowerCase().trim() === 'medium');
+  quiz.difficulty = hasHard ? 'hard' : hasMedium ? 'medium' : 'easy';
   return quiz;
 }
 

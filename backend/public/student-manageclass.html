@@ -1121,6 +1121,15 @@
           return;
         }
 
+        function formatDifficulty(difficulty) {
+          if (!difficulty) return 'Unknown';
+          var d = String(difficulty).toLowerCase();
+          if (d === 'easy') return 'Easy';
+          if (d === 'medium') return 'Medium';
+          if (d === 'hard') return 'Hard';
+          return difficulty;
+        }
+
         function escapeHtml(s) {
           if (s == null) return '';
           var div = document.createElement('div');
@@ -1136,7 +1145,7 @@
           var difficulty = (q.difficulty && String(q.difficulty).toLowerCase()) || 'medium';
           var attemptCount = q.attempt_count != null ? Number(q.attempt_count) : 0;
           var completed = !!(attemptCount && attemptCount > 0);
-          var difficultyLabel = (difficulty.charAt(0).toUpperCase() + difficulty.slice(1)).toUpperCase();
+          var difficultyLabel = formatDifficulty(q.difficulty);
           var questionsText = questionCount + ' Question' + (questionCount !== 1 ? 's' : '');
 
           var card = document.createElement("div");

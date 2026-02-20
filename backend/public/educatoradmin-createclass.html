@@ -249,9 +249,9 @@ border-color: #a5b4fc;
               <a href="educatoradmin-dashboard.html" class="w-full py-3 rounded-2xl bg-white text-slate-600 font-bold text-xs border-2 border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all text-center">
                 Back to Dashboard
               </a>
-              <a href="educator-class.html" class="w-full py-3 rounded-2xl bg-white text-rose-500 font-bold text-xs border-2 border-rose-100 hover:border-rose-200 hover:bg-rose-50 transition-all text-center">
+              <button type="button" id="js-cancel-btn" class="w-full py-3 rounded-2xl bg-white text-rose-500 font-bold text-xs border-2 border-rose-100 hover:border-rose-200 hover:bg-rose-50 transition-all text-center">
                 Cancel
-              </a>
+              </button>
             </div>
           </div>
         </div>
@@ -338,8 +338,16 @@ border-color: #a5b4fc;
       lucide.createIcons();
 
       const API_BASE = '/api';
-      if (localStorage.getItem('role') !== 'educatoradmin') { window.location.href = "educatoradmin-login.html"; }
+      const role = localStorage.getItem('role');
       const ADMIN_ID = localStorage.getItem("userId");
+      if (role !== 'educatoradmin') {
+        window.location.href = "educatoradmin-login.html";
+        throw new Error('educatoradmin required');
+      }
+      if (!ADMIN_ID) {
+        console.warn("No admin session found");
+        return;
+      }
 
       function loadStudents() {
         const container = document.getElementById("js-students-checklist");
@@ -431,6 +439,7 @@ border-color: #a5b4fc;
           return;
         }
         if (!btn || !btnText) return;
+        console.log("Admin ID:", ADMIN_ID);
         btn.disabled = true;
         btnText.textContent = "Creating...";
         var payload = {
@@ -444,6 +453,12 @@ border-color: #a5b4fc;
           body: JSON.stringify(payload),
         })
           .then(function (res) {
+            if (res.status === 401 || res.status === 403) {
+              btn.disabled = false;
+              btnText.textContent = "Create & Activate Class";
+              alert("Session expired. Please log in again.");
+              return Promise.reject(new Error("Auth failed"));
+            }
             return res.json().then(function (data) {
               if (!res.ok) {
                 var msg = (data && data.error) ? data.error : "Create failed";
@@ -470,6 +485,9 @@ border-color: #a5b4fc;
       }
 
       document.addEventListener("DOMContentLoaded", function () {
+        var cancelBtn = document.getElementById("js-cancel-btn");
+        if (cancelBtn) cancelBtn.addEventListener("click", function () { window.location.href = "educatoradmin-dashboard.html"; });
+        if (!ADMIN_ID) return;
         loadStudents();
         loadEducators();
         var btn = document.getElementById("js-create-class-btn");
