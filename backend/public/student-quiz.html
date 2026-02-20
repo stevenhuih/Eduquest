@@ -625,26 +625,44 @@ box-shadow: 0 20px 40px -12px rgba(99, 102, 241, 0.1);
       function submitQuiz() {
         var q = studentQuiz.quiz;
         if (!q) return;
+        var studentId = localStorage.getItem('userId');
         var answers = [];
         (q.questions || []).forEach(function (qu) { var optId = studentQuiz.answers[qu.id]; if (optId != null) answers.push({ question_id: qu.id, selected_option_id: optId }); });
+        var payload = { quiz_id: q.id, student_id: studentId ? Number(studentId) : null, class_id: CLASS_ID, answers: answers };
+        console.log('Submitting payload:', payload);
         var prevBtn = document.getElementById('student-prev');
         var nextBtn = document.getElementById('student-next');
         var submitBtn = document.getElementById('student-submit-btn');
         if (prevBtn) prevBtn.disabled = true;
         if (nextBtn) nextBtn.disabled = true;
         if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Submitting…'; }
-        fetch(API_BASE + '/attempts', { method: 'POST', headers: getAuthHeaders(), body: JSON.stringify({ quiz_id: q.id, class_id: CLASS_ID, answers: answers }) })
+        var opts = { method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(payload) };
+        if (!opts.headers['Content-Type']) opts.headers['Content-Type'] = 'application/json';
+        fetch(API_BASE + '/attempts', opts)
           .then(function (res) {
-            if (res.status === 403) return res.json().then(function (d) { throw new Error(d.error || 'You can only attempt this quiz once.'); });
-            if (!res.ok) throw new Error('Submit failed');
-            return res.json();
+            var status = res.status;
+            return res.text().then(function (text) {
+              console.log('Submit response status:', status, 'body:', text);
+              if (status === 403) {
+                var d = {};
+                try { d = JSON.parse(text); } catch (e) {}
+                throw new Error(d.error || 'You can only attempt this quiz once.');
+              }
+              if (!res.ok) {
+                var errMsg = text;
+                try { var parsed = JSON.parse(text); if (parsed && parsed.error) errMsg = parsed.error; } catch (e) {}
+                throw new Error(errMsg);
+              }
+              return JSON.parse(text);
+            });
           })
           .then(function (data) {
+            console.log('Submit success:', data);
             renderResults(data);
           })
           .catch(function (err) {
-            console.error(err);
-            alert(err.message || 'Something went wrong. Please try again.');
+            console.error('Submit error:', err);
+            alert(err.message || 'Network error. Please try again.');
             if (prevBtn) prevBtn.disabled = false;
             if (nextBtn) nextBtn.disabled = false;
             if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Submit Quiz'; }

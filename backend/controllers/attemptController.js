@@ -12,6 +12,7 @@ const QUIZ_REWARDS = {
 
 async function createAttempt(req, res) {
   try {
+    console.log('Incoming submit:', req.body);
     const studentId = Number(req.headers['x-student-id']);
     if (studentId == null || isNaN(studentId)) {
       return res.status(401).json({ error: 'x-student-id header is required' });
@@ -62,7 +63,8 @@ async function createAttempt(req, res) {
     });
   } catch (err) {
     console.error('createAttempt error:', err);
-    res.status(500).json({ error: err.message || 'Failed to submit attempt' });
+    const message = err.message || 'Failed to submit attempt';
+    res.status(500).json({ error: message });
   }
 }
 
